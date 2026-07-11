@@ -44,3 +44,25 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ai agent files
+AGENTS.md
+CLAUDE.md
+
+# test reports
+TEST_REPORT.md
+
+# editor/ide
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# os
+Thumbs.db
+Desktop.ini
+
+# logs
+*.log
+tmp/
+temp/
