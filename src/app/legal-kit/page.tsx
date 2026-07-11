@@ -130,7 +130,7 @@ export default function LegalKitPage() {
       <main className="min-h-screen bg-slate-950 px-6 py-12 text-white">
         <div className="mx-auto max-w-3xl rounded-3xl bg-white p-8 text-center text-slate-950 shadow-2xl">
           <h1 className="text-3xl font-black">No case data found. Please complete the intake first.</h1>
-          <Link href="/intake" className="mt-6 inline-flex rounded-full bg-teal-600 px-6 py-3 font-bold text-white">Back to Intake</Link>
+          <Link href="/dashboard" className="mt-6 inline-flex rounded-full bg-teal-600 px-6 py-3 font-bold text-white">{t("backDashboard")}</Link>
         </div>
       </main>
     );
