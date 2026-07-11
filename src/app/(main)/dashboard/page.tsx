@@ -103,7 +103,6 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-slate-950 px-5 py-8 text-white sm:px-8">
-      <div className="mx-auto max-w-7xl">
         <header className="rounded-[2rem] bg-gradient-to-br from-teal-500 to-slate-900 p-8 shadow-2xl">
           <p className="inline-flex rounded-full bg-white/15 px-4 py-2 text-sm font-black">Draft preparation tool | Not legal advice</p>
           <h1 className="mt-5 text-4xl font-black tracking-tight sm:text-6xl">{t("appName")} {t("dashboard")}</h1>
