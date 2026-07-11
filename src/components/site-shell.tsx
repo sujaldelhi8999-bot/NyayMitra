@@ -16,7 +16,7 @@ export function Navbar({ language, onChangeLanguage }: { language: Language; onC
             N
           </span>
           <span className="text-xl font-black tracking-tight text-slate-950">
-            NyayMitra
+            {t("appName")}
           </span>
         </Link>
         <div className="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex">
