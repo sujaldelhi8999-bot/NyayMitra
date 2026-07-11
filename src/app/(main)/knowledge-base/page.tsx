@@ -12,6 +12,9 @@ export default function KnowledgeBasePage() {
   const [tab, setTab] = useState<"legal" | "portals">("legal");
   const [language, setLanguage] = useState<Language>("en");
   const entries = filter === "All" ? verifiedLegalKnowledge : verifiedLegalKnowledge.filter((entry) => entry.caseType === filter);
+  const portalCaseTypes = ["All", ...Array.from(new Set(officialPortals.flatMap((p) => p.caseTypes).filter((ct) => ct !== "all")))];
+  const [portalFilter, setPortalFilter] = useState("All");
+  const filteredPortals = portalFilter === "All" ? officialPortals : officialPortals.filter((p) => p.caseTypes.includes("all") ? false : p.caseTypes.includes(portalFilter));
 
   function changeLanguage(nextLanguage: Language) {
     setLanguage(nextLanguage);
