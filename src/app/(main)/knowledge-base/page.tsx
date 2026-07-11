@@ -55,7 +55,7 @@ export default function KnowledgeBasePage() {
             </article>
           ))}
         </section> : <section className="mt-8 grid gap-5 md:grid-cols-2">
-          {officialPortals.map((portal) => (
+          {filteredPortals.map((portal) => (
             <article key={portal.id} className="rounded-[2rem] bg-white p-6 text-slate-950 shadow-2xl">
               <div className="flex flex-wrap gap-2"><span className="rounded-full bg-teal-100 px-3 py-1 text-xs font-black text-teal-800">Official</span>{portal.emergencyOnly && <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-black text-orange-800">Emergency</span>}{portal.stateSpecific && <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-black text-yellow-800">State-specific</span>}<span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">{portal.category}</span></div>
               <h2 className="mt-4 text-2xl font-black">{portal.title}</h2>
