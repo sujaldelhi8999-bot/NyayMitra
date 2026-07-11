@@ -39,6 +39,9 @@ export default function KnowledgeBasePage() {
           {tab === "legal" && <><label className="mt-5 block font-black text-teal-700">Filter by case type</label><select value={filter} onChange={(event) => setFilter(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 p-3 font-bold outline-none focus:border-teal-500 md:max-w-md">
             {caseTypes.map((caseType) => <option key={caseType}>{caseType}</option>)}
           </select></>}
+          {tab === "portals" && <><label className="mt-5 block font-black text-teal-700">Filter by case type</label><select value={portalFilter} onChange={(event) => setPortalFilter(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 p-3 font-bold outline-none focus:border-teal-500 md:max-w-md">
+            {portalCaseTypes.map((caseType) => <option key={caseType}>{caseType}</option>)}
+          </select></>}
         </section>
 
         {tab === "legal" ? <section className="mt-8 grid gap-5 md:grid-cols-2">
