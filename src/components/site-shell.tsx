@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 export function Navbar() {
   return (
@@ -20,12 +21,15 @@ export function Navbar() {
           <Link href="/dashboard" className="hover:text-teal-700">Dashboard</Link>
           <Link href="/knowledge-base" className="hover:text-teal-700">Knowledge Base</Link>
         </div>
-        <Link
-          href="/intake"
-          className="rounded-full bg-slate-950 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-teal-700"
-        >
-          Start Case Preparation
-        </Link>
+        <div className="flex items-center gap-4">
+          <LanguageSwitcher />
+          <Link
+            href="/intake"
+            className="rounded-full bg-slate-950 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-teal-700"
+          >
+            Start Case Preparation
+          </Link>
+        </div>
       </nav>
     </header>
   );

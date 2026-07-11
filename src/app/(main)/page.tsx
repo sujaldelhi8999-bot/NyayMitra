@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { SectionHeading } from "@/components/section-heading";
-import { SiteShell } from "@/components/site-shell";
 import { getInitialLanguage, type Language, translate } from "@/lib/i18n";
 
 const features = [
@@ -33,12 +31,11 @@ export default function Home() {
   }
 
   return (
-    <SiteShell>
+    <>
       <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,#14b8a633,transparent_34%),linear-gradient(135deg,#06152f_0%,#0f2745_52%,#0f766e_100%)] px-5 py-20 text-white sm:px-8 lg:py-28">
         <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-slate-50 to-transparent" />
         <div className="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div>
-            <div className="mb-6"><LanguageSwitcher language={language} onChange={changeLanguage} /></div>
             <p className="inline-flex rounded-full border border-teal-200/30 bg-white/10 px-4 py-2 text-sm font-bold text-teal-50 backdrop-blur">AI Legal Guidance and Case Preparation Assistant for Bharat</p>
             <h1 className="mt-7 text-5xl font-black tracking-tight sm:text-7xl">
               NyayMitra
@@ -121,6 +118,6 @@ export default function Home() {
           </Link>
         </div>
       </section>
-    </SiteShell>
+    </>
   );
 }
