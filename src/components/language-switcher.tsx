@@ -2,26 +2,25 @@
 
 import type { Language } from "@/lib/i18n";
 
-export function LanguageSwitcher({ language, onChange }: { language: Language; onChange: (language: Language) => void }) {
-  const options: { label: string; value: Language }[] = [
-    { label: "English", value: "en" },
-    { label: "हिंदी", value: "hi" },
-    { label: "Hinglish", value: "hinglish" },
-  ];
+const options: { label: string; value: Language }[] = [
+  { label: "English", value: "en" },
+  { label: "हिंदी", value: "hi" },
+  { label: "Hinglish", value: "hinglish" },
+];
 
+export function LanguageSwitcher({ language, onChange }: { language: Language; onChange: (language: Language) => void }) {
   return (
-    <div className="flex flex-wrap gap-2" aria-label="Language switcher">
+    <select
+      aria-label="Select language"
+      value={language}
+      onChange={(e) => onChange(e.target.value as Language)}
+      className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-teal-400 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-200"
+    >
       {options.map((option) => (
-        <button
-          key={option.value}
-          type="button"
-          aria-label={`Switch language to ${option.label}`}
-          onClick={() => onChange(option.value)}
-          className={`rounded-full px-4 py-2 text-sm font-bold transition focus:outline-none focus:ring-4 focus:ring-teal-200 ${language === option.value ? "bg-teal-400 text-slate-950" : "bg-white/10 text-white hover:bg-white/20"}`}
-        >
+        <option key={option.value} value={option.value}>
           {option.label}
-        </button>
+        </option>
       ))}
-    </div>
+    </select>
   );
 }
