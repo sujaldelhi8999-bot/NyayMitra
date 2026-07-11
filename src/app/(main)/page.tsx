@@ -33,7 +33,7 @@ export default function Home() {
           <div>
             <p className="inline-flex rounded-full border border-teal-200/30 bg-white/10 px-4 py-2 text-sm font-bold text-teal-50 backdrop-blur">{t("heroBadge")}</p>
             <h1 className="mt-7 text-5xl font-black tracking-tight sm:text-7xl">
-              NyayMitra
+              {t("appName")}
             </h1>
             <p className="mt-6 max-w-2xl text-xl leading-9 text-slate-100">
               {t("heroDescription")}
