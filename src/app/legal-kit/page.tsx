@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { getInitialLanguage, type Language, translate } from "@/lib/i18n";
 import { buildKnowledgeContext } from "@/lib/legalKnowledge";
 import { getCaseConfig, outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
@@ -109,11 +108,6 @@ export default function LegalKitPage() {
   const [statusMessage, setStatusMessage] = useState("");
   const [language, setLanguage] = useState<Language>("en");
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
-
-  function changeLanguage(nextLanguage: Language) {
-    setLanguage(nextLanguage);
-    localStorage.setItem("nyaymitra_language", nextLanguage);
-  }
 
   useEffect(() => {
     window.setTimeout(() => {
