@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NyayMitra
+
+NyayMitra is an AI Legal Guidance and Case Preparation Assistant for Bharat. It helps users classify legal issues, organize proof, prepare drafts for review or Legal Aid Consultation Notes, view official action links, save cases locally, and export Legal Action Kit PDFs.
+
+NyayMitra is a legal self-help preparation tool, not a lawyer. Please verify with legal aid/lawyer before filing.
 
 ## Getting Started
 
-First, run the development server:
+First, create `.env.local` from `.env.local.example` if AI features are needed:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+OPENROUTER_MODEL=google/gemini-2.0-flash-001
+```
+
+Then run the development server:
+
+```bash
+npm.cmd run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Build and QA commands:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm.cmd run lint
+npm.cmd run build
+npm.cmd start
+```
 
-## Learn More
+## Safety Boundaries
 
-To learn more about Next.js, take a look at the following resources:
+- NyayMitra does not provide legal advice.
+- NyayMitra does not guarantee outcomes.
+- NyayMitra does not invent legal sections.
+- High-risk matters are routed to legal-aid/lawyer review.
+- OpenRouter API keys must stay server-side only in `.env.local`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## LocalStorage MVP
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This MVP stores cases in browser localStorage. It does not include backend database, authentication, or payments.
 
-## Deploy on Vercel
+## Deploy
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Set these environment variables in the deployment platform:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `OPENROUTER_API_KEY`
+- `OPENROUTER_MODEL`
+
+Do not create a public OpenRouter key variable.
