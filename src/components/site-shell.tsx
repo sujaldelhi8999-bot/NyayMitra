@@ -13,13 +13,12 @@ export function Navbar() {
           </span>
         </Link>
         <div className="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex">
-          <Link href="/" className="hover:text-teal-700">Home</Link>
-          <Link href="/intake" className="hover:text-teal-700">Intake</Link>
-          <Link href="/dashboard" className="hover:text-teal-700">Dashboard</Link>
-          <Link href="/knowledge-base" className="hover:text-teal-700">Knowledge Base</Link>
           <Link href="/#features" className="hover:text-teal-700">Features</Link>
           <Link href="/#how-it-works" className="hover:text-teal-700">How it works</Link>
           <Link href="/#safety" className="hover:text-teal-700">Safety</Link>
+          <Link href="/intake" className="hover:text-teal-700">Intake</Link>
+          <Link href="/dashboard" className="hover:text-teal-700">Dashboard</Link>
+          <Link href="/knowledge-base" className="hover:text-teal-700">Knowledge Base</Link>
         </div>
         <Link
           href="/intake"
