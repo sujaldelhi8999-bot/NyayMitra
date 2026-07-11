@@ -136,6 +136,7 @@ function IntakeContent() {
   const [caseTypeSearch, setCaseTypeSearch] = useState("");
   const [customProofInput, setCustomProofInput] = useState("");
   const [customReliefInput, setCustomReliefInput] = useState("");
+  const [draftLanguage, setDraftLanguage] = useState<Language>("en");
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
   const currentCaseConfig = getCaseConfig(formData.caseType);
   const suggestedProofs = formData.aiAnalysis?.classification?.suggestedProofs || [];
@@ -1609,9 +1610,17 @@ Date: ${today}`;
                   <p className="mt-2 text-sm font-semibold text-slate-600">Generated locally from your case details. Review and edit before using.</p>
                 </div>
                 <div className="flex flex-col gap-2 sm:flex-row">
-                  <button type="button" onClick={handleGenerateDraftComplaint} className="rounded-full bg-teal-600 px-5 py-3 font-bold text-white hover:bg-teal-700">{submittedOutputMode === "urgent-legal-aid-route" ? "Generate Legal Aid Consultation Note" : "Generate Draft Complaint"}</button>
-                  <button type="button" onClick={handleResetDraft} className="rounded-full bg-slate-100 px-5 py-3 font-bold text-slate-700 hover:bg-slate-200">Reset Draft</button>
-                  <button type="button" onClick={handleCopyDraft} className="rounded-full bg-slate-950 px-5 py-3 font-bold text-white hover:bg-slate-800">Copy Draft</button>
+                  <label className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-slate-700">{t("draftLanguageLabel")}:</span>
+                    <select value={draftLanguage} onChange={(e) => setDraftLanguage(e.target.value as Language)} className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-bold outline-none focus:border-teal-500">
+                      <option value="en">{t("draftLangEnglish")}</option>
+                      <option value="hi">{t("draftLangHindi")}</option>
+                      <option value="hinglish">{t("draftLangHinglish")}</option>
+                    </select>
+                  </label>
+                  <button type="button" onClick={handleGenerateDraftComplaint} className="rounded-full bg-teal-600 px-5 py-3 font-bold text-white hover:bg-teal-700">{submittedOutputMode === "urgent-legal-aid-route" ? t("btnGenerateLegalAid") : t("btnGenerateDraft")}</button>
+                  <button type="button" onClick={handleResetDraft} className="rounded-full bg-slate-100 px-5 py-3 font-bold text-slate-700 hover:bg-slate-200">{t("btnResetDraft")}</button>
+                  <button type="button" onClick={handleCopyDraft} className="rounded-full bg-slate-950 px-5 py-3 font-bold text-white hover:bg-slate-800">{t("btnCopyDraft")}</button>
                 </div>
               </div>
 

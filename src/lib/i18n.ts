@@ -906,6 +906,12 @@ export const translations = {
     badgeOfficial: "आधिकारिक",
     badgeEmergency: "आपातकालीन",
     badgeStateSpecific: "राज्य-विशिष्ट",
+
+    draftLanguageLabel: "ड्राफ्ट भाषा",
+    draftLanguageDesc: "शिकायत ड्राफ्ट आउटपुट के लिए भाषा चुनें।",
+    draftLangEnglish: "अंग्रेजी",
+    draftLangHindi: "हिंदी",
+    draftLangHinglish: "हिंगलिश",
   },
   hinglish: {
     appName: "NyayMitra",
@@ -1357,6 +1363,12 @@ export const translations = {
     badgeOfficial: "Official",
     badgeEmergency: "Emergency",
     badgeStateSpecific: "State-specific",
+
+    draftLanguageLabel: "Draft Language",
+    draftLanguageDesc: "Choose the language for the complaint draft output.",
+    draftLangEnglish: "English",
+    draftLangHindi: "Hindi",
+    draftLangHinglish: "Hinglish",
   },
 } as const;
 
