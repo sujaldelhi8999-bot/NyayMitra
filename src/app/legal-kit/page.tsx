@@ -213,111 +213,111 @@ export default function LegalKitPage() {
     }
 
     text(`NyayMitra ${kitTitle}`, 20, true);
-    text("This is a draft preparation document. It is not legal advice and does not guarantee any result.", 10);
-    text("NyayMitra is a legal self-help preparation tool, not a lawyer. Please verify with legal aid/lawyer before filing.", 10);
+    text(t("disclaimer"), 10);
+    text(t("footerDisclaimer"), 10);
 
     if (outputMode === "urgent-legal-aid-route") {
-      section("Strong Disclaimer");
-      text("This urgent/high-risk matter requires lawyer/legal-aid review. NyayMitra provides only a Legal Aid Consultation Note and document organization support.");
+      section(t("kitStrongDisclaimer"));
+      text(t("kitStrongDisclaimerDesc"));
     }
 
-    section("Case Snapshot");
+    section(t("kitCaseSnapshot"));
     text([
-      `Name: ${caseData.fullName}`,
-      `Contact: ${caseData.contact}`,
-      `Case type: ${caseData.caseType}`,
-      `State / UT: ${caseData.stateOrUT || "Not provided"}`,
-      `Incident date: ${caseData.incidentDate}`,
-      `Amount lost: Rs. ${caseData.amountLost}`,
-      `Opposite party details: ${caseData.oppositeParty || "Not provided"}`,
-      `Relief wanted: ${[...caseData.relief.filter((item) => item !== "Other relief / outcome"), ...(caseData.customReliefs || [])].join(", ")}`,
+      `${t("kitLabelName")}: ${caseData.fullName}`,
+      `${t("kitLabelContact")}: ${caseData.contact}`,
+      `${t("kitLabelCaseType")}: ${caseData.caseType}`,
+      `${t("kitLabelStateUT")}: ${caseData.stateOrUT || t("kitLabelNotProvided")}`,
+      `${t("kitLabelIncidentDate")}: ${caseData.incidentDate}`,
+      `${t("kitLabelAmountLost")}: Rs. ${caseData.amountLost}`,
+      `${t("kitLabelOppositeParty")}: ${caseData.oppositeParty || t("kitLabelNotProvided")}`,
+      `${t("kitLabelReliefWanted")}: ${[...caseData.relief.filter((item) => item !== "Other relief / outcome"), ...(caseData.customReliefs || [])].join(", ")}`,
     ]);
-    text(`User story: ${caseData.story}`);
+    text(`${t("kitLabelUserStory")}: ${caseData.story}`);
 
     if (outputMode === "urgent-legal-aid-route") {
-      section("Safety Summary");
-      text("The case has been routed to urgent legal-aid review based on the case type or safety signals. If there is immediate danger, contact local emergency services immediately.");
+      section(t("kitSafetySummary"));
+      text(t("kitSafetySummaryDesc"));
     }
 
     if (amountMismatch) {
-      section("Amount Mismatch Warning");
+      section(t("labelAmountMismatch"));
       text(amountMismatch);
     }
 
-    section(outputMode === "urgent-legal-aid-route" ? "Facts Timeline" : "Timeline of Events");
+    section(outputMode === "urgent-legal-aid-route" ? "Facts Timeline" : t("kitTimelineOfEvents"));
     timeline(caseData).forEach((item) => text(`- ${item}`));
 
-    section(outputMode === "limited-guidance-kit" ? "Evidence Organizer" : outputMode === "urgent-legal-aid-route" ? "Document Checklist" : "Evidence Index");
+    section(outputMode === "limited-guidance-kit" ? t("kitEvidenceOrganizer") : outputMode === "urgent-legal-aid-route" ? t("kitDocumentChecklist") : t("kitEvidenceIndex"));
     evidenceRows(caseData).forEach((row) => text(`${row.annexure}. ${row.evidence} | ${row.status} | File: ${row.fileName} | ${row.proves} | ${row.action}`));
 
-    section("Uploaded Annexures");
-    text(caseData.uploadedFiles.length ? caseData.uploadedFiles.map((file, index) => `A${index + 1} - ${file.fileName} - ${file.evidenceCategory}`) : "No uploaded annexure files added.");
+    section(t("kitUploadedAnnexures"));
+    text(caseData.uploadedFiles.length ? caseData.uploadedFiles.map((file, index) => `A${index + 1} - ${file.fileName} - ${file.evidenceCategory}`) : t("kitNoUploadedAnnexureFiles"));
 
-    section("Missing Proof");
-    text(missingProofs.length ? missingProofs.map((proof) => `- ${proof}`) : "No basic proof missing.");
+    section(t("kitMissingProof"));
+    text(missingProofs.length ? missingProofs.map((proof) => `- ${proof}`) : t("kitNoBasicProofMissing"));
     if (caseData.customProofs?.length) {
-      section("Custom Proofs / Documents");
+      section(t("kitCustomProofs"));
       text(caseData.customProofs.map((proof) => `- ${proof}`));
-      text("Custom documents are user-provided and should be verified before filing or relying on them.");
+      text(t("kitCustomProofsNote"));
     }
     if (caseData.customReliefs?.length) {
-      section("Custom Relief / Outcome Requested");
+      section(t("kitCustomRelief"));
       text(caseData.customReliefs.map((relief) => `- ${relief}`));
     }
 
-    section("Smart Follow-up Answers");
-    text(answeredFollowUps.length ? answeredFollowUps.map(([question, answer]) => `Q: ${question} A: ${answer}`) : "No follow-up answers added.");
+    section(t("kitFollowUpAnswers"));
+    text(answeredFollowUps.length ? answeredFollowUps.map(([question, answer]) => `Q: ${question} A: ${answer}`) : t("kitNoFollowUpAnswers"));
 
-    section("AI Legal Guidance History");
-    text(caseData.advisorChats?.length ? caseData.advisorChats.flatMap((chat) => [`Q: ${chat.question}`, `A: ${chat.answer}`, `Risk: ${chat.riskNote}`, ...chat.nextSteps.map((step) => `- ${step}`)]) : "No AI legal guidance chats added.");
+    section(t("kitAiHistory"));
+    text(caseData.advisorChats?.length ? caseData.advisorChats.flatMap((chat) => [`Q: ${chat.question}`, `A: ${chat.answer}`, `Risk: ${chat.riskNote}`, ...chat.nextSteps.map((step) => `- ${step}`)]) : t("kitNoAiHistory"));
 
-    section("Verified Source Notes");
-    text(verifiedSourceNotes.length ? verifiedSourceNotes.map((source) => `${source.title} - ${source.sourceName}`) : "No exact legal source was used. Please verify with legal aid/lawyer before filing.");
+    section(t("kitVerifiedSources"));
+    text(verifiedSourceNotes.length ? verifiedSourceNotes.map((source) => `${source.title} - ${source.sourceName}`) : t("kitNoVerifiedSources"));
 
-    section("Official Action Links");
+    section(t("kitOfficialLinks"));
     officialActionSuggestions.portals.forEach((portal) => text([`${portal.title}`, `${portal.url}`, `${portal.notes}`]));
-    text("Verify the portal and procedure before submitting. For emergencies, contact local emergency services immediately.");
+    text(t("kitVerifyPortal"));
 
     if (caseData.aiAnalysis) {
-      section("AI Case Summary");
+      section(t("kitAiCaseSummary"));
       text(caseData.aiAnalysis.extraction?.caseSummary || caseData.aiAnalysis.classification?.shortSummary || "No AI summary available.");
       section("AI Extracted Timeline");
       text(caseData.aiAnalysis.extraction?.timeline?.length ? caseData.aiAnalysis.extraction.timeline.map((item) => `- ${item.date}: ${item.event}`) : "No AI timeline available.");
-      section("AI Missing Details");
+      section(t("kitAiMissingDetails"));
       text(caseData.aiAnalysis.extraction?.missingDetails?.length ? caseData.aiAnalysis.extraction.missingDetails.map((item) => `- ${item}`) : "No AI missing details available.");
-      section("AI Review Suggestions");
+      section(t("kitAiReviewSuggestions"));
       text(caseData.aiAnalysis.review?.suggestions?.length ? caseData.aiAnalysis.review.suggestions.map((item) => `- ${item}`) : "No AI review suggestions available.");
     }
 
-    section("Case Quality Score");
+    section(t("kitQualityScore"));
     text(`${quality.score}/100 - ${quality.label}`);
 
-    section("Preparation Suggestions");
-    text(quality.suggestions.length ? quality.suggestions.map((item) => `- ${item}`) : "Good preparation. Still verify with legal aid/lawyer before filing.");
+    section(t("kitPrepSuggestions"));
+    text(quality.suggestions.length ? quality.suggestions.map((item) => `- ${item}`) : t("kitGoodPrep"));
 
-    section("Relevant Legal Route");
+    section(t("kitRelevantLegalRoute"));
     getLegalRoutes(caseData).forEach((route) => text(`- ${route}`));
 
-    section(outputMode === "urgent-legal-aid-route" ? "Legal Aid Consultation Note" : outputMode === "limited-guidance-kit" ? "Draft Representation for Review" : "Draft Complaint/Application");
+    section(outputMode === "urgent-legal-aid-route" ? t("kitLegalAidNote") : outputMode === "limited-guidance-kit" ? t("kitDraftRepresentation") : t("kitDraftComplaint"));
     text(complaint);
 
     if (outputMode !== "urgent-legal-aid-route") {
-      section("Hearing / Visit Preparation");
+      section(t("kitHearingPrep"));
       visitChecklist.forEach((item) => text(`- ${item}`));
     }
 
     if (outputMode === "urgent-legal-aid-route") {
-      section("Questions for Lawyer/Legal Aid");
-      text(["- What urgent protection or procedural steps should be considered?", "- What documents should be carried immediately?", "- Are there any deadlines, safety risks, or court/police steps requiring urgent review?"]);
-      section("Urgent Next Steps");
-      text(["- Contact legal aid/lawyer as soon as possible.", "- Keep original documents and communication proof safe.", "- For immediate danger, call 112 or local emergency services."]);
-      section("Strong Lawyer/Legal Aid Warning");
-      text("Do not rely on this note as legal advice. Lawyer/legal-aid review is required before taking legal action in this high-risk matter.");
+      section(t("kitQuestionsForLawyer"));
+      text([`- ${t("kitQuestionsLawyer1")}`, `- ${t("kitQuestionsLawyer2")}`, `- ${t("kitQuestionsLawyer3")}`]);
+      section(t("kitUrgentNextSteps"));
+      text([`- ${t("kitUrgentNextStep1")}`, `- ${t("kitUrgentNextStep2")}`, `- ${t("kitUrgentNextStep3")}`]);
+      section(t("kitStrongLawyerWarning"));
+      text(t("kitStrongLawyerWarningDesc"));
     }
 
-    section("Legal Aid Route");
-    text("If the user cannot afford a lawyer, they may approach District Legal Services Authority / State Legal Services Authority / NALSA route.");
-    text("For serious or high-value matters, get lawyer/legal-aid review before filing.");
+    section(t("kitLegalAidRoute"));
+    text(t("kitLegalAidRouteDesc"));
+    text(t("kitLegalAidRouteSerious"));
 
     const totalPages = doc.getNumberOfPages();
     for (let page = 1; page <= totalPages; page += 1) {
