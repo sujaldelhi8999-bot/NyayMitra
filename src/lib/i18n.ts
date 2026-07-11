@@ -444,6 +444,17 @@ export const translations = {
     kitPropertyLegalRoute3: "Do not sign or submit property documents without legal review.",
     kitPropertyLegalRoute4: "Check old court case details, case number, court name, and current status through legal aid/lawyer or official court sources.",
     kitPropertyLegalRoute5: "This point needs verification from legal aid/lawyer or official sources.",
+
+    kbHeader: "Draft preparation tool | Not legal advice",
+    kbTitle: "Verified Knowledge Base",
+    kbDescription: "Local curated legal/procedure snippets used by NyayMitra.",
+    kbDisclaimer: "NyayMitra is a legal self-help preparation tool, not a lawyer. Please verify with legal aid/lawyer before filing.",
+    tabLegalKnowledge: "Legal Knowledge",
+    tabOfficialPortals: "Official Portals",
+    filterByCaseType: "Filter by case type",
+    badgeOfficial: "Official",
+    badgeEmergency: "Emergency",
+    badgeStateSpecific: "State-specific",
   },
   hi: {
     appName: "न्यायमित्र",
@@ -884,6 +895,17 @@ export const translations = {
     kitPropertyLegalRoute3: "कानूनी समीक्षा के बिना संपत्ति दस्तावेजों पर हस्ताक्षर या जमा न करें।",
     kitPropertyLegalRoute4: "पुराने अदालती मामले के विवरण, केस नंबर, अदालत का नाम और वर्तमान स्थिति की जांच कानूनी सहायता/वकील या आधिकारिक अदालत स्रोतों से करें।",
     kitPropertyLegalRoute5: "इस बिंदु को कानूनी सहायता/वकील या आधिकारिक स्रोतों से सत्यापन की आवश्यकता है।",
+
+    kbHeader: "ड्राफ्ट तैयारी टूल | कानूनी सलाह नहीं",
+    kbTitle: "सत्यापित ज्ञान आधार",
+    kbDescription: "न्यायमित्र द्वारा उपयोग किए जाने वाले स्थानीय क्यूरेटेड कानूनी/प्रक्रिया स्निपेट।",
+    kbDisclaimer: "न्यायमित्र एक कानूनी self-help तैयारी टूल है, वकील नहीं। फाइल करने से पहले legal aid या वकील से जांच जरूर करें।",
+    tabLegalKnowledge: "कानूनी ज्ञान",
+    tabOfficialPortals: "आधिकारिक पोर्टल",
+    filterByCaseType: "केस प्रकार से फ़िल्टर करें",
+    badgeOfficial: "आधिकारिक",
+    badgeEmergency: "आपातकालीन",
+    badgeStateSpecific: "राज्य-विशिष्ट",
   },
   hinglish: {
     appName: "NyayMitra",
@@ -1324,6 +1346,17 @@ export const translations = {
     kitPropertyLegalRoute3: "Legal review ke bina property documents par sign ya submit na karein.",
     kitPropertyLegalRoute4: "Purane court case details, case number, court name aur current status ki jaanch legal aid/lawyer ya official court sources se karein.",
     kitPropertyLegalRoute5: "Is point ko legal aid/lawyer ya official sources se verification ki zaroorat hai.",
+
+    kbHeader: "Draft preparation tool | Legal advice nahi",
+    kbTitle: "Verified Knowledge Base",
+    kbDescription: "Local curated legal/procedure snippets jo NyayMitra dwara use hote hain.",
+    kbDisclaimer: "NyayMitra ek legal self-help preparation tool hai, lawyer nahi. Filing se pehle legal aid/lawyer se verify zaroor karein.",
+    tabLegalKnowledge: "Legal Knowledge",
+    tabOfficialPortals: "Official Portals",
+    filterByCaseType: "Case type se filter karein",
+    badgeOfficial: "Official",
+    badgeEmergency: "Emergency",
+    badgeStateSpecific: "State-specific",
   },
 } as const;
 
