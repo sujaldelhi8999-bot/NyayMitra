@@ -59,29 +59,12 @@ type UploadedFile = {
   uploadedAt: string;
 };
 
-const defaultProofOptions = [
-  "WhatsApp chat screenshot",
-  "UPI transaction screenshot",
-  "Bank SMS",
-  "Phone number",
-  "Email/chat record",
-  "Police/cyber complaint acknowledgement",
-];
-
 const uploadCategories = Array.from(new Set(caseConfigs.flatMap((config) => config.proofs).concat("Other supporting proof")));
 
 const storyKeywords = ["whatsapp", "upi", "payment", "paid", "blocked", "message", "scam", "fraud", "transaction", "bank", "job", "refund"];
 const propertyKeywords = ["property", "land", "grandfather", "ancestral", "sale deed", "revenue", "mutation", "tax", "possession", "court", "case", "khasra", "survey", "plot", "family"];
 const consumerKeywords = ["order", "invoice", "refund", "replacement", "damaged", "defective", "delivery", "seller", "platform", "customer support", "product"];
 const rtiKeywords = ["department", "application", "receipt", "acknowledgement", "delay", "certificate", "government", "follow-up", "rti", "service"];
-
-const defaultReliefOptions = [
-  "Refund",
-  "Police complaint",
-  "Cybercrime complaint",
-  "Bank complaint",
-  "Legal aid guidance",
-];
 
 const OTHER_PROOF_OPTION = "Other proof / document";
 const OTHER_RELIEF_OPTION = "Other relief / outcome";
@@ -96,26 +79,6 @@ const caseTypeAliases: Record<string, string[]> = {
   "Divorce / Custody / Family Matter": ["divorce", "custody", "family", "child"],
   "Bail / Arrest / Criminal Defence": ["bail", "arrest", "criminal", "defence", "detention"],
   "Other / Not Sure": ["other", "not sure", "unknown"],
-};
-
-const evidenceMeaning: Record<string, string> = {
-  "WhatsApp chat screenshot":
-    "Helps show conversation, demand, scam message, and contact identity.",
-  "UPI transaction screenshot":
-    "Helps show payment amount, transaction ID, and receiver UPI ID.",
-  "Bank SMS": "Helps show debit alert and transaction timing.",
-  "Phone number": "Helps identify the contact route of the suspected scammer.",
-  "Email/chat record": "Helps show the communication trail.",
-  "Police/cyber complaint acknowledgement":
-    "Helps show that a complaint has already been filed.",
-  "Property papers": "May help identify title/ownership history, subject to legal verification.",
-  "Mutation/tax records": "May help show revenue/tax entries, but these need legal review.",
-  "Photos": "May help show possession, boundary, condition, or dispute context.",
-  "Notices": "May help show prior legal communication or dispute history.",
-  "Messages / emails": "May help show admissions, threats, negotiations, or timeline.",
-  "Witness details": "May help identify people who know the property history or possession facts.",
-  "Timeline notes": "Helps legal aid/lawyer understand events in order.",
-  "Other supporting proof": "User-provided supporting material that should be reviewed before relying on it.",
 };
 
 export default function IntakePage() {
@@ -178,8 +141,44 @@ function IntakeContent() {
   const currentCaseConfig = getCaseConfig(formData.caseType);
   const suggestedProofs = formData.aiAnalysis?.classification?.suggestedProofs || [];
   const suggestedReliefs = formData.aiAnalysis?.classification?.suggestedReliefs || [];
-  const proofOptions = Array.from(new Set([...(currentCaseConfig.proofs || defaultProofOptions), ...(formData.caseType === "Other / Not Sure" ? suggestedProofs : []), OTHER_PROOF_OPTION]));
-  const reliefOptions = Array.from(new Set([...(currentCaseConfig.relief || defaultReliefOptions), ...(formData.caseType === "Other / Not Sure" ? suggestedReliefs : []), OTHER_RELIEF_OPTION]));
+  const proofKeys = ["proofWhatsApp", "proofUPI", "proofBankSMS", "proofPhone", "proofEmail", "proofPolice"] as const;
+  const reliefKeys = ["reliefRefund", "reliefPolice", "reliefCyber", "reliefBank", "reliefLegalAid"] as const;
+  const defaultProofOpts = proofKeys.map((k) => t(k));
+  const defaultReliefOpts = reliefKeys.map((k) => t(k));
+  const proofOptions = Array.from(new Set([...(currentCaseConfig.proofs || defaultProofOpts), ...(formData.caseType === "Other / Not Sure" ? suggestedProofs : []), OTHER_PROOF_OPTION]));
+  const reliefOptions = Array.from(new Set([...(currentCaseConfig.relief || defaultReliefOpts), ...(formData.caseType === "Other / Not Sure" ? suggestedReliefs : []), OTHER_RELIEF_OPTION]));
+  const evidenceMeaningKeysLocal: Record<string, string> = {
+    "proofWhatsApp": "evidenceMeaningWhatsApp",
+    "proofUPI": "evidenceMeaningUPI",
+    "proofBankSMS": "evidenceMeaningBankSMS",
+    "proofPhone": "evidenceMeaningPhone",
+    "proofEmail": "evidenceMeaningEmail",
+    "proofPolice": "evidenceMeaningPolice",
+    "Property papers": "May help identify title/ownership history, subject to legal verification.",
+    "Mutation/tax records": "May help show revenue/tax entries, but these need legal review.",
+    "Photos": "May help show possession, boundary, condition, or dispute context.",
+    "Notices": "May help show prior legal communication or dispute history.",
+    "Messages / emails": "May help show admissions, threats, negotiations, or timeline.",
+    "Witness details": "May help identify people who know the property history or possession facts.",
+    "Timeline notes": "Helps legal aid/lawyer understand events in order.",
+    [OTHER_PROOF_OPTION]: "evidenceMeaningOther",
+  };
+  const evidenceMeaning: Record<string, string> = {
+    [t("proofWhatsApp")]: t("evidenceMeaningWhatsApp"),
+    [t("proofUPI")]: t("evidenceMeaningUPI"),
+    [t("proofBankSMS")]: t("evidenceMeaningBankSMS"),
+    [t("proofPhone")]: t("evidenceMeaningPhone"),
+    [t("proofEmail")]: t("evidenceMeaningEmail"),
+    [t("proofPolice")]: t("evidenceMeaningPolice"),
+    "Property papers": "May help identify title/ownership history, subject to legal verification.",
+    "Mutation/tax records": "May help show revenue/tax entries, but these need legal review.",
+    "Photos": "May help show possession, boundary, condition, or dispute context.",
+    "Notices": "May help show prior legal communication or dispute history.",
+    "Messages / emails": "May help show admissions, threats, negotiations, or timeline.",
+    "Witness details": "May help identify people who know the property history or possession facts.",
+    "Timeline notes": "Helps legal aid/lawyer understand events in order.",
+    [OTHER_PROOF_OPTION]: t("evidenceMeaningOther"),
+  };
 
   function changeLanguage(nextLanguage: Language) {
     setLanguage(nextLanguage);
@@ -1054,18 +1053,18 @@ Date: ${today}`;
   }
 
   const wizardSteps = [
-    { title: "Basic Details", instruction: "Add your name and contact so the draft can identify you." },
-    { title: "Incident Details", instruction: "Add the date and amount. These details make the kit stronger." },
-    { title: "Tell your story", instruction: "Write what happened in simple words. Dates, amount, UPI ID, and screenshots help make your kit stronger." },
-    { title: "Opposite Party", instruction: "Add phone number, UPI ID, email, name, or any account details you know." },
-    { title: "Proofs", instruction: "Select available proofs and add local file metadata for annexure mapping." },
-    { title: "Relief Wanted", instruction: "Select what help you want: refund, complaints, bank action, or legal aid guidance." },
-    { title: "Review & Generate", instruction: "Review your details and generate the Legal Action Kit Preview." },
+    { title: t("wizardStepBasic"), instruction: t("wizardStepBasicDesc") },
+    { title: t("wizardStepIncident"), instruction: t("wizardStepIncidentDesc") },
+    { title: t("wizardStepStory"), instruction: t("wizardStepStoryDesc") },
+    { title: t("wizardStepOpposite"), instruction: t("wizardStepOppositeDesc") },
+    { title: t("wizardStepProofs"), instruction: t("wizardStepProofsDesc") },
+    { title: t("wizardStepRelief"), instruction: t("wizardStepReliefDesc") },
+    { title: t("wizardStepReview"), instruction: t("wizardStepReviewDesc") },
   ];
 
   function readStepAloud() {
     if (!("speechSynthesis" in window)) {
-      setVoiceMessage("Voice reading is not supported in this browser.");
+      setVoiceMessage(t("msgVoiceUnsupported"));
       return;
     }
 
@@ -1092,7 +1091,7 @@ Date: ${today}`;
             <div className="flex gap-2">
               <button type="button" onClick={() => setMode("full")} className={`rounded-full px-4 py-2 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-teal-200 ${mode === "full" ? "bg-teal-400 text-slate-950" : "bg-white/10 text-white"}`}>{t("fullMode")}</button>
               <button type="button" onClick={() => setMode("guided")} className={`rounded-full px-4 py-2 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-teal-200 ${mode === "guided" ? "bg-teal-400 text-slate-950" : "bg-white/10 text-white"}`}>{t("guidedMode")}</button>
-              <button type="button" onClick={startFreshCase} className="rounded-full bg-red-50 px-4 py-2 text-sm font-bold text-red-700 focus:outline-none focus:ring-4 focus:ring-red-100">Start Fresh Case</button>
+              <button type="button" onClick={startFreshCase} className="rounded-full bg-red-50 px-4 py-2 text-sm font-bold text-red-700 focus:outline-none focus:ring-4 focus:ring-red-100">{t("btnStartFresh")}</button>
             </div>
           </div>
           <p className="text-sm font-semibold text-teal-300">
@@ -1110,19 +1109,19 @@ Date: ${today}`;
             {t("disclaimer")}
           </p>
           <div className="mt-4 rounded-2xl border border-teal-400/20 bg-slate-900 p-5">
-            <h2 className="font-black text-teal-300">Important Safety Note</h2>
+            <h2 className="font-black text-teal-300">{t("labelSafetyNote")}</h2>
             <p className="mt-2 text-sm leading-6 text-slate-200">
-              NyayMitra prepares a draft based on the information you provide. It does not verify whether the evidence is genuine, does not provide legal advice, and does not guarantee any outcome. Please verify the draft with legal aid, a lawyer, or the concerned authority before filing.
+              {t("labelDisclaimer")}
             </p>
           </div>
         </div>
 
         {draftFound && !isEditingSavedCase && (
           <div className="mb-6 rounded-3xl border border-teal-200 bg-teal-50 p-5 text-slate-950 shadow-xl" aria-live="polite">
-            <h2 className="text-xl font-black">Saved draft found.</h2>
+            <h2 className="text-xl font-black">{t("msgDraftLoaded")}</h2>
             <div className="mt-4 flex flex-wrap gap-3">
-              <button type="button" onClick={continueDraft} className="rounded-full bg-teal-600 px-5 py-3 font-bold text-white">Continue Draft</button>
-              <button type="button" onClick={clearDraft} className="rounded-full bg-white px-5 py-3 font-bold text-slate-700">Clear Draft</button>
+              <button type="button" onClick={continueDraft} className="rounded-full bg-teal-600 px-5 py-3 font-bold text-white">{t("btnContinueDraft")}</button>
+              <button type="button" onClick={clearDraft} className="rounded-full bg-white px-5 py-3 font-bold text-slate-700">{t("btnClearDraft")}</button>
             </div>
           </div>
         )}
@@ -1139,7 +1138,7 @@ Date: ${today}`;
             {voiceMessage && <p className="mt-3 rounded-xl bg-amber-100 p-3 text-sm font-bold text-amber-900" aria-live="polite">{voiceMessage}</p>}
 
             <div className="mt-6 grid gap-5 md:grid-cols-2">
-              {wizardStep === 0 && <><Input label={t("fullName")} name="fullName" value={formData.fullName} onChange={handleInputChange} /><Input label={t("contact")} name="contact" value={formData.contact} onChange={handleInputChange} /><Input label="State / UT" name="stateOrUT" value={formData.stateOrUT || ""} onChange={handleInputChange} /><div className="md:col-span-2"><CaseTypeSelector selected={formData.caseType} search={caseTypeSearch} onSearch={setCaseTypeSearch} onSelect={selectCaseType} /></div></>}
+              {wizardStep === 0 && <><Input label={t("fullName")} name="fullName" value={formData.fullName} onChange={handleInputChange} /><Input label={t("contact")} name="contact" value={formData.contact} onChange={handleInputChange} /><Input label={t("stateOrUT")} name="stateOrUT" value={formData.stateOrUT || ""} onChange={handleInputChange} /><div className="md:col-span-2"><CaseTypeSelector selected={formData.caseType} search={caseTypeSearch} onSearch={setCaseTypeSearch} onSelect={selectCaseType} /></div></>}
               {wizardStep === 1 && <><Input label={t("incidentDate")} type="date" name="incidentDate" value={formData.incidentDate} onChange={handleInputChange} /><Input label={t("amountLost")} type="number" name="amountLost" value={formData.amountLost} onChange={handleInputChange} /></>}
               {wizardStep === 2 && <label className="block md:col-span-2"><span className="mb-2 block font-semibold">{t("story")}</span><textarea name="story" value={formData.story} onChange={handleInputChange} rows={6} className="w-full rounded-xl border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" /></label>}
               {wizardStep === 3 && <Input label={t("oppositeParty")} name="oppositeParty" value={formData.oppositeParty} onChange={handleInputChange} />}

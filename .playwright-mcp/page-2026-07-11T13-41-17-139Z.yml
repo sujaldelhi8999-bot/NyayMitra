@@ -1,0 +1,223 @@
+- generic [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic "Language switcher" [ref=e6]:
+            - button "Switch language to English" [ref=e7]: English
+            - button "Switch language to हिंदी" [ref=e8]: हिंदी
+            - button "Switch language to Hinglish" [active] [ref=e9]: Hinglish
+          - generic [ref=e10]:
+            - button "Full Form Mode" [ref=e149]
+            - button "Guided Mode" [ref=e150]
+            - button "Naya Case Start Karein" [ref=e151]
+        - paragraph [ref=e14]: INTAKE PAGE REAL VERSION
+        - heading "Universal Legal Case Preparation" [level=1] [ref=e15]
+        - paragraph [ref=e16]: Enter any legal problem in simple language. NyayMitra helps classify the issue, organize proof, prepare drafts or consultation notes, and route serious matters to legal aid or lawyer review.
+        - paragraph [ref=e17]: NyayMitra ek legal self-help preparation tool hai, lawyer nahi. Filing se pehle legal aid/lawyer se verify zaroor karein.
+        - generic [ref=e18]:
+          - heading "Important Safety Note" [level=2] [ref=e152]
+          - paragraph [ref=e20]: NyayMitra legal advice nahi deta aur kisi result ki guarantee nahi deta. Ye draft preparation, evidence organization, aur legal-aid routing mein madad karta hai. Filing se pehle legal aid/lawyer se verify zaroor karein.
+      - generic [ref=e21]:
+        - generic [ref=e22]:
+          - generic [ref=e23]:
+            - generic [ref=e24]: Full Name
+            - 'textbox "Example: Sujal" [ref=e25]'
+          - generic [ref=e26]:
+            - generic [ref=e27]: Phone / Email
+            - 'textbox "Example: sujal@example.com" [ref=e28]'
+          - generic [ref=e30]:
+            - generic [ref=e31]:
+              - generic [ref=e32]: Case Type
+              - textbox "Case Type" [ref=e33]:
+                - /placeholder: Search legal issue type...
+            - paragraph [ref=e34]: "Selected: Cyber Fraud / UPI Scam"
+            - generic [ref=e35]:
+              - button "Cyber Fraud / UPI Scam" [ref=e36]
+              - button "Consumer Complaint" [ref=e37]
+              - button "Unpaid Salary / Gig Worker Payment" [ref=e38]
+              - button "Landlord / Tenant Dispute" [ref=e39]
+              - button "Cheque Bounce / Payment Recovery" [ref=e40]
+              - button "Online Shopping Fraud" [ref=e41]
+              - button "Harassment / Threat Complaint" [ref=e42]
+              - button "Lost Documents / Police Complaint" [ref=e43]
+              - button "RTI / Government Service Delay" [ref=e44]
+              - button "Domestic Violence / Family Safety Concern" [ref=e45]
+              - button "Property / Land Dispute" [ref=e46]
+              - button "Divorce / Custody / Family Matter" [ref=e47]
+              - button "Bail / Arrest / Criminal Defence" [ref=e48]
+              - button "Accident / Insurance Claim" [ref=e49]
+              - button "Education / College Fee Dispute" [ref=e50]
+              - button "Employment Termination" [ref=e51]
+              - button "Medical Negligence Concern" [ref=e52]
+              - button "Loan / Debt Recovery Issue" [ref=e53]
+              - button "Defamation / Online Abuse" [ref=e54]
+              - button "Neighbour Dispute" [ref=e55]
+              - button "Police Complaint / General Complaint" [ref=e56]
+              - button "Business / Contract Dispute" [ref=e57]
+              - button "Startup / Freelancer Contract Issue" [ref=e58]
+              - button "Government Document / Certificate Issue" [ref=e59]
+            - button "Other / Not Sure" [ref=e60]
+          - generic [ref=e61]:
+            - generic [ref=e62]: Date of Incident
+            - textbox [ref=e63]
+          - generic [ref=e64]:
+            - generic [ref=e65]: State / UT
+            - 'textbox "Example: Delhi, Uttar Pradesh, Maharashtra" [ref=e66]'
+          - generic [ref=e67]:
+            - generic [ref=e68]: Amount Lost
+            - 'spinbutton "Example: 3000" [ref=e69]'
+          - generic [ref=e70]:
+            - generic [ref=e71]: Opposite Party Details
+            - textbox "Phone number, UPI ID, email, name" [ref=e72]
+        - generic [ref=e73]:
+          - generic [ref=e74]: What happened?
+          - 'textbox "Example: I received a fake work-from-home job message on WhatsApp. The person asked me to pay a registration fee through UPI. I paid ₹4000 to fakejob@upi. After payment, the person blocked me. I have WhatsApp screenshots, UPI transaction proof, bank SMS, and the phone number." [ref=e75]'
+        - generic [ref=e76]:
+          - heading "Proof Available" [level=2] [ref=e77]
+          - generic [ref=e78]:
+            - generic [ref=e79] [cursor=pointer]:
+              - checkbox "WhatsApp chat screenshot" [ref=e80]
+              - generic [ref=e81]: WhatsApp chat screenshot
+            - generic [ref=e82] [cursor=pointer]:
+              - checkbox "UPI transaction screenshot" [ref=e83]
+              - generic [ref=e84]: UPI transaction screenshot
+            - generic [ref=e85] [cursor=pointer]:
+              - checkbox "Bank SMS" [ref=e86]
+              - generic [ref=e87]: Bank SMS
+            - generic [ref=e88] [cursor=pointer]:
+              - checkbox "Phone number" [ref=e89]
+              - generic [ref=e90]: Phone number
+            - generic [ref=e91] [cursor=pointer]:
+              - checkbox "Email/chat record" [ref=e92]
+              - generic [ref=e93]: Email/chat record
+            - generic [ref=e94] [cursor=pointer]:
+              - checkbox "Police/cyber complaint acknowledgement" [ref=e95]
+              - generic [ref=e96]: Police/cyber complaint acknowledgement
+            - generic [ref=e97] [cursor=pointer]:
+              - checkbox "Other proof / document" [ref=e98]
+              - generic [ref=e99]: Other proof / document
+        - generic [ref=e100]:
+          - paragraph [ref=e101]: Local annexure builder
+          - heading "Upload Proof Files" [level=2] [ref=e102]
+          - paragraph [ref=e103]: Upload screenshots, bank SMS images, UPI transaction proof, chat records, or complaint acknowledgement. Files are only stored locally in this MVP.
+          - generic [ref=e104]:
+            - generic [ref=e105]:
+              - generic [ref=e106]: Evidence category
+              - combobox "Evidence category" [ref=e107]:
+                - option "WhatsApp chat screenshot" [selected]
+                - option "UPI transaction screenshot"
+                - option "Bank SMS"
+                - option "Phone number"
+                - option "Email/chat record"
+                - option "Police/cyber complaint acknowledgement"
+                - option "Invoice/order receipt"
+                - option "Payment proof"
+                - option "Product photos"
+                - option "Delivery proof"
+                - option "Customer support chat/email"
+                - option "Messages / emails"
+                - option "Screenshots"
+                - option "ID proof if relevant"
+                - option "Witness details"
+                - option "Timeline notes"
+                - option "Other supporting proof"
+                - option "Work agreement/message"
+                - option "Attendance/work proof"
+                - option "Payment promise"
+                - option "Invoice"
+                - option "Rent agreement"
+                - option "Rent receipts"
+                - option "Deposit proof"
+                - option "Notice/message"
+                - option "Cheque image"
+                - option "Bank return memo"
+                - option "Payment agreement"
+                - option "Demand messages"
+                - option "Order receipt"
+                - option "Seller chat/email"
+                - option "Threat messages"
+                - option "Call logs"
+                - option "ID proof copy"
+                - option "Document number"
+                - option "Loss location details"
+                - option "Date/time details"
+                - option "Application receipt"
+                - option "Department details"
+                - option "Reference number"
+                - option "Previous reminders"
+                - option "Medical record"
+                - option "Photos"
+                - option "Property papers"
+                - option "Mutation/tax records"
+                - option "Notices"
+                - option "Marriage/family documents"
+                - option "Child-related documents"
+                - option "Messages"
+                - option "Financial records"
+                - option "Case papers"
+                - option "Arrest details"
+                - option "Court/police documents"
+                - option "ID proof"
+                - option "Insurance policy"
+                - option "Accident photos"
+                - option "Medical bills"
+                - option "Police/claim documents"
+                - option "Fee receipts"
+                - option "Admission documents"
+                - option "College emails"
+                - option "Policy/rules"
+                - option "Offer letter"
+                - option "Termination message"
+                - option "Salary slips"
+                - option "HR emails"
+                - option "Medical records"
+                - option "Bills"
+                - option "Prescription"
+                - option "Hospital communication"
+                - option "Loan agreement"
+                - option "Payment records"
+                - option "Demand notices"
+                - option "Profile/link details"
+                - option "Photos / videos"
+                - option "Police/authority acknowledgement"
+                - option "Written complaint"
+                - option "Acknowledgement"
+                - option "Contract"
+                - option "Invoices"
+                - option "Emails/messages"
+                - option "Contract / scope of work"
+                - option "Client messages"
+                - option "Department messages"
+                - option "Any document"
+                - option "Notice / letter"
+                - option "Police/court/government acknowledgement"
+            - generic [ref=e108]:
+              - generic [ref=e109]: Choose file
+              - 'button "Choose file Only metadata is saved: file name, type, size, category, and time." [ref=e110]'
+              - generic [ref=e111]: "Only metadata is saved: file name, type, size, category, and time."
+            - button "Add Evidence File" [ref=e112]
+        - generic [ref=e113]:
+          - heading "Relief Wanted" [level=2] [ref=e114]
+          - generic [ref=e115]:
+            - generic [ref=e116] [cursor=pointer]:
+              - checkbox "Refund" [ref=e117]
+              - generic [ref=e118]: Refund
+            - generic [ref=e119] [cursor=pointer]:
+              - checkbox "Police complaint" [ref=e120]
+              - generic [ref=e121]: Police complaint
+            - generic [ref=e122] [cursor=pointer]:
+              - checkbox "Cybercrime complaint" [ref=e123]
+              - generic [ref=e124]: Cybercrime complaint
+            - generic [ref=e125] [cursor=pointer]:
+              - checkbox "Bank complaint" [ref=e126]
+              - generic [ref=e127]: Bank complaint
+            - generic [ref=e128] [cursor=pointer]:
+              - checkbox "Legal aid guidance" [ref=e129]
+              - generic [ref=e130]: Legal aid guidance
+            - generic [ref=e131] [cursor=pointer]:
+              - checkbox "Other relief / outcome" [ref=e132]
+              - generic [ref=e133]: Other relief / outcome
+        - button "Generate Case Summary" [ref=e134]
+  - button "Open Next.js Dev Tools" [ref=e140] [cursor=pointer]
+  - alert [ref=e144]
