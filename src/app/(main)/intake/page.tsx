@@ -323,10 +323,10 @@ function IntakeContent() {
 
   function getStoryQualityWarning(caseData: FormData) {
     if (caseData.story.trim().length >= 80 && countCaseUsefulKeywords(caseData) < 3) {
-      if (caseData.caseType === "Property / Land Dispute") return "Your story is long but may not clearly explain the property history. Please describe the property location, relationship to original owner, documents, dispute timeline, and urgent sale/possession issues.";
-      if (caseData.caseType === "Consumer Complaint") return "Your story is long but may not clearly explain the consumer issue. Please describe order ID, seller/platform, purchase/delivery dates, defect or service issue, complaint history, and refund/replacement request.";
-      if (caseData.caseType === "RTI / Government Service Delay") return "Your story is long but may not clearly explain the government-service delay. Please describe department name, application number, application date, delay period, acknowledgement, and what action/information is needed.";
-      return "Your story is long but may not clearly explain the incident. Please describe who contacted you, how payment happened, amount lost, and what happened after payment.";
+      if (caseData.caseType === "Property / Land Dispute") return t("warnStoryQualityProperty");
+      if (caseData.caseType === "Consumer Complaint") return t("warnStoryQualityConsumer");
+      if (caseData.caseType === "RTI / Government Service Delay") return t("warnStoryQualityRti");
+      return t("warnStoryQualityGeneric");
     }
 
     return "";
@@ -340,7 +340,7 @@ function IntakeContent() {
 
     if (!differentAmount) return "";
 
-    return `Amount mismatch detected: the amount field says ₹${caseData.amountLost}, but the story mentions ₹${differentAmount}. Please verify before generating PDF.`;
+    return t("warnAmountMismatch").replace("{fieldAmount}", String(caseData.amountLost)).replace("{storyAmount}", String(differentAmount));
   }
 
   function getVerifiedSources(caseData: FormData) {
@@ -549,12 +549,12 @@ Date: ${today}`;
   async function handleCopyDraft() {
     if (!editableDraft) return;
     await navigator.clipboard.writeText(editableDraft);
-    setDraftMessage("Draft copied to clipboard.");
+    setDraftMessage(t("msgDraftCopied"));
   }
 
   function handleAddEvidenceFile() {
     if (!selectedFile) {
-      setFileError("Please choose a file before adding evidence.");
+      setFileError(t("msgPleaseChooseFile"));
       return;
     }
 
@@ -726,7 +726,7 @@ Date: ${today}`;
   async function handleAskAdvisor() {
     if (!submittedCase || !advisorQuestion.trim()) return;
     setAdvisorLoading(true);
-    setAdvisorMessage("NyayMitra is thinking...");
+    setAdvisorMessage(t("aiThinkingNyayMitra"));
     const result = await aiAskAdvisor(submittedCase, advisorQuestion) as AdvisorAnswer | AiClientError;
     const failed = isAiError(result);
     const answer = failed ? fallbackAdvisor(submittedCase) : result;
@@ -738,24 +738,24 @@ Date: ${today}`;
       setLastAiError(result.error);
       setLastAiDebug(result.debug || null);
     }
-    setAdvisorMessage(failed ? `${result.error} Rule-based fallback was added.` : "AI guidance generated. Please verify important decisions with legal aid/lawyer.");
+    setAdvisorMessage(failed ? `${result.error} ${t("aiRuleBasedFallback")}` : t("aiGuidanceGenerated"));
   }
 
   async function handleOtherClassification() {
     if (formData.caseType !== "Other / Not Sure") return;
     setOtherClassifying(true);
-    setAiMessage("AI is trying to understand your case...");
+    setAiMessage(t("aiTryingToUnderstand"));
     const result = await aiClassifyCase(formData) as AiClassification | AiClientError;
     setOtherClassifying(false);
     if (isAiError(result)) {
-      showAiError(result, "AI could not classify this right now. Keep it as Other / Not Sure and continue with limited guidance.");
+      showAiError(result, t("aiCouldNotClassify"));
       return;
     }
     const safeClassification = { ...result, outputMode: safetyOutputMode(formData, result) };
     setFormData((current) => ({ ...current, aiAnalysis: { ...(current.aiAnalysis || {}), classification: safeClassification, lastAnalyzedAt: new Date().toISOString() } }));
     setLastAiError("");
     setLastAiDebug(null);
-    setAiMessage("AI Case Understanding Result is ready. Review before using the suggested case type.");
+    setAiMessage(t("aiClassificationReady"));
   }
 
   function useSuggestedCaseType() {
@@ -775,7 +775,7 @@ Date: ${today}`;
     setAiLoading("analyze");
     setLastAiMode("classify + extract");
     setLastAiError("");
-    setAiMessage("AI is analyzing your case...");
+    setAiMessage(t("aiAnalyzingCase"));
     const [classification, extraction] = await Promise.all([aiClassifyCase(submittedCase), aiExtractFacts(submittedCase)]);
     setAiLoading("");
     const classificationError = isAiError(classification) ? classification : null;
@@ -788,7 +788,7 @@ Date: ${today}`;
     mergeAiAnalysis({ classification: safeClassification, extraction: extraction && !extractionError ? extraction as AiExtraction : undefined });
     setLastAiError(classificationError?.error || extractionError?.error || "");
     setLastAiDebug(classificationError?.debug || extractionError?.debug || null);
-    setAiMessage("AI analysis completed.");
+    setAiMessage(t("aiAnalysisCompleted"));
   }
 
   async function handleAiFollowups() {
@@ -796,7 +796,7 @@ Date: ${today}`;
     setAiLoading("followup");
     setLastAiMode("followup");
     setLastAiError("");
-    setAiMessage("AI is analyzing your case...");
+    setAiMessage(t("aiAnalyzingCase"));
     const result = await aiGenerateFollowups(submittedCase) as { questions?: string[] } | AiClientError;
     setAiLoading("");
     if (isAiError(result) || !result.questions) {
@@ -806,7 +806,7 @@ Date: ${today}`;
     const questions = Array.from(new Set([...extraFollowUpQuestions, ...result.questions]));
     setExtraFollowUpQuestions(questions);
     mergeAiAnalysis({ followupQuestions: questions });
-    setAiMessage("AI analysis completed.");
+    setAiMessage(t("aiAnalysisCompleted"));
   }
 
   async function handleAiImproveDraft() {
@@ -814,7 +814,7 @@ Date: ${today}`;
     setAiLoading("draft");
     setLastAiMode("draft");
     setLastAiError("");
-    setAiMessage("AI is analyzing your case...");
+    setAiMessage(t("aiAnalyzingCase"));
     const result = await aiGenerateDraft(submittedCase) as { draftText?: string } | AiClientError;
     setAiLoading("");
     if (isAiError(result) || !result.draftText) {
@@ -823,7 +823,7 @@ Date: ${today}`;
     }
     setEditableDraft(result.draftText);
     setSubmittedCase({ ...submittedCase, complaintDraft: result.draftText, aiAnalysis: { ...(submittedCase.aiAnalysis || {}), generatedDraft: result.draftText, lastAnalyzedAt: new Date().toISOString() } });
-    setAiMessage("AI draft generated. Please review and edit before using.");
+    setAiMessage(t("aiDraftGenerated"));
   }
 
   async function handleAiReview() {
@@ -831,7 +831,7 @@ Date: ${today}`;
     setAiLoading("review");
     setLastAiMode("review");
     setLastAiError("");
-    setAiMessage("AI is analyzing your case...");
+    setAiMessage(t("aiAnalyzingCase"));
     const result = await aiReviewCase(submittedCase) as AiReview | AiClientError;
     setAiLoading("");
     if (isAiError(result)) {
@@ -839,7 +839,7 @@ Date: ${today}`;
       return;
     }
     mergeAiAnalysis({ review: result });
-    setAiMessage("AI analysis completed.");
+    setAiMessage(t("aiAnalysisCompleted"));
   }
 
   function calculateCaseQualityScore(caseData: FormData) {
@@ -925,32 +925,32 @@ Date: ${today}`;
   function handleGenerate() {
     const nextErrors: string[] = [];
 
-    if (!formData.fullName.trim()) nextErrors.push("Full name is required.");
-    if (!formData.contact.trim()) nextErrors.push("Contact is required.");
-    if (!formData.incidentDate) nextErrors.push("Incident date is required.");
+    if (!formData.fullName.trim()) nextErrors.push(t("errorNameRequired"));
+    if (!formData.contact.trim()) nextErrors.push(t("errorContactRequired"));
+    if (!formData.incidentDate) nextErrors.push(t("errorDateRequired"));
 
     if (formData.story.trim().length < 30) {
-      nextErrors.push("Please describe what happened in at least 30 characters so the draft can be useful.");
+      nextErrors.push(t("errorStoryShort"));
     }
 
     if (Number(formData.amountLost) < 0) {
-      nextErrors.push("Please enter an amount lost of 0 or more.");
+      nextErrors.push(t("errorAmountNegative"));
     }
 
     if (formData.proofs.length === 0) {
-      nextErrors.push("Please select at least one proof available.");
+      nextErrors.push(t("errorProofRequired"));
     }
 
     if (formData.proofs.includes(OTHER_PROOF_OPTION) && !(formData.customProofs || []).length) {
-      nextErrors.push("Please describe the other proof/document or unselect Other proof.");
+      nextErrors.push(t("errorOtherProofRequired"));
     }
 
     if (formData.relief.length === 0) {
-      nextErrors.push("Please select at least one relief wanted.");
+      nextErrors.push(t("errorReliefRequired"));
     }
 
     if (formData.relief.includes(OTHER_RELIEF_OPTION) && !(formData.customReliefs || []).length) {
-      nextErrors.push("Please describe the other relief/outcome or unselect Other relief.");
+      nextErrors.push(t("errorOtherReliefRequired"));
     }
 
     if (nextErrors.length) {
@@ -976,7 +976,7 @@ Date: ${today}`;
     if (!submittedCase) return;
 
     setSubmittedCase({ ...submittedCase, followUpAnswers });
-    setUpdateMessage("Preview updated with follow-up answers.");
+    setUpdateMessage(t("msgPreviewUpdated"));
   }
 
   function handleGeneratePdf() {
@@ -1006,7 +1006,7 @@ Date: ${today}`;
   function saveProgress() {
     localStorage.setItem("nyaymitra_intake_draft", JSON.stringify({ ...formData, followUpAnswers, complaintDraft: editableDraft, language }));
     setDraftFound(true);
-    setProgressMessage("Progress saved locally.");
+    setProgressMessage(t("msgProgressSaved"));
   }
 
   function continueDraft() {
@@ -1017,13 +1017,13 @@ Date: ${today}`;
     setFollowUpAnswers(parsed.followUpAnswers || {});
     setEditableDraft(parsed.complaintDraft || "");
     if (parsed.language) changeLanguage(parsed.language);
-    setProgressMessage("Saved draft loaded.");
+    setProgressMessage(t("msgDraftLoaded"));
   }
 
   function clearDraft() {
     localStorage.removeItem("nyaymitra_intake_draft");
     setDraftFound(false);
-    setProgressMessage("Saved draft cleared.");
+    setProgressMessage(t("msgDraftCleared"));
   }
 
   function startFreshCase() {
@@ -1037,16 +1037,16 @@ Date: ${today}`;
     setEditableDraft("");
     setDraftFound(false);
     setIsEditingSavedCase(false);
-    setProgressMessage("Started a fresh case. Saved dashboard cases and language were not deleted.");
+    setProgressMessage(t("msgFreshCase"));
   }
 
   function detectCaseTypeMismatch(caseData: FormData) {
     const lower = caseData.story.toLowerCase();
     if (caseData.caseType === "Cyber Fraud / UPI Scam" && /(ancestral|land|property|sale deed|revenue record|mutation|khasra|survey|uncle)/i.test(lower)) {
-      return "Your story looks like a Property / Land Dispute, but selected case type is Cyber Fraud / UPI Scam.";
+      return t("warnCaseTypeMismatchCyberToProperty");
     }
     if (caseData.caseType === "Property / Land Dispute" && /(upi|transaction|bank sms|cyber|scam|fraud|blocked)/i.test(lower)) {
-      return "Your story may include payment/cyber details. Verify whether Property / Land Dispute is still the correct case type.";
+      return t("warnCaseTypeMismatchPropertyToCyber");
     }
     return "";
   }
