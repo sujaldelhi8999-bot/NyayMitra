@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { getInitialLanguage, type Language } from "@/lib/i18n";
+import { getInitialLanguage, type Language, translate } from "@/lib/i18n";
 
 export function Navbar({ language, onChangeLanguage }: { language: Language; onChangeLanguage: (lang: Language) => void }) {
+  const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
+
   return (
     <header className="sticky top-0 z-50 border-b border-white/20 bg-white/85 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
@@ -18,12 +20,12 @@ export function Navbar({ language, onChangeLanguage }: { language: Language; onC
           </span>
         </Link>
         <div className="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex">
-          <Link href="/#features" className="hover:text-teal-700">Features</Link>
-          <Link href="/#how-it-works" className="hover:text-teal-700">How it works</Link>
-          <Link href="/#safety" className="hover:text-teal-700">Safety</Link>
-          <Link href="/intake" className="hover:text-teal-700">Intake</Link>
-          <Link href="/dashboard" className="hover:text-teal-700">Dashboard</Link>
-          <Link href="/knowledge-base" className="hover:text-teal-700">Knowledge Base</Link>
+          <Link href="/#features" className="hover:text-teal-700">{t("navFeatures")}</Link>
+          <Link href="/#how-it-works" className="hover:text-teal-700">{t("navHowItWorks")}</Link>
+          <Link href="/#safety" className="hover:text-teal-700">{t("navSafety")}</Link>
+          <Link href="/intake" className="hover:text-teal-700">{t("navIntake")}</Link>
+          <Link href="/dashboard" className="hover:text-teal-700">{t("navDashboard")}</Link>
+          <Link href="/knowledge-base" className="hover:text-teal-700">{t("navKnowledgeBase")}</Link>
         </div>
         <div className="flex items-center gap-4">
           <LanguageSwitcher language={language} onChange={onChangeLanguage} />
@@ -31,7 +33,7 @@ export function Navbar({ language, onChangeLanguage }: { language: Language; onC
             href="/intake"
             className="rounded-full bg-slate-950 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-teal-700"
           >
-            Start Case Preparation
+            {t("navStartCase")}
           </Link>
         </div>
       </nav>
@@ -39,10 +41,12 @@ export function Navbar({ language, onChangeLanguage }: { language: Language; onC
   );
 }
 
-export function Footer() {
+export function Footer({ language }: { language: Language }) {
+  const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
+
   return (
     <footer className="border-t border-slate-200 bg-white px-5 py-8 text-center text-sm font-semibold text-slate-500">
-      NyayMitra is a legal self-help preparation tool, not a lawyer. Please verify with legal aid/lawyer before filing.
+      {t("footerDisclaimer")}
     </footer>
   );
 }
@@ -63,7 +67,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
     <>
       <Navbar language={language} onChangeLanguage={changeLanguage} />
       <main key={language} className="flex-1">{children}</main>
-      <Footer />
+      <Footer language={language} />
     </>
   );
 }

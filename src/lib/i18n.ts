@@ -163,6 +163,15 @@ export const translations = {
     errorReliefRequired: "Please select at least one relief wanted.",
     errorOtherReliefRequired: "Please describe the other relief/outcome or unselect Other relief.",
     errorFileRequired: "Please choose a file before adding evidence.",
+
+    navFeatures: "Features",
+    navHowItWorks: "How it works",
+    navSafety: "Safety",
+    navIntake: "Intake",
+    navDashboard: "Dashboard",
+    navKnowledgeBase: "Knowledge Base",
+    navStartCase: "Start Case Preparation",
+    footerDisclaimer: "NyayMitra is a legal self-help preparation tool, not a lawyer. Please verify with legal aid/lawyer before filing.",
   },
   hi: {
     appName: "न्यायमित्र",
@@ -326,6 +335,15 @@ export const translations = {
     errorReliefRequired: "कृपया कम से कम एक चाही गई राहत चुनें।",
     errorOtherReliefRequired: "कृपया अन्य राहत/परिणाम का वर्णन करें या अन्य राहत का चयन हटाएं।",
     errorFileRequired: "सबूत जोड़ने से पहले कृपया एक फाइल चुनें।",
+
+    navFeatures: "विशेषताएं",
+    navHowItWorks: "यह कैसे काम करता है",
+    navSafety: "सुरक्षा",
+    navIntake: "इनटेक",
+    navDashboard: "डैशबोर्ड",
+    navKnowledgeBase: "ज्ञान आधार",
+    navStartCase: "केस तैयारी शुरू करें",
+    footerDisclaimer: "न्यायमित्र एक कानूनी self-help तैयारी टूल है, वकील नहीं। फाइल करने से पहले legal aid या वकील से जांच जरूर करें।",
   },
   hinglish: {
     appName: "NyayMitra",
@@ -489,6 +507,15 @@ export const translations = {
     errorReliefRequired: "Kripya kam se kam ek relief chahiye select karein.",
     errorOtherReliefRequired: "Kripya other relief/outcome describe karein ya other relief unselect karein.",
     errorFileRequired: "Evidence add karne se pehle kripya ek file choose karein.",
+
+    navFeatures: "Features",
+    navHowItWorks: "Ye kaise kaam karta hai",
+    navSafety: "Safety",
+    navIntake: "Intake",
+    navDashboard: "Dashboard",
+    navKnowledgeBase: "Knowledge Base",
+    navStartCase: "Case Preparation Start Karein",
+    footerDisclaimer: "NyayMitra ek legal self-help preparation tool hai, lawyer nahi. Filing se pehle legal aid/lawyer se verify zaroor karein.",
   },
 } as const;
 
