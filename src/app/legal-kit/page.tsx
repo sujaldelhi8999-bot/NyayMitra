@@ -99,7 +99,13 @@ const cyberLegalRoutes = [
 ];
 
 const storyKeywords = ["whatsapp", "upi", "payment", "paid", "blocked", "message", "scam", "fraud", "transaction", "bank", "job", "refund"];
-const statusOptions = ["Intake Started", "Draft Ready", "Review Needed", "Filed", "Closed"];
+const statusEntries = [
+  { value: "Intake Started", key: "statusIntakeStarted" },
+  { value: "Draft Ready", key: "statusDraftReady" },
+  { value: "Review Needed", key: "statusReviewNeeded" },
+  { value: "Filed", key: "statusFiled" },
+  { value: "Closed", key: "statusClosed" },
+] as const;
 
 export default function LegalKitPage() {
   const [caseData, setCaseData] = useState<CaseData | null>(null);
@@ -359,7 +365,7 @@ export default function LegalKitPage() {
             <div className="mt-5 rounded-2xl bg-slate-50 p-5">
               <label className="block text-sm font-black uppercase tracking-[0.18em] text-teal-700">{t("kitUpdateStatus")}</label>
               <select value={caseData.status || "Draft Ready"} onChange={(event) => updateStatus(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-white p-3 font-bold outline-none focus:border-teal-500 md:max-w-sm">
-                {statusOptions.map((status) => <option key={status}>{status}</option>)}
+                {statusEntries.map(({ value, key }) => <option key={value} value={value}>{t(key)}</option>)}
               </select>
               {statusMessage && <p className="mt-3 rounded-xl bg-teal-100 p-3 text-sm font-bold text-teal-900">{statusMessage}</p>}
             </div>
