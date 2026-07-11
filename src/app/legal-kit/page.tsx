@@ -332,12 +332,17 @@ export default function LegalKitPage() {
   return (
     <main className="min-h-screen bg-slate-950 px-5 py-8 text-slate-950 sm:px-8">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
-          <LanguageSwitcher language={language} onChange={changeLanguage} />
+        <div className="mb-6 flex items-center justify-between">
           <Link href="/dashboard" className="rounded-full border border-white/20 px-5 py-3 text-center font-bold text-white hover:bg-white/10">{t("backDashboard")}</Link>
-          <Link href="/intake" className="rounded-full border border-white/20 px-5 py-3 text-center font-bold text-white hover:bg-white/10">Back to Intake</Link>
-          <button type="button" onClick={exportCaseJson} className="rounded-full border border-white/20 px-5 py-3 text-center font-bold text-white hover:bg-white/10">{t("exportJson")}</button>
-          <button type="button" onClick={downloadPdf} className="rounded-full bg-teal-400 px-5 py-3 font-black text-slate-950 shadow-lg hover:bg-teal-300">{t("downloadPdf")}</button>
+          <select
+            aria-label="Export case"
+            onChange={(e) => { if (e.target.value === "json") exportCaseJson(); else if (e.target.value === "pdf") downloadPdf(); e.target.value = ""; }}
+            className="rounded-full bg-amber-400 px-5 py-3 font-black text-slate-950 shadow-lg hover:bg-amber-300"
+          >
+            <option value="">{t("exportJson")} / {t("downloadPdf")}</option>
+            <option value="json">{t("exportJson")}</option>
+            <option value="pdf">{t("downloadPdf")}</option>
+          </select>
         </div>
 
         <article className="rounded-[2rem] bg-white p-6 shadow-2xl sm:p-10">
