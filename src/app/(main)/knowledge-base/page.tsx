@@ -19,7 +19,7 @@ export default function KnowledgeBasePage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 px-5 py-8 text-white sm:px-8">
+    <div className="min-h-screen bg-slate-950 px-5 py-8 text-white sm:px-8">
       <div className="mx-auto max-w-7xl">
         <header className="rounded-[2rem] bg-gradient-to-br from-teal-500 to-slate-900 p-8 shadow-2xl">
           <p className="inline-flex rounded-full bg-white/15 px-4 py-2 text-sm font-black">Draft preparation tool | Not legal advice</p>
@@ -61,6 +61,6 @@ export default function KnowledgeBasePage() {
           ))}
         </section>}
       </div>
-    </main>
+    </div>
   );
 }
