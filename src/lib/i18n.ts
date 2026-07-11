@@ -163,6 +163,7 @@ export const translations = {
     errorReliefRequired: "Please select at least one relief wanted.",
     errorOtherReliefRequired: "Please describe the other relief/outcome or unselect Other relief.",
     errorFileRequired: "Please choose a file before adding evidence.",
+    msgPleaseChooseFile: "Please choose a file before adding evidence.",
 
     navFeatures: "Features",
     navHowItWorks: "How it works",
@@ -341,6 +342,7 @@ export const translations = {
     kitNoCustomRelief: "No custom relief added.",
     kitUploadedAnnexures: "Uploaded Annexures",
     kitNoUploadedAnnexures: "No uploaded annexure files added.",
+    kitNoUploadedAnnexureFiles: "No uploaded annexure files added.",
     kitFollowUpAnswers: "Smart Follow-up Answers",
     kitNoFollowUpAnswers: "No follow-up answers added.",
     kitAiHistory: "AI Legal Guidance History",
@@ -455,6 +457,12 @@ export const translations = {
     badgeOfficial: "Official",
     badgeEmergency: "Emergency",
     badgeStateSpecific: "State-specific",
+
+    draftLanguageLabel: "Draft Language",
+    draftLanguageDesc: "Choose the language for the complaint draft output.",
+    draftLangEnglish: "English",
+    draftLangHindi: "Hindi",
+    draftLangHinglish: "Hinglish",
   },
   hi: {
     appName: "न्यायमित्र",
@@ -618,6 +626,7 @@ export const translations = {
     errorReliefRequired: "कृपया कम से कम एक चाही गई राहत चुनें।",
     errorOtherReliefRequired: "कृपया अन्य राहत/परिणाम का वर्णन करें या अन्य राहत का चयन हटाएं।",
     errorFileRequired: "सबूत जोड़ने से पहले कृपया एक फाइल चुनें।",
+    msgPleaseChooseFile: "सबूत जोड़ने से पहले कृपया एक फाइल चुनें।",
 
     navFeatures: "विशेषताएं",
     navHowItWorks: "यह कैसे काम करता है",
@@ -792,6 +801,7 @@ export const translations = {
     kitNoCustomRelief: "कोई कस्टम राहत नहीं जोड़ी गई।",
     kitUploadedAnnexures: "अपलोड किए गए अनुलग्नक",
     kitNoUploadedAnnexures: "कोई अपलोड किया गया अनुलग्नक फाइल नहीं जोड़ी गई।",
+    kitNoUploadedAnnexureFiles: "कोई अपलोड किया गया अनुलग्नक फाइल नहीं जोड़ी गई।",
     kitFollowUpAnswers: "स्मार्ट फॉलो-अप उत्तर",
     kitNoFollowUpAnswers: "कोई फॉलो-अप उत्तर नहीं जोड़े गए।",
     kitAiHistory: "AI कानूनी मार्गदर्शन इतिहास",
@@ -1075,6 +1085,7 @@ export const translations = {
     errorReliefRequired: "Kripya kam se kam ek relief chahiye select karein.",
     errorOtherReliefRequired: "Kripya other relief/outcome describe karein ya other relief unselect karein.",
     errorFileRequired: "Evidence add karne se pehle kripya ek file choose karein.",
+    msgPleaseChooseFile: "Evidence add karne se pehle kripya ek file choose karein.",
 
     navFeatures: "Features",
     navHowItWorks: "Ye kaise kaam karta hai",
@@ -1249,6 +1260,7 @@ export const translations = {
     kitNoCustomRelief: "Koi custom relief nahi add hua.",
     kitUploadedAnnexures: "Uploaded Annexures",
     kitNoUploadedAnnexures: "Koi uploaded annexure files nahi add hui.",
+    kitNoUploadedAnnexureFiles: "Koi uploaded annexure files nahi add hui.",
     kitFollowUpAnswers: "Smart Follow-up Answers",
     kitNoFollowUpAnswers: "Koi follow-up answers nahi add hue.",
     kitAiHistory: "AI Legal Guidance History",
