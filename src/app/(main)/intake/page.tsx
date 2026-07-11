@@ -1094,7 +1094,7 @@ Date: ${today}`;
             </div>
           </div>
           <p className="text-sm font-semibold text-teal-300">
-            {isEditingSavedCase ? "Editing Saved Case" : "INTAKE PAGE REAL VERSION"}
+            {isEditingSavedCase ? "Editing Saved Case" : t("intakePageLabel")}
           </p>
 
           <h1 className="mt-2 text-3xl font-bold md:text-5xl">
@@ -1102,7 +1102,7 @@ Date: ${today}`;
           </h1>
 
           <p className="mt-4 max-w-3xl text-slate-300">
-            Enter any legal problem in simple language. NyayMitra helps classify the issue, organize proof, prepare drafts or consultation notes, and route serious matters to legal aid or lawyer review.
+            {t("intakePageDesc")}
           </p>
           <p className="mt-4 rounded-2xl bg-slate-900 p-4 text-sm font-semibold text-slate-200">
             {t("disclaimer")}

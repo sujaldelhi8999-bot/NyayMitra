@@ -228,6 +228,8 @@ export const translations = {
     dashDraftTool: "Draft preparation tool | Not legal advice",
     dashManage: "Manage your case preparation drafts and Legal Action Kits.",
     dashStartFreshNote: "Use Start Fresh Case on File Complaint before demoing a new case to avoid mixed test data. This does not delete saved dashboard cases.",
+    intakePageLabel: "New Complaint",
+    intakePageDesc: "Enter any legal problem in simple language. NyayMitra helps classify the issue, organize proof, prepare drafts or consultation notes, and route serious matters to legal aid or lawyer review.",
     dashNoCases: "No saved cases yet.",
     dashStartPrompt: "Start a cyber fraud case preparation draft to see it here.",
 
@@ -690,6 +692,8 @@ export const translations = {
     dashDraftTool: "ड्राफ्ट तैयारी टूल | कानूनी सलाह नहीं",
     dashManage: "अपने केस तैयारी ड्राफ्ट और लीगल एक्शन किट प्रबंधित करें।",
     dashStartFreshNote: "नया केस डेमो करने से पहले शिकायत दर्ज करें पर 'नया केस शुरू करें' का उपयोग करें ताकि मिश्रित टेस्ट डेटा से बचा जा सके। यह सेव किए गए डैशबोर्ड केस को नहीं हटाता।",
+    intakePageLabel: "नई शिकायत",
+    intakePageDesc: "सरल भाषा में कोई भी कानूनी समस्या दर्ज करें। न्यायमित्र मुद्दे को वर्गीकृत करने, सबूत व्यवस्थित करने, ड्राफ्ट या परामर्श नोट तैयार करने और गंभीर मामलों को कानूनी सहायता या वकील समीक्षा तक पहुंचाने में मदद करता है।",
     dashNoCases: "अभी तक कोई सेव किया गया केस नहीं।",
     dashStartPrompt: "यहां देखने के लिए एक साइबर धोखाधड़ी केस तैयारी ड्राफ्ट शुरू करें।",
 
@@ -1148,6 +1152,8 @@ export const translations = {
     dashDraftTool: "Draft preparation tool | Legal advice nahi",
     dashManage: "Apne case preparation drafts aur Legal Action Kits manage karein.",
     dashStartFreshNote: "Naya case demo karne se pehle File Complaint par 'Naya Case Start Karein' ka use karein taaki mixed test data se bacha ja sake. Ye saved dashboard cases ko nahi hatata.",
+    intakePageLabel: "Naya Complaint",
+    intakePageDesc: "Simple bhasha mein koi bhi legal problem darj karein. NyayMitra issue classify karne, proof organize karne, drafts ya consultation notes taiyar karne aur serious matters ko legal aid ya lawyer review tak pahunchane mein madad karta hai.",
     dashNoCases: "Abhi tak koi saved case nahi hai.",
     dashStartPrompt: "Yahan dekhne ke liye ek cyber fraud case preparation draft start karein.",
 
