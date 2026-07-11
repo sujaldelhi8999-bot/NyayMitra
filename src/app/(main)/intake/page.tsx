@@ -1082,7 +1082,7 @@ Date: ${today}`;
   const submittedOutputMode = submittedCase ? getCaseOutputMode(submittedCase) : "full-preparation-kit";
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-slate-950 text-white">
       <section className="mx-auto max-w-6xl px-6 py-10">
         <div className="mb-8 rounded-3xl border border-teal-400/20 bg-white/5 p-6 shadow-2xl">
           <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -1688,7 +1688,7 @@ Date: ${today}`;
           </section>
         )}
       </section>
-    </main>
+    </div>
   );
 }
 
