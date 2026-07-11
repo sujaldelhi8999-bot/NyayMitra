@@ -5,18 +5,7 @@ import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { getInitialLanguage, type Language } from "@/lib/i18n";
 
-export function Navbar() {
-  const [language, setLanguage] = useState<Language>("en");
-
-  useEffect(() => {
-    setLanguage(getInitialLanguage());
-  }, []);
-
-  function changeLanguage(nextLanguage: Language) {
-    setLanguage(nextLanguage);
-    localStorage.setItem("nyaymitra_language", nextLanguage);
-  }
-
+export function Navbar({ language, onChangeLanguage }: { language: Language; onChangeLanguage: (lang: Language) => void }) {
   return (
     <header className="sticky top-0 z-50 border-b border-white/20 bg-white/85 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
@@ -37,7 +26,7 @@ export function Navbar() {
           <Link href="/knowledge-base" className="hover:text-teal-700">Knowledge Base</Link>
         </div>
         <div className="flex items-center gap-4">
-          <LanguageSwitcher language={language} onChange={changeLanguage} />
+          <LanguageSwitcher language={language} onChange={onChangeLanguage} />
           <Link
             href="/intake"
             className="rounded-full bg-slate-950 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-teal-700"
@@ -59,10 +48,21 @@ export function Footer() {
 }
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
+  const [language, setLanguage] = useState<Language>("en");
+
+  useEffect(() => {
+    setLanguage(getInitialLanguage());
+  }, []);
+
+  function changeLanguage(nextLanguage: Language) {
+    setLanguage(nextLanguage);
+    localStorage.setItem("nyaymitra_language", nextLanguage);
+  }
+
   return (
     <>
-      <Navbar />
-      <main className="flex-1">{children}</main>
+      <Navbar language={language} onChangeLanguage={changeLanguage} />
+      <main key={language} className="flex-1">{children}</main>
       <Footer />
     </>
   );
