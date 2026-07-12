@@ -23,6 +23,14 @@
 - **Risk & Safety Router** — Auto-routes high-risk case types (domestic violence, property disputes, family matters, bail/criminal) and urgent safety signals (immediate danger, arrest, eviction threat) to urgent legal-aid route
 - **Official Portal Links** — Verified links to Cyber Crime Portal, 112 Emergency, Consumer Helpline, RTI Online, NALSA Legal Aid, State Police portals (with last-checked dates)
 - **Verified Knowledge Base** — Curated legal/procedure snippets with source URLs and last-checked dates
+- **Other / Not Sure Flow** — Describe your problem freely; AI classifies case type and routes to right checklist
+- **Case Type Alias Search & Mismatch Detection** — Search by synonyms; detects when story contradicts selected case type
+- **Draft Completeness Score** — Separate metric checking all required fields are filled before export
+- **Knowledge Base: Dual-Tab UI** — Legal Knowledge + Official Portals tabs with case-type filter
+- **Dashboard** — 6 stat cards, 7 filters, cross-field search, inline status updates, per-case JSON export
+- **Edit Saved Cases** — `?edit=true` loads case back into intake wizard for modifications
+- **Draft Language Selector** — Per-case English / Hindi / Hinglish selection
+- **Start Fresh Case Button** — One-click reset to new intake
 
 ### AI Features (OpenRouter)
 - **Case Classification** — Suggests case type, confidence, risk level, output mode, suggested proofs/reliefs, missing details, next steps
@@ -50,13 +58,15 @@
 - **No invented law sections** — AI instructed to cite only verified sources
 - **High-risk routing** — Urgent legal-aid route for sensitive matters
 - **API keys server-side only** — OpenRouter key in `.env.local`, never exposed to client
+- **LocalStorage only** — No backend, auth, or cloud sync
+- **Hallucination detection** — Flags AI legal citations without verified source mapping
 
 ## Tech Stack
 - **Next.js 16** (App Router, React 19)
-- **TypeScript** (strict)
+- **TypeScript** (strict) + `src/types/` for shared types
 - **Tailwind CSS v4**
 - **jsPDF** for PDF generation
-- **OpenRouter** (Google Gemini 2.0 Flash via serverless API route)
+- **OpenRouter** (configurable via `OPENROUTER_MODEL`, defaults to Google Gemini 2.0 Flash) via serverless API route
 - **ESLint 9** (Next.js config)
 
 ## Getting Started
@@ -66,7 +76,7 @@
 - npm
 
 ### Environment Setup
-Create `.env.local` from `.env.local.example` (if AI features needed):
+Create `.env.local` with (if AI features needed):
 
 ```bash
 OPENROUTER_API_KEY=your_openrouter_api_key_here
@@ -102,7 +112,8 @@ src/
 │   │   └── layout.tsx
 │   ├── legal-kit/page.tsx        # Legal Action Kit preview + PDF export
 │   ├── api/ai/case-assistant/route.ts  # OpenRouter proxy (server-side)
-│   └── layout.tsx
+│   ├── layout.tsx                # Root layout, fonts, metadata
+│   └── globals.css               # Tailwind + custom CSS
 ├── components/
 │   ├── site-shell.tsx            # Layout shell + nav + language switcher
 │   ├── section-heading.tsx
@@ -113,21 +124,29 @@ src/
 ├── lib/
 │   ├── aiClient.ts               # Typed AI functions (classify, extract, followups, draft, review, advisor)
 │   ├── caseConfig.ts             # 25 case types with proofs, reliefs, output modes, risk messages
+│   ├── caseUtils.ts              # Helpers: missing proofs, evidence rows, timeline, amount mismatch, source notes, hallucination check, next steps, followups, legal routes
+│   ├── draftTemplates.ts         # generateComplaintDraft() — 3 output modes
 │   ├── i18n.ts                   # i18n (en/hi/hinglish) + translations
 │   ├── legalKnowledge.ts         # Case-type filtered knowledge context builder
-│   └── officialPortals.ts        # Portal matcher + action suggestions builder
-└── public/
+│   ├── officialPortals.ts        # Portal matcher + action suggestions builder
+│   └── qualityScore.ts           # calculateCaseQualityScore() — case-type-aware scoring
+└── types/
+    └── case.ts                   # Shared TypeScript types (CaseData, FormData, AiClassification, etc.)
 ```
 
 ## Key Files to Understand
 - `src/lib/caseConfig.ts` — All case types, proofs, reliefs, output modes, risk routing
 - `src/lib/aiClient.ts` — Typed OpenRouter calls with Zod-like validation, error handling, fallback
-- `src/app/(main)/intake/page.tsx` — Core intake logic (1000+ lines): form, validation, AI actions, guided mode, draft generation
-- `src/app/legal-kit/page.tsx` — Preview, PDF generation, quality scoring, verified sources, official links
-- `src/app/(main)/dashboard/page.tsx` — Case management, search/filter, stats, export
+- `src/lib/caseUtils.ts` — Shared helpers: missing proofs, evidence rows, timeline, amount mismatch, hallucination check, next steps, legal routes
+- `src/lib/draftTemplates.ts` — `generateComplaintDraft()` for all three output modes
+- `src/lib/qualityScore.ts` — `calculateCaseQualityScore()` with case-type-specific branches
+- `src/app/(main)/intake/page.tsx` — Core intake logic (1000+ lines): form, validation, AI actions, guided mode, draft generation, alias search, mismatch detection, edit mode
+- `src/app/legal-kit/page.tsx` — Preview, PDF generation, quality scoring, verified sources, official links, output-mode-specific titles
+- `src/app/(main)/dashboard/page.tsx` — Case management, search/filter, stats, export, inline status
 - `src/data/officialPortals.ts` — Verified portal list with metadata
 - `src/data/legalKnowledgeBase.ts` — Curated knowledge snippets
 - `src/lib/i18n.ts` — Full translation dictionary (EN/HI/Hinglish)
+- `src/types/case.ts` — All shared TypeScript types
 
 ## Output Modes (Risk Routing)
 | Mode | Trigger | Output |

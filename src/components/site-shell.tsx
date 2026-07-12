@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { getInitialLanguage, type Language, translate } from "@/lib/i18n";
 
@@ -52,11 +52,7 @@ export function Footer({ language }: { language: Language }) {
 }
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState<Language>("en");
-
-  useEffect(() => {
-    setLanguage(getInitialLanguage());
-  }, []);
+  const [language, setLanguage] = useState<Language>(() => getInitialLanguage());
 
   function changeLanguage(nextLanguage: Language) {
     setLanguage(nextLanguage);
