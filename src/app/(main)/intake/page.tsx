@@ -664,12 +664,12 @@ function getVerifiedSources(caseData: CaseData) {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <section className="mx-auto max-w-6xl px-6 py-10">
-        <div className="mb-8 rounded-3xl border border-teal-400/20 bg-white/5 p-6 shadow-2xl">
+        <div className="mb-8 rounded-lg border border-teal-400/20 bg-white/5 p-6 shadow-2xl">
           <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex gap-2">
-              <button type="button" onClick={() => setMode("full")} className={`rounded-full px-4 py-2 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-teal-200 ${mode === "full" ? "bg-teal-400 text-slate-950" : "bg-white/10 text-white"}`}>{t("fullMode")}</button>
-              <button type="button" onClick={() => setMode("guided")} className={`rounded-full px-4 py-2 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-teal-200 ${mode === "guided" ? "bg-teal-400 text-slate-950" : "bg-white/10 text-white"}`}>{t("guidedMode")}</button>
-              <button type="button" onClick={startFreshCase} className="rounded-full bg-red-50 px-4 py-2 text-sm font-bold text-red-700 focus:outline-none focus:ring-4 focus:ring-red-100">{t("btnStartFresh")}</button>
+              <button type="button" onClick={() => setMode("full")} className={`rounded-lg px-4 py-2 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-teal-200 ${mode === "full" ? "bg-teal-400 text-slate-950" : "bg-white/10 text-white"}`}>{t("fullMode")}</button>
+              <button type="button" onClick={() => setMode("guided")} className={`rounded-lg px-4 py-2 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-teal-200 ${mode === "guided" ? "bg-teal-400 text-slate-950" : "bg-white/10 text-white"}`}>{t("guidedMode")}</button>
+              <button type="button" onClick={startFreshCase} className="rounded-lg bg-red-50 px-4 py-2 text-sm font-bold text-red-700 focus:outline-none focus:ring-4 focus:ring-red-100">{t("btnStartFresh")}</button>
             </div>
           </div>
           <p className="text-sm font-semibold text-teal-300">
@@ -683,10 +683,10 @@ function getVerifiedSources(caseData: CaseData) {
           <p className="mt-4 max-w-3xl text-slate-300">
             {t("intakePageDesc")}
           </p>
-          <p className="mt-4 rounded-2xl bg-slate-900 p-4 text-sm font-semibold text-slate-200">
+          <p className="mt-4 rounded-lg bg-slate-900 p-4 text-sm font-semibold text-slate-200">
             {t("disclaimer")}
           </p>
-          <div className="mt-4 rounded-2xl border border-teal-400/20 bg-slate-900 p-5">
+          <div className="mt-4 rounded-lg border border-teal-400/20 bg-slate-900 p-5">
             <h2 className="font-black text-teal-300">{t("labelSafetyNote")}</h2>
             <p className="mt-2 text-sm leading-6 text-slate-200">
               {t("labelDisclaimer")}
@@ -695,46 +695,46 @@ function getVerifiedSources(caseData: CaseData) {
         </div>
 
         {draftFound && !isEditingSavedCase && (
-          <div className="mb-6 rounded-3xl border border-teal-200 bg-teal-50 p-5 text-slate-950 shadow-xl" aria-live="polite">
+          <div className="mb-6 rounded-lg border border-teal-200 bg-teal-50 p-5 text-slate-950 shadow-xl" aria-live="polite">
             <h2 className="text-xl font-black">{t("msgDraftLoaded")}</h2>
             <div className="mt-4 flex flex-wrap gap-3">
-              <button type="button" onClick={continueDraft} className="rounded-full bg-teal-600 px-5 py-3 font-bold text-white">{t("btnContinueDraft")}</button>
-              <button type="button" onClick={clearDraft} className="rounded-full bg-white px-5 py-3 font-bold text-slate-700">{t("btnClearDraft")}</button>
+              <button type="button" onClick={continueDraft} className="rounded-lg bg-teal-600 px-5 py-3 font-bold text-white">{t("btnContinueDraft")}</button>
+              <button type="button" onClick={clearDraft} className="rounded-lg bg-white px-5 py-3 font-bold text-slate-700">{t("btnClearDraft")}</button>
             </div>
           </div>
         )}
 
-        {progressMessage && <p className="mb-6 rounded-2xl bg-teal-100 p-4 font-bold text-teal-900" aria-live="polite">{progressMessage}</p>}
+        {progressMessage && <p className="mb-6 rounded-lg bg-teal-100 p-4 font-bold text-teal-900" aria-live="polite">{progressMessage}</p>}
 
         {mode === "guided" && (
-          <div className="mb-8 rounded-[2rem] bg-white p-6 text-slate-950 shadow-2xl">
-            <div className="h-3 overflow-hidden rounded-full bg-slate-100"><div className="h-full bg-teal-500" style={{ width: `${((wizardStep + 1) / wizardSteps.length) * 100}%` }} /></div>
+          <div className="mb-8 rounded-lg bg-white p-6 text-slate-950 shadow-2xl">
+            <div className="h-3 overflow-hidden rounded-lg bg-slate-100"><div className="h-full bg-teal-500" style={{ width: `${((wizardStep + 1) / wizardSteps.length) * 100}%` }} /></div>
             <p className="mt-5 text-sm font-black uppercase tracking-[0.2em] text-teal-700">Step {wizardStep + 1} of {wizardSteps.length}: {wizardSteps[wizardStep].title}</p>
             <h2 className="mt-2 text-3xl font-black">{wizardSteps[wizardStep].title}</h2>
             <p className="mt-2 font-semibold leading-7 text-slate-600">{wizardSteps[wizardStep].instruction}</p>
-            <button type="button" onClick={readStepAloud} className="mt-4 rounded-full bg-slate-950 px-5 py-3 font-bold text-white">{t("readAloud")}</button>
-            {voiceMessage && <p className="mt-3 rounded-xl bg-amber-100 p-3 text-sm font-bold text-amber-900" aria-live="polite">{voiceMessage}</p>}
+            <button type="button" onClick={readStepAloud} className="mt-4 rounded-lg bg-slate-950 px-5 py-3 font-bold text-white">{t("readAloud")}</button>
+            {voiceMessage && <p className="mt-3 rounded-lg bg-amber-100 p-3 text-sm font-bold text-amber-900" aria-live="polite">{voiceMessage}</p>}
 
             <div className="mt-6 grid gap-5 md:grid-cols-2">
               {wizardStep === 0 && <><Input label={t("fullName")} name="fullName" value={formData.fullName} onChange={handleInputChange} /><Input label={t("contact")} name="contact" value={formData.contact} onChange={handleInputChange} /><Input label={t("stateOrUT")} name="stateOrUT" value={formData.stateOrUT || ""} onChange={handleInputChange} /><div className="md:col-span-2"><CaseTypeSelector selected={formData.caseType} search={caseTypeSearch} onSearch={setCaseTypeSearch} onSelect={selectCaseType} /></div></>}
               {wizardStep === 1 && <><Input label={t("incidentDate")} type="date" name="incidentDate" value={formData.incidentDate} onChange={handleInputChange} /><Input label={t("amountLost")} type="number" name="amountLost" value={formData.amountLost} onChange={handleInputChange} /></>}
-              {wizardStep === 2 && <label className="block md:col-span-2"><span className="mb-2 block font-semibold">{t("story")}</span><textarea name="story" value={formData.story} onChange={handleInputChange} rows={6} className="w-full rounded-xl border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" /></label>}
+              {wizardStep === 2 && <label className="block md:col-span-2"><span className="mb-2 block font-semibold">{t("story")}</span><textarea name="story" value={formData.story} onChange={handleInputChange} rows={6} className="w-full rounded-lg border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" /></label>}
               {wizardStep === 3 && <Input label={t("oppositeParty")} name="oppositeParty" value={formData.oppositeParty} onChange={handleInputChange} />}
-              {wizardStep === 4 && <div className="md:col-span-2"><h3 className="mb-3 font-black">{t("proofAvailable")}</h3><div className="grid gap-3 md:grid-cols-2">{proofOptions.map((proof) => <label key={proof} className="flex items-center gap-3 rounded-xl border bg-slate-50 p-3"><input type="checkbox" value={proof} checked={formData.proofs.includes(proof)} onChange={(e) => handleCheckboxChange(e, "proofs")} />{proof}</label>)}</div><CustomItemsEditor type="proof" enabled={formData.proofs.includes(OTHER_PROOF_OPTION)} value={customProofInput} items={formData.customProofs || []} onChange={setCustomProofInput} onAdd={addCustomProof} onRemove={removeCustomProof} /></div>}
-              {wizardStep === 5 && <div className="md:col-span-2"><h3 className="mb-3 font-black">{t("reliefWanted")}</h3><div className="grid gap-3 md:grid-cols-2">{reliefOptions.map((item) => <label key={item} className="flex items-center gap-3 rounded-xl border bg-slate-50 p-3"><input type="checkbox" value={item} checked={formData.relief.includes(item)} onChange={(e) => handleCheckboxChange(e, "relief")} />{item}</label>)}</div><CustomItemsEditor type="relief" enabled={formData.relief.includes(OTHER_RELIEF_OPTION)} value={customReliefInput} items={formData.customReliefs || []} onChange={setCustomReliefInput} onAdd={addCustomRelief} onRemove={removeCustomRelief} /></div>}
-              {wizardStep === 6 && <div className="md:col-span-2 rounded-2xl bg-slate-50 p-5"><p><b>{t("fullName")}:</b> {formData.fullName || "-"}</p><p><b>{t("amountLost")}:</b> ₹{formData.amountLost || "-"}</p><p><b>{t("proofAvailable")}:</b> {formData.proofs.filter((item) => item !== OTHER_PROOF_OPTION).length} standard + {(formData.customProofs || []).length} custom</p><p><b>{t("reliefWanted")}:</b> {[...formData.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(formData.customReliefs || [])].join(", ") || "-"}</p></div>}
+              {wizardStep === 4 && <div className="md:col-span-2"><h3 className="mb-3 font-black">{t("proofAvailable")}</h3><div className="grid gap-3 md:grid-cols-2">{proofOptions.map((proof) => <label key={proof} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3"><input type="checkbox" value={proof} checked={formData.proofs.includes(proof)} onChange={(e) => handleCheckboxChange(e, "proofs")} />{proof}</label>)}</div><CustomItemsEditor type="proof" enabled={formData.proofs.includes(OTHER_PROOF_OPTION)} value={customProofInput} items={formData.customProofs || []} onChange={setCustomProofInput} onAdd={addCustomProof} onRemove={removeCustomProof} /></div>}
+              {wizardStep === 5 && <div className="md:col-span-2"><h3 className="mb-3 font-black">{t("reliefWanted")}</h3><div className="grid gap-3 md:grid-cols-2">{reliefOptions.map((item) => <label key={item} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3"><input type="checkbox" value={item} checked={formData.relief.includes(item)} onChange={(e) => handleCheckboxChange(e, "relief")} />{item}</label>)}</div><CustomItemsEditor type="relief" enabled={formData.relief.includes(OTHER_RELIEF_OPTION)} value={customReliefInput} items={formData.customReliefs || []} onChange={setCustomReliefInput} onAdd={addCustomRelief} onRemove={removeCustomRelief} /></div>}
+              {wizardStep === 6 && <div className="md:col-span-2 rounded-lg bg-slate-50 p-5"><p><b>{t("fullName")}:</b> {formData.fullName || "-"}</p><p><b>{t("amountLost")}:</b> ₹{formData.amountLost || "-"}</p><p><b>{t("proofAvailable")}:</b> {formData.proofs.filter((item) => item !== OTHER_PROOF_OPTION).length} standard + {(formData.customProofs || []).length} custom</p><p><b>{t("reliefWanted")}:</b> {[...formData.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(formData.customReliefs || [])].join(", ") || "-"}</p></div>}
             </div>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <button type="button" onClick={() => setWizardStep((step) => Math.max(0, step - 1))} className="rounded-full bg-slate-100 px-5 py-3 font-bold text-slate-700">{t("previous")}</button>
-              <button type="button" onClick={() => setWizardStep((step) => Math.min(wizardSteps.length - 1, step + 1))} className="rounded-full bg-slate-950 px-5 py-3 font-bold text-white">{t("next")}</button>
-              <button type="button" onClick={saveProgress} className="rounded-full bg-teal-100 px-5 py-3 font-bold text-teal-900">{t("saveProgress")}</button>
-              {wizardStep === wizardSteps.length - 1 && <button type="button" onClick={handleGenerate} className="rounded-full bg-teal-600 px-5 py-3 font-black text-white">{t("generateSummary")}</button>}
+              <button type="button" onClick={() => setWizardStep((step) => Math.max(0, step - 1))} className="rounded-lg bg-slate-100 px-5 py-3 font-bold text-slate-700">{t("previous")}</button>
+              <button type="button" onClick={() => setWizardStep((step) => Math.min(wizardSteps.length - 1, step + 1))} className="rounded-lg bg-slate-950 px-5 py-3 font-bold text-white">{t("next")}</button>
+              <button type="button" onClick={saveProgress} className="rounded-lg bg-teal-100 px-5 py-3 font-bold text-teal-900">{t("saveProgress")}</button>
+              {wizardStep === wizardSteps.length - 1 && <button type="button" onClick={handleGenerate} className="rounded-lg bg-teal-600 px-5 py-3 font-black text-white">{t("generateSummary")}</button>}
             </div>
           </div>
         )}
 
-        {mode === "full" && <div className="rounded-3xl border border-white/10 bg-white p-6 text-slate-900 shadow-2xl">
+        {mode === "full" && <div className="rounded-lg border border-white/10 bg-white p-6 text-slate-900 shadow-2xl">
           <div className="grid gap-5 md:grid-cols-2">
             <div>
               <label className="mb-2 block font-semibold">Full Name</label>
@@ -742,7 +742,7 @@ function getVerifiedSources(caseData: CaseData) {
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleInputChange}
-                className="w-full rounded-xl border p-3 outline-none focus:border-teal-500"
+                className="w-full rounded-lg border p-3 outline-none focus:border-teal-500"
                 placeholder="Example: Sujal"
               />
             </div>
@@ -753,7 +753,7 @@ function getVerifiedSources(caseData: CaseData) {
                 name="contact"
                 value={formData.contact}
                 onChange={handleInputChange}
-                className="w-full rounded-xl border p-3 outline-none focus:border-teal-500"
+                className="w-full rounded-lg border p-3 outline-none focus:border-teal-500"
                 placeholder="Example: sujal@example.com"
               />
             </div>
@@ -767,7 +767,7 @@ function getVerifiedSources(caseData: CaseData) {
                 name="incidentDate"
                 value={formData.incidentDate}
                 onChange={handleInputChange}
-                className="w-full rounded-xl border p-3 outline-none focus:border-teal-500"
+                className="w-full rounded-lg border p-3 outline-none focus:border-teal-500"
               />
             </div>
 
@@ -777,7 +777,7 @@ function getVerifiedSources(caseData: CaseData) {
                 name="stateOrUT"
                 value={formData.stateOrUT || ""}
                 onChange={handleInputChange}
-                className="w-full rounded-xl border p-3 outline-none focus:border-teal-500"
+                className="w-full rounded-lg border p-3 outline-none focus:border-teal-500"
                 placeholder="Example: Delhi, Uttar Pradesh, Maharashtra"
               />
             </div>
@@ -789,7 +789,7 @@ function getVerifiedSources(caseData: CaseData) {
                 name="amountLost"
                 value={formData.amountLost}
                 onChange={handleInputChange}
-                className="w-full rounded-xl border p-3 outline-none focus:border-teal-500"
+                className="w-full rounded-lg border p-3 outline-none focus:border-teal-500"
                 placeholder="Example: 3000"
               />
             </div>
@@ -802,7 +802,7 @@ function getVerifiedSources(caseData: CaseData) {
                 name="oppositeParty"
                 value={formData.oppositeParty}
                 onChange={handleInputChange}
-                className="w-full rounded-xl border p-3 outline-none focus:border-teal-500"
+                className="w-full rounded-lg border p-3 outline-none focus:border-teal-500"
                 placeholder="Phone number, UPI ID, email, name"
               />
             </div>
@@ -815,26 +815,26 @@ function getVerifiedSources(caseData: CaseData) {
               value={formData.story}
               onChange={handleInputChange}
               rows={5}
-              className="w-full rounded-xl border p-3 outline-none focus:border-teal-500"
+              className="w-full rounded-lg border p-3 outline-none focus:border-teal-500"
                 placeholder="Example: I received a fake work-from-home job message on WhatsApp. The person asked me to pay a registration fee through UPI. I paid ₹4000 to fakejob@upi. After payment, the person blocked me. I have WhatsApp screenshots, UPI transaction proof, bank SMS, and the phone number."
               />
             </div>
 
           {formData.caseType === "Other / Not Sure" && (
-            <div className="mt-6 rounded-3xl border border-amber-200 bg-amber-50 p-5 text-slate-950">
+            <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-5 text-slate-950">
               <p className="text-sm font-black uppercase tracking-[0.18em] text-amber-700">Other / Not Sure flow</p>
               <h2 className="mt-2 text-2xl font-black">Explain Your Legal Problem</h2>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
-                <label className="block md:col-span-2"><span className="font-bold">What happened?</span><textarea value={formData.story} onChange={(event) => setCaseData((current) => ({ ...current, story: event.target.value }))} rows={4} className="mt-2 w-full rounded-xl border border-amber-200 bg-white p-3 outline-none focus:border-amber-500" /></label>
+                <label className="block md:col-span-2"><span className="font-bold">What happened?</span><textarea value={formData.story} onChange={(event) => setCaseData((current) => ({ ...current, story: event.target.value }))} rows={4} className="mt-2 w-full rounded-lg border border-amber-200 bg-white p-3 outline-none focus:border-amber-500" /></label>
                 <Input label="Who is involved?" name="oppositeParty" value={formData.oppositeParty} onChange={handleInputChange} />
                 <Input label="When did it happen?" type="date" name="incidentDate" value={formData.incidentDate} onChange={handleInputChange} />
-                <label className="block md:col-span-2"><span className="font-bold">Is there any urgent danger or deadline?</span><textarea onChange={(event) => setCaseData((current) => ({ ...current, story: `${current.story}\nUrgency/deadline: ${event.target.value}` }))} rows={2} className="mt-2 w-full rounded-xl border border-amber-200 bg-white p-3 outline-none focus:border-amber-500" /></label>
-                <label className="block md:col-span-2"><span className="font-bold">What documents/proof do you have?</span><textarea onChange={(event) => setCaseData((current) => ({ ...current, story: `${current.story}\nDocuments/proof: ${event.target.value}` }))} rows={2} className="mt-2 w-full rounded-xl border border-amber-200 bg-white p-3 outline-none focus:border-amber-500" /></label>
-                <label className="block"><span className="font-bold">What outcome do you want?</span><textarea onChange={(event) => setCaseData((current) => ({ ...current, story: `${current.story}\nOutcome wanted: ${event.target.value}` }))} rows={2} className="mt-2 w-full rounded-xl border border-amber-200 bg-white p-3 outline-none focus:border-amber-500" /></label>
-                <label className="block"><span className="font-bold">Has anything already been filed?</span><textarea onChange={(event) => setCaseData((current) => ({ ...current, story: `${current.story}\nAlready filed: ${event.target.value}` }))} rows={2} className="mt-2 w-full rounded-xl border border-amber-200 bg-white p-3 outline-none focus:border-amber-500" /></label>
+                <label className="block md:col-span-2"><span className="font-bold">Is there any urgent danger or deadline?</span><textarea onChange={(event) => setCaseData((current) => ({ ...current, story: `${current.story}\nUrgency/deadline: ${event.target.value}` }))} rows={2} className="mt-2 w-full rounded-lg border border-amber-200 bg-white p-3 outline-none focus:border-amber-500" /></label>
+                <label className="block md:col-span-2"><span className="font-bold">What documents/proof do you have?</span><textarea onChange={(event) => setCaseData((current) => ({ ...current, story: `${current.story}\nDocuments/proof: ${event.target.value}` }))} rows={2} className="mt-2 w-full rounded-lg border border-amber-200 bg-white p-3 outline-none focus:border-amber-500" /></label>
+                <label className="block"><span className="font-bold">What outcome do you want?</span><textarea onChange={(event) => setCaseData((current) => ({ ...current, story: `${current.story}\nOutcome wanted: ${event.target.value}` }))} rows={2} className="mt-2 w-full rounded-lg border border-amber-200 bg-white p-3 outline-none focus:border-amber-500" /></label>
+                <label className="block"><span className="font-bold">Has anything already been filed?</span><textarea onChange={(event) => setCaseData((current) => ({ ...current, story: `${current.story}\nAlready filed: ${event.target.value}` }))} rows={2} className="mt-2 w-full rounded-lg border border-amber-200 bg-white p-3 outline-none focus:border-amber-500" /></label>
               </div>
-              <button type="button" onClick={handleOtherClassification} className="mt-5 rounded-full bg-amber-500 px-6 py-3 font-black text-slate-950 hover:bg-amber-400">{otherClassifying ? "NyayMitra is understanding your case..." : "AI Understand My Case"}</button>
-              {formData.aiAnalysis?.classification && <div className="mt-5 rounded-2xl bg-white p-4"><h3 className="text-xl font-black">AI Case Understanding Result</h3><div className="mt-3 grid gap-3 md:grid-cols-2"><p><b>Probable case type:</b> {formData.aiAnalysis.classification.caseType}</p><p><b>Confidence:</b> {formData.aiAnalysis.classification.confidence}%</p><p><b>Output mode:</b> {outputModeLabel(formData.aiAnalysis.classification.outputMode)}</p><p><b>Risk level:</b> {formData.aiAnalysis.classification.riskLevel}</p><p className="md:col-span-2"><b>Risk reason:</b> {formData.aiAnalysis.classification.riskReason}</p><p className="md:col-span-2"><b>Short summary:</b> {formData.aiAnalysis.classification.shortSummary}</p><p className="md:col-span-2"><b>Suggested proofs:</b> {formData.aiAnalysis.classification.suggestedProofs?.join(", ") || "Not provided"}</p><p className="md:col-span-2"><b>Suggested reliefs:</b> {formData.aiAnalysis.classification.suggestedReliefs?.join(", ") || "Not provided"}</p><p className="md:col-span-2"><b>Missing details:</b> {formData.aiAnalysis.classification.missingDetails?.join(", ") || "Not provided"}</p><p className="md:col-span-2"><b>Next steps:</b> {formData.aiAnalysis.classification.nextSteps?.join(", ") || "Not provided"}</p><p><b>Lawyer review recommended:</b> {formData.aiAnalysis.classification.lawyerReviewRecommended ? "Yes" : "No"}</p></div><div className="mt-4 flex flex-wrap gap-3"><button type="button" onClick={useSuggestedCaseType} className="rounded-full bg-teal-600 px-5 py-3 font-bold text-white">Use AI Suggested Case Type</button><button type="button" className="rounded-full bg-slate-100 px-5 py-3 font-bold text-slate-700">Keep as Other / Not Sure</button></div></div>}
+              <button type="button" onClick={handleOtherClassification} className="mt-5 rounded-lg bg-amber-500 px-6 py-3 font-black text-slate-950 hover:bg-amber-400">{otherClassifying ? "NyayMitra is understanding your case..." : "AI Understand My Case"}</button>
+              {formData.aiAnalysis?.classification && <div className="mt-5 rounded-lg bg-white p-4"><h3 className="text-xl font-black">AI Case Understanding Result</h3><div className="mt-3 grid gap-3 md:grid-cols-2"><p><b>Probable case type:</b> {formData.aiAnalysis.classification.caseType}</p><p><b>Confidence:</b> {formData.aiAnalysis.classification.confidence}%</p><p><b>Output mode:</b> {outputModeLabel(formData.aiAnalysis.classification.outputMode)}</p><p><b>Risk level:</b> {formData.aiAnalysis.classification.riskLevel}</p><p className="md:col-span-2"><b>Risk reason:</b> {formData.aiAnalysis.classification.riskReason}</p><p className="md:col-span-2"><b>Short summary:</b> {formData.aiAnalysis.classification.shortSummary}</p><p className="md:col-span-2"><b>Suggested proofs:</b> {formData.aiAnalysis.classification.suggestedProofs?.join(", ") || "Not provided"}</p><p className="md:col-span-2"><b>Suggested reliefs:</b> {formData.aiAnalysis.classification.suggestedReliefs?.join(", ") || "Not provided"}</p><p className="md:col-span-2"><b>Missing details:</b> {formData.aiAnalysis.classification.missingDetails?.join(", ") || "Not provided"}</p><p className="md:col-span-2"><b>Next steps:</b> {formData.aiAnalysis.classification.nextSteps?.join(", ") || "Not provided"}</p><p><b>Lawyer review recommended:</b> {formData.aiAnalysis.classification.lawyerReviewRecommended ? "Yes" : "No"}</p></div><div className="mt-4 flex flex-wrap gap-3"><button type="button" onClick={useSuggestedCaseType} className="rounded-lg bg-teal-600 px-5 py-3 font-bold text-white">Use AI Suggested Case Type</button><button type="button" className="rounded-lg bg-slate-100 px-5 py-3 font-bold text-slate-700">Keep as Other / Not Sure</button></div></div>}
             </div>
           )}
 
@@ -845,7 +845,7 @@ function getVerifiedSources(caseData: CaseData) {
               {proofOptions.map((proof) => (
                 <label
                   key={proof}
-                  className="flex cursor-pointer items-center gap-3 rounded-xl border bg-slate-50 p-3 hover:bg-teal-50"
+                  className="flex cursor-pointer items-center gap-3 rounded-lg border bg-slate-50 p-3 hover:bg-teal-50"
                 >
                   <input
                     type="checkbox"
@@ -860,7 +860,7 @@ function getVerifiedSources(caseData: CaseData) {
             <CustomItemsEditor type="proof" enabled={formData.proofs.includes(OTHER_PROOF_OPTION)} value={customProofInput} items={formData.customProofs || []} onChange={setCustomProofInput} onAdd={addCustomProof} onRemove={removeCustomProof} />
           </div>
 
-          <div className="mt-8 rounded-3xl border border-teal-100 bg-gradient-to-br from-slate-950 to-teal-950 p-5 text-white shadow-2xl">
+          <div className="mt-8 rounded-lg border border-teal-100 bg-gradient-to-br from-slate-950 to-teal-950 p-5 text-white shadow-2xl">
             <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-300">Local annexure builder</p>
             <h2 className="mt-2 text-2xl font-black">Upload Proof Files</h2>
             <p className="mt-2 text-sm leading-6 text-slate-300">
@@ -870,26 +870,26 @@ function getVerifiedSources(caseData: CaseData) {
             <div className="mt-5 grid gap-4 md:grid-cols-[1fr_1.2fr_auto] md:items-end">
               <label className="block">
                 <span className="mb-2 block text-sm font-bold text-slate-100">Evidence category</span>
-                <select value={selectedCategory} onChange={(event) => setSelectedCategory(event.target.value)} className="w-full rounded-xl border border-white/10 bg-white p-3 font-semibold text-slate-950 outline-none focus:border-teal-400">
+                <select value={selectedCategory} onChange={(event) => setSelectedCategory(event.target.value)} className="w-full rounded-lg border border-white/10 bg-white p-3 font-semibold text-slate-950 outline-none focus:border-teal-400">
                   {Array.from(new Set([...uploadCategories, ...(formData.customProofs || [])])).map((category) => <option key={category}>{category}</option>)}
                 </select>
               </label>
 
-              <label className="block rounded-2xl border border-dashed border-teal-300/60 bg-white/10 p-4">
+              <label className="block rounded-lg border border-dashed border-teal-300/60 bg-white/10 p-4">
                 <span className="mb-2 block text-sm font-bold text-slate-100">Choose file</span>
                 <input type="file" onChange={(event) => setSelectedFile(event.target.files?.[0] || null)} className="w-full text-sm text-slate-200 file:mr-4 file:rounded-full file:border-0 file:bg-teal-400 file:px-4 file:py-2 file:font-bold file:text-slate-950" />
                 <span className="mt-2 block text-xs text-slate-300">Only metadata is saved: file name, type, size, category, and time.</span>
               </label>
 
-              <button type="button" onClick={handleAddEvidenceFile} className="rounded-xl bg-teal-400 px-5 py-4 font-black text-slate-950 shadow-lg transition hover:bg-teal-300">
+              <button type="button" onClick={handleAddEvidenceFile} className="rounded-lg bg-teal-400 px-5 py-4 font-black text-slate-950 shadow-lg transition hover:bg-teal-300">
                 Add Evidence File
               </button>
             </div>
 
-            {fileError && <p className="mt-4 rounded-xl bg-red-100 p-3 text-sm font-bold text-red-800">{fileError}</p>}
+            {fileError && <p className="mt-4 rounded-lg bg-red-100 p-3 text-sm font-bold text-red-800">{fileError}</p>}
 
             {formData.uploadedFiles.length > 0 && (
-              <div className="mt-6 overflow-x-auto rounded-2xl bg-white text-slate-950">
+              <div className="mt-6 overflow-x-auto rounded-lg bg-white text-slate-950">
                 <table className="w-full min-w-[820px] text-left text-sm">
                   <thead className="bg-slate-100 text-slate-600">
                     <tr>
@@ -911,7 +911,7 @@ function getVerifiedSources(caseData: CaseData) {
                         <td className="p-3">{file.fileType}</td>
                         <td className="p-3">{formatFileSize(file.fileSize)}</td>
                         <td className="p-3">{new Date(file.uploadedAt).toLocaleString()}</td>
-                        <td className="p-3"><button type="button" onClick={() => handleRemoveEvidenceFile(file.id)} className="rounded-full bg-red-50 px-3 py-1 font-bold text-red-700">Remove</button></td>
+                        <td className="p-3"><button type="button" onClick={() => handleRemoveEvidenceFile(file.id)} className="rounded-lg bg-red-50 px-3 py-1 font-bold text-red-700">Remove</button></td>
                       </tr>
                     ))}
                   </tbody>
@@ -927,7 +927,7 @@ function getVerifiedSources(caseData: CaseData) {
               {reliefOptions.map((item) => (
                 <label
                   key={item}
-                  className="flex cursor-pointer items-center gap-3 rounded-xl border bg-slate-50 p-3 hover:bg-teal-50"
+                  className="flex cursor-pointer items-center gap-3 rounded-lg border bg-slate-50 p-3 hover:bg-teal-50"
                 >
                   <input
                     type="checkbox"
@@ -943,7 +943,7 @@ function getVerifiedSources(caseData: CaseData) {
           </div>
 
           {errors.length > 0 && (
-            <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 p-5 text-red-800 shadow-lg">
+            <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-5 text-red-800 shadow-lg">
               <h3 className="font-black">Please fix these details</h3>
               <ul className="mt-3 space-y-2 text-sm font-semibold">
                 {errors.map((item) => <li key={item}>{item}</li>)}
@@ -954,7 +954,7 @@ function getVerifiedSources(caseData: CaseData) {
           <button
             type="button"
             onClick={handleGenerate}
-            className="mt-8 w-full rounded-xl bg-teal-600 px-6 py-4 font-bold text-white shadow-lg transition hover:bg-teal-700"
+            className="mt-8 w-full rounded-lg bg-teal-600 px-6 py-4 font-bold text-white shadow-lg transition hover:bg-teal-700"
           >
             Generate Case Summary
           </button>
@@ -965,68 +965,68 @@ function getVerifiedSources(caseData: CaseData) {
             <CaseQualityCard result={calculateCaseQualityScore(submittedCase)} />
             <OfficialActionLinks caseData={submittedCase} />
 
-            <div className="rounded-3xl border border-teal-400/30 bg-slate-900 p-6 shadow-2xl">
+            <div className="rounded-lg border border-teal-400/30 bg-slate-900 p-6 shadow-2xl">
               <p className="text-sm font-semibold text-teal-300">Optional AI layer</p>
               <h2 className="mt-2 text-2xl font-bold">AI Assist</h2>
               <p className="mt-2 text-sm leading-6 text-slate-300">Let NyayMitra analyze your story and improve your preparation kit. Rule-based mode still works if AI is unavailable.</p>
               <div className="mt-5 grid gap-3 md:grid-cols-4">
-                <button type="button" onClick={handleAiAnalyzeStory} className="rounded-xl bg-teal-500 px-4 py-3 font-bold text-slate-950">{aiLoading === "analyze" ? "Analyzing..." : "AI Analyze Story"}</button>
-                <button type="button" onClick={handleAiFollowups} className="rounded-xl bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "followup" ? "Generating..." : "AI Generate Follow-up Questions"}</button>
-                <button type="button" onClick={handleAiImproveDraft} className="rounded-xl bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "draft" ? "Improving..." : "AI Improve Draft"}</button>
-                <button type="button" onClick={handleAiReview} className="rounded-xl bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "review" ? "Reviewing..." : "AI Review Case Strength"}</button>
+                <button type="button" onClick={handleAiAnalyzeStory} className="rounded-lg bg-teal-500 px-4 py-3 font-bold text-slate-950">{aiLoading === "analyze" ? "Analyzing..." : "AI Analyze Story"}</button>
+                <button type="button" onClick={handleAiFollowups} className="rounded-lg bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "followup" ? "Generating..." : "AI Generate Follow-up Questions"}</button>
+                <button type="button" onClick={handleAiImproveDraft} className="rounded-lg bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "draft" ? "Improving..." : "AI Improve Draft"}</button>
+                <button type="button" onClick={handleAiReview} className="rounded-lg bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "review" ? "Reviewing..." : "AI Review Case Strength"}</button>
               </div>
-              {aiMessage && <p className={`mt-4 rounded-xl p-3 text-sm font-bold ${aiMessage.startsWith("AI could not") || aiMessage.startsWith("OpenRouter") || aiMessage.includes("error") || aiMessage.includes("Error") ? "bg-red-100 text-red-800" : "bg-teal-100 text-teal-900"}`} aria-live="polite">{aiMessage}</p>}
+              {aiMessage && <p className={`mt-4 rounded-lg p-3 text-sm font-bold ${aiMessage.startsWith("AI could not") || aiMessage.startsWith("OpenRouter") || aiMessage.includes("error") || aiMessage.includes("Error") ? "bg-red-100 text-red-800" : "bg-teal-100 text-teal-900"}`} aria-live="polite">{aiMessage}</p>}
               {submittedCase.aiAnalysis && (
                 <div className="mt-5 space-y-4">
                   {(submittedCase.aiAnalysis.classification || submittedCase.aiAnalysis.extraction) && (
-                    <div className="rounded-2xl bg-white p-5 text-slate-950">
+                    <div className="rounded-lg bg-white p-5 text-slate-950">
                       <h3 className="text-xl font-black">AI Analysis Result</h3>
                       {submittedCase.aiAnalysis.classification && <div className="mt-3 grid gap-3 md:grid-cols-2"><p><b>AI Classified Case Type:</b> {submittedCase.aiAnalysis.classification.caseType}</p><p><b>AI Confidence:</b> {submittedCase.aiAnalysis.classification.confidence}%</p><p><b>AI Output Mode:</b> {outputModeLabel(submittedCase.aiAnalysis.classification.outputMode)}</p><p><b>AI Risk Level:</b> {submittedCase.aiAnalysis.classification.riskLevel}</p><p><b>AI Risk Reason:</b> {submittedCase.aiAnalysis.classification.riskReason}</p><p><b>Lawyer Review:</b> {submittedCase.aiAnalysis.classification.lawyerReviewRecommended ? "Recommended" : "Not specifically flagged"}</p><p className="md:col-span-2"><b>AI Short Summary:</b> {submittedCase.aiAnalysis.classification.shortSummary}</p></div>}
                       {submittedCase.aiAnalysis.extraction && <div className="mt-4 grid gap-4 md:grid-cols-3"><AiBox title="AI Extracted Timeline" items={submittedCase.aiAnalysis.extraction.timeline.map((item) => `${item.date}: ${item.event}`)} /><AiBox title="AI Parties" items={submittedCase.aiAnalysis.extraction.parties} /><AiBox title="AI Missing Details" items={submittedCase.aiAnalysis.extraction.missingDetails} /></div>}
                     </div>
                   )}
                   {submittedCase.aiAnalysis.followupQuestions && <AiBox title="AI Suggested Follow-up Questions" items={submittedCase.aiAnalysis.followupQuestions} />}
-                  {submittedCase.aiAnalysis.review && <div className="rounded-2xl bg-white p-5 text-slate-950"><h3 className="text-xl font-black">AI Case Review</h3><p className="mt-2"><b>Quality score:</b> {submittedCase.aiAnalysis.review.qualityScore}</p><div className="mt-4 grid gap-4 md:grid-cols-2"><AiBox title="Strengths" items={submittedCase.aiAnalysis.review.strengths} /><AiBox title="Weaknesses" items={submittedCase.aiAnalysis.review.weaknesses} /><AiBox title="Missing proof" items={submittedCase.aiAnalysis.review.missingProof} /><AiBox title="Suggestions" items={submittedCase.aiAnalysis.review.suggestions} /></div></div>}
+                  {submittedCase.aiAnalysis.review && <div className="rounded-lg bg-white p-5 text-slate-950"><h3 className="text-xl font-black">AI Case Review</h3><p className="mt-2"><b>Quality score:</b> {submittedCase.aiAnalysis.review.qualityScore}</p><div className="mt-4 grid gap-4 md:grid-cols-2"><AiBox title="Strengths" items={submittedCase.aiAnalysis.review.strengths} /><AiBox title="Weaknesses" items={submittedCase.aiAnalysis.review.weaknesses} /><AiBox title="Missing proof" items={submittedCase.aiAnalysis.review.missingProof} /><AiBox title="Suggestions" items={submittedCase.aiAnalysis.review.suggestions} /></div></div>}
                   {getVerifiedSources(submittedCase).length > 0 && <AiBox title="Verified Sources Used" items={getVerifiedSources(submittedCase).map((source) => `${source.title} - ${source.sourceName}`)} />}
-                  {hasLawHallucinationRisk(JSON.stringify(submittedCase.aiAnalysis), getVerifiedSources(submittedCase)) && <p className="rounded-xl bg-red-100 p-3 text-sm font-bold text-red-800">AI mentioned legal terms without verified source mapping. Please verify with legal aid/lawyer before relying on it.</p>}
+                  {hasLawHallucinationRisk(JSON.stringify(submittedCase.aiAnalysis), getVerifiedSources(submittedCase)) && <p className="rounded-lg bg-red-100 p-3 text-sm font-bold text-red-800">AI mentioned legal terms without verified source mapping. Please verify with legal aid/lawyer before relying on it.</p>}
                 </div>
               )}
             </div>
 
-            <div className="rounded-3xl bg-white p-6 text-slate-950 shadow-2xl">
+            <div className="rounded-lg bg-white p-6 text-slate-950 shadow-2xl">
               <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-700">Safe preparation guidance</p>
               <h2 className="mt-2 text-3xl font-black">AI Legal Guidance Mode</h2>
               <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">Ask NyayMitra for preparation guidance, possible routes, risks, and next steps. This is not legal advice.</p>
-              <p className="mt-3 rounded-2xl bg-slate-950 p-4 text-sm font-semibold text-white">NyayMitra can explain preparation options and next steps, but it is not a substitute for a licensed advocate. Please verify important decisions with legal aid or a lawyer.</p>
-              <textarea value={advisorQuestion} onChange={(event) => setAdvisorQuestion(event.target.value)} rows={3} className="mt-5 w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" placeholder="Ask a question about your case preparation... Example: What proof is missing? How should I explain this to the authority?" />
-              <button type="button" onClick={handleAskAdvisor} className="mt-4 rounded-full bg-teal-600 px-6 py-3 font-black text-white hover:bg-teal-700">{advisorLoading ? "NyayMitra is thinking..." : "Ask NyayMitra"}</button>
-              {advisorMessage && <p className="mt-3 rounded-xl bg-teal-100 p-3 text-sm font-bold text-teal-900" aria-live="polite">{advisorMessage}</p>}
+              <p className="mt-3 rounded-lg bg-slate-950 p-4 text-sm font-semibold text-white">NyayMitra can explain preparation options and next steps, but it is not a substitute for a licensed advocate. Please verify important decisions with legal aid or a lawyer.</p>
+              <textarea value={advisorQuestion} onChange={(event) => setAdvisorQuestion(event.target.value)} rows={3} className="mt-5 w-full rounded-lg border border-slate-200 bg-slate-50 p-4 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" placeholder="Ask a question about your case preparation... Example: What proof is missing? How should I explain this to the authority?" />
+              <button type="button" onClick={handleAskAdvisor} className="mt-4 rounded-lg bg-teal-600 px-6 py-3 font-black text-white hover:bg-teal-700">{advisorLoading ? "NyayMitra is thinking..." : "Ask NyayMitra"}</button>
+              {advisorMessage && <p className="mt-3 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900" aria-live="polite">{advisorMessage}</p>}
               {(submittedCase.advisorChats || []).length > 0 && <div className="mt-5 space-y-4">{submittedCase.advisorChats?.map((chat) => <AdvisorChatCard key={chat.id} chat={chat} />)}</div>}
             </div>
 
             {detectAmountMismatch(submittedCase) && (
-              <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-red-900 shadow-2xl">
+              <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-900 shadow-2xl">
                 <h2 className="text-xl font-black">Amount Mismatch Warning</h2>
                 <p className="mt-2 font-semibold leading-7">{detectAmountMismatch(submittedCase)}</p>
               </div>
             )}
 
             {storyWarning && (
-              <div className="rounded-3xl border border-amber-200 bg-amber-50 p-6 text-amber-900 shadow-2xl">
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-6 text-amber-900 shadow-2xl">
                 <h2 className="text-xl font-black">Story Quality Warning</h2>
                 <p className="mt-2 font-semibold leading-7">{storyWarning}</p>
               </div>
             )}
 
             {caseTypeMismatch && (
-              <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-red-900 shadow-2xl">
+              <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-900 shadow-2xl">
                 <h2 className="text-xl font-black">Case Type Mismatch Warning</h2>
                 <p className="mt-2 font-semibold leading-7">{caseTypeMismatch}</p>
-                {submittedCase.caseType === "Cyber Fraud / UPI Scam" && <div className="mt-4 flex flex-wrap gap-3"><button type="button" onClick={() => { const next = { ...submittedCase, caseType: "Property / Land Dispute", proofs: [], relief: [], customProofs: [], customReliefs: [], uploadedFiles: [], aiAnalysis: undefined, complaintDraft: "" }; setSubmittedCase(next); setCaseData(next); setEditableDraft(""); }} className="rounded-full bg-red-600 px-5 py-3 font-bold text-white">Switch to Property / Land Dispute</button><button type="button" className="rounded-full bg-white px-5 py-3 font-bold text-red-700">Keep Cyber Fraud / UPI Scam</button></div>}
+                {submittedCase.caseType === "Cyber Fraud / UPI Scam" && <div className="mt-4 flex flex-wrap gap-3"><button type="button" onClick={() => { const next = { ...submittedCase, caseType: "Property / Land Dispute", proofs: [], relief: [], customProofs: [], customReliefs: [], uploadedFiles: [], aiAnalysis: undefined, complaintDraft: "" }; setSubmittedCase(next); setCaseData(next); setEditableDraft(""); }} className="rounded-lg bg-red-600 px-5 py-3 font-bold text-white">Switch to Property / Land Dispute</button><button type="button" className="rounded-lg bg-white px-5 py-3 font-bold text-red-700">Keep Cyber Fraud / UPI Scam</button></div>}
               </div>
             )}
 
-            <div className="rounded-3xl border border-teal-400/30 bg-white/10 p-6 shadow-2xl">
+            <div className="rounded-lg border border-teal-400/30 bg-white/10 p-6 shadow-2xl">
               <p className="mb-2 text-sm font-semibold text-teal-300">
                 Legal Action Kit Preview
               </p>
@@ -1044,40 +1044,40 @@ function getVerifiedSources(caseData: CaseData) {
                 .
               </p>
 
-              <div className="mt-5 rounded-2xl bg-slate-900 p-4 text-sm text-slate-300">
+              <div className="mt-5 rounded-lg bg-slate-900 p-4 text-sm text-slate-300">
                 <b>User story:</b> {submittedCase.story}
               </div>
             </div>
 
-            <div className="rounded-3xl border border-teal-400/30 bg-slate-900 p-6 shadow-2xl">
+            <div className="rounded-lg border border-teal-400/30 bg-slate-900 p-6 shadow-2xl">
               <p className="text-sm font-semibold text-teal-300">Rule-based preparation assistant</p>
               <h2 className="mt-2 text-2xl font-bold">Smart Follow-up Questions</h2>
               <div className="mt-5 space-y-4">
                 {generateFollowUpQuestions(submittedCase).map((question) => (
-                  <label key={question} className="block rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <label key={question} className="block rounded-lg border border-white/10 bg-white/5 p-4">
                     <span className="font-semibold text-slate-100">{question}</span>
                     <textarea
                       value={followUpAnswers[question] || ""}
                       onChange={(event) => setFollowUpAnswers((current) => ({ ...current, [question]: event.target.value }))}
                       rows={3}
-                      className="mt-3 w-full rounded-xl border border-white/10 bg-white p-3 text-slate-950 outline-none focus:border-teal-400"
+                      className="mt-3 w-full rounded-lg border border-white/10 bg-white p-3 text-slate-950 outline-none focus:border-teal-400"
                       placeholder="Type your answer here..."
                     />
                   </label>
                 ))}
               </div>
-              <button type="button" onClick={handleUpdatePreviewWithAnswers} className="mt-5 w-full rounded-xl bg-teal-500 px-6 py-4 font-bold text-slate-950 shadow-lg transition hover:bg-teal-400">
+              <button type="button" onClick={handleUpdatePreviewWithAnswers} className="mt-5 w-full rounded-lg bg-teal-500 px-6 py-4 font-bold text-slate-950 shadow-lg transition hover:bg-teal-400">
                 Update Preview with Answers
               </button>
-              {updateMessage && <p className="mt-3 rounded-xl bg-teal-100 p-3 text-sm font-bold text-teal-900">{updateMessage}</p>}
+              {updateMessage && <p className="mt-3 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900">{updateMessage}</p>}
             </div>
 
             {submittedCase.followUpAnswers && Object.values(submittedCase.followUpAnswers).some(Boolean) && (
-              <div className="rounded-3xl bg-white p-6 text-slate-900 shadow-2xl">
+              <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
                 <h2 className="text-2xl font-bold">Follow-up Answers Added</h2>
                 <div className="mt-4 space-y-3">
                   {Object.entries(submittedCase.followUpAnswers).filter(([, answer]) => answer.trim()).map(([question, answer]) => (
-                    <div key={question} className="rounded-2xl bg-slate-50 p-4">
+                    <div key={question} className="rounded-lg bg-slate-50 p-4">
                       <p className="font-black text-teal-700">{question}</p>
                       <p className="mt-2 text-slate-700">{answer}</p>
                     </div>
@@ -1086,28 +1086,28 @@ function getVerifiedSources(caseData: CaseData) {
               </div>
             )}
 
-            <div className="rounded-3xl bg-white p-6 text-slate-900 shadow-2xl">
+            <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
               <h2 className="text-2xl font-bold">Timeline Builder</h2>
 
               <div className="mt-5 grid gap-4 md:grid-cols-5">
-                <div className="rounded-2xl bg-slate-100 p-4">
+                <div className="rounded-lg bg-slate-100 p-4">
                   <p className="font-bold">1. Incident</p>
                   <p className="text-sm">{submittedCase.incidentDate}</p>
                 </div>
 
-                <div className="rounded-2xl bg-slate-100 p-4">
+                <div className="rounded-lg bg-slate-100 p-4">
                   <p className="font-bold">2. Loss</p>
                   <p className="text-sm">₹{submittedCase.amountLost}</p>
                 </div>
 
-                <div className="rounded-2xl bg-slate-100 p-4">
+                <div className="rounded-lg bg-slate-100 p-4">
                   <p className="font-bold">3. Evidence</p>
                   <p className="text-sm">
                     {submittedCase.proofs.filter((item) => item !== OTHER_PROOF_OPTION).length} standard + {(submittedCase.customProofs || []).length} custom proof item(s)
                   </p>
                 </div>
 
-                <div className="rounded-2xl bg-slate-100 p-4">
+                <div className="rounded-lg bg-slate-100 p-4">
                   <p className="font-bold">4. Complaint</p>
                   <p className="text-sm">
                     {submittedCase.proofs.includes(
@@ -1118,14 +1118,14 @@ function getVerifiedSources(caseData: CaseData) {
                   </p>
                 </div>
 
-                <div className="rounded-2xl bg-teal-100 p-4">
+                <div className="rounded-lg bg-teal-100 p-4">
                   <p className="font-bold">5. Next Step</p>
                   <p className="text-sm">{submittedOutputMode === "urgent-legal-aid-route" ? "Prepare consultation note" : "Prepare draft for review"}</p>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-3xl bg-white p-6 text-slate-900 shadow-2xl">
+            <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
               <h2 className="text-2xl font-bold">Evidence Table</h2>
 
               <div className="mt-5 overflow-x-auto">
@@ -1173,7 +1173,7 @@ function getVerifiedSources(caseData: CaseData) {
               </div>
             </div>
 
-            <div className="rounded-3xl bg-white p-6 text-slate-900 shadow-2xl">
+            <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div>
                   <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-700">Rule-based draft generator</p>
@@ -1183,15 +1183,15 @@ function getVerifiedSources(caseData: CaseData) {
                 <div className="flex flex-col gap-2 sm:flex-row">
                   <label className="flex items-center gap-2">
                     <span className="text-sm font-bold text-slate-700">{t("draftLanguageLabel")}:</span>
-                    <select value={draftLanguage} onChange={(e) => setDraftLanguage(e.target.value as Language)} className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-bold outline-none focus:border-teal-500">
+                    <select value={draftLanguage} onChange={(e) => setDraftLanguage(e.target.value as Language)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold outline-none focus:border-teal-500">
                       <option value="en">{t("draftLangEnglish")}</option>
                       <option value="hi">{t("draftLangHindi")}</option>
                       <option value="hinglish">{t("draftLangHinglish")}</option>
                     </select>
                   </label>
-                  <button type="button" onClick={handleGenerateDraftComplaint} className="rounded-full bg-teal-600 px-5 py-3 font-bold text-white hover:bg-teal-700">{submittedOutputMode === "urgent-legal-aid-route" ? t("btnGenerateLegalAid") : t("btnGenerateDraft")}</button>
-                  <button type="button" onClick={handleResetDraft} className="rounded-full bg-slate-100 px-5 py-3 font-bold text-slate-700 hover:bg-slate-200">{t("btnResetDraft")}</button>
-                  <button type="button" onClick={handleCopyDraft} className="rounded-full bg-slate-950 px-5 py-3 font-bold text-white hover:bg-slate-800">{t("btnCopyDraft")}</button>
+                  <button type="button" onClick={handleGenerateDraftComplaint} className="rounded-lg bg-teal-600 px-5 py-3 font-bold text-white hover:bg-teal-700">{submittedOutputMode === "urgent-legal-aid-route" ? t("btnGenerateLegalAid") : t("btnGenerateDraft")}</button>
+                  <button type="button" onClick={handleResetDraft} className="rounded-lg bg-slate-100 px-5 py-3 font-bold text-slate-700 hover:bg-slate-200">{t("btnResetDraft")}</button>
+                  <button type="button" onClick={handleCopyDraft} className="rounded-lg bg-slate-950 px-5 py-3 font-bold text-white hover:bg-slate-800">{t("btnCopyDraft")}</button>
                 </div>
               </div>
 
@@ -1199,19 +1199,19 @@ function getVerifiedSources(caseData: CaseData) {
                 value={editableDraft}
                 onChange={(event) => handleDraftChange(event.target.value)}
                 rows={18}
-                className="mt-6 w-full rounded-2xl border border-slate-200 bg-slate-50 p-5 font-mono text-sm leading-7 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
+                className="mt-6 w-full rounded-lg border border-slate-200 bg-slate-50 p-5 font-mono text-sm leading-7 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
                 placeholder={submittedOutputMode === "urgent-legal-aid-route" ? "Click Generate Legal Aid Consultation Note to create an editable note." : "Click Generate Draft Complaint to create an editable complaint draft."}
               />
 
               {editableDraft && <DraftQualityCard result={analyzeDraftQuality(editableDraft)} />}
-              {draftMessage && <p className="mt-4 rounded-xl bg-teal-100 p-3 text-sm font-bold text-teal-900">{draftMessage}</p>}
+              {draftMessage && <p className="mt-4 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900">{draftMessage}</p>}
             </div>
 
-            <div className="rounded-3xl bg-white p-6 text-slate-900 shadow-2xl">
+            <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
               <h2 className="text-2xl font-bold">Missing Proof</h2>
 
               {displayedMissingProofs.length === 0 ? (
-                <p className="mt-3 rounded-xl bg-green-100 p-4">
+                <p className="mt-3 rounded-lg bg-green-100 p-4">
                   Great. No missing proof from the basic checklist.
                 </p>
               ) : (
@@ -1219,7 +1219,7 @@ function getVerifiedSources(caseData: CaseData) {
                   {displayedMissingProofs.map((item) => (
                     <div
                       key={item}
-                      className="rounded-xl border border-orange-300 bg-orange-50 p-4"
+                      className="rounded-lg border border-orange-300 bg-orange-50 p-4"
                     >
                       <b>Missing:</b> {item}. Try to collect this before final
                       PDF.
@@ -1227,10 +1227,10 @@ function getVerifiedSources(caseData: CaseData) {
                   ))}
                 </div>
               )}
-              {(submittedCase.customProofs || []).length > 0 && <p className="mt-4 rounded-xl bg-teal-50 p-4 text-sm font-bold text-teal-900">Additional custom proofs added by user. These should be reviewed before filing.</p>}
+              {(submittedCase.customProofs || []).length > 0 && <p className="mt-4 rounded-lg bg-teal-50 p-4 text-sm font-bold text-teal-900">Additional custom proofs added by user. These should be reviewed before filing.</p>}
             </div>
 
-            <div className="rounded-3xl border border-teal-400/30 bg-white/10 p-6 shadow-2xl">
+            <div className="rounded-lg border border-teal-400/30 bg-white/10 p-6 shadow-2xl">
               <h2 className="text-2xl font-bold">Risk & Safety Router</h2>
 
               <p className="mt-3 text-xl font-bold text-teal-300">
@@ -1243,14 +1243,14 @@ function getVerifiedSources(caseData: CaseData) {
                   : "This case can be prepared with evidence, timeline, and a draft for review. For serious matters, contact legal aid or a lawyer."}
               </p>
 
-              <p className="mt-4 rounded-xl bg-slate-900 p-4 text-sm text-slate-300">
+              <p className="mt-4 rounded-lg bg-slate-900 p-4 text-sm text-slate-300">
                 NyayMitra does not provide legal advice and does not
                 guarantee any result. It helps with draft preparation, evidence
                 organization, and legal-aid routing. NyayMitra is a legal self-help preparation tool, not a lawyer. Please verify with legal aid/lawyer before filing.
               </p>
             </div>
 
-            <div className="rounded-3xl bg-white p-6 text-slate-900 shadow-2xl">
+            <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
               <h2 className="text-2xl font-bold">Next Steps Checklist</h2>
 
               <ul className="mt-4 space-y-2">
@@ -1260,7 +1260,7 @@ function getVerifiedSources(caseData: CaseData) {
               <button
                 type="button"
                 onClick={handleGeneratePdf}
-                className="mt-6 w-full rounded-xl bg-teal-600 px-6 py-4 font-bold text-white shadow-lg transition hover:bg-teal-700"
+                className="mt-6 w-full rounded-lg bg-teal-600 px-6 py-4 font-bold text-white shadow-lg transition hover:bg-teal-700"
               >
                 Generate Legal Action Kit PDF
               </button>
@@ -1278,7 +1278,7 @@ function CaseQualityCard({ result }: { result: { score: number; label: string; s
   const color = strong ? "bg-teal-500" : moderate ? "bg-amber-500" : "bg-orange-500";
 
   return (
-    <div className="rounded-3xl bg-white p-6 text-slate-900 shadow-2xl">
+    <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-700">Case Quality Score</p>
@@ -1289,7 +1289,7 @@ function CaseQualityCard({ result }: { result: { score: number; label: string; s
           <div className={`h-full ${color}`} style={{ width: `${result.score}%` }} />
         </div>
       </div>
-      <div className={`mt-5 rounded-2xl p-4 ${strong ? "bg-teal-50 text-teal-900" : "bg-amber-50 text-amber-900"}`}>
+      <div className={`mt-5 rounded-lg p-4 ${strong ? "bg-teal-50 text-teal-900" : "bg-amber-50 text-amber-900"}`}>
         {strong ? (
           <p className="font-semibold">Good preparation. Still verify with legal aid/lawyer before filing.</p>
         ) : (
@@ -1306,7 +1306,7 @@ function DraftQualityCard({ result }: { result: { score: number; suggestions: st
   const strong = result.score >= 70;
 
   return (
-    <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5">
+    <div className="mt-5 rounded-lg border border-slate-200 bg-white p-5">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-700">Draft Completeness Score</p>
@@ -1327,7 +1327,7 @@ function DraftQualityCard({ result }: { result: { score: number; suggestions: st
 
 function AiBox({ title, items }: { title: string; items: string[] }) {
   return (
-    <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-700">
+    <div className="rounded-lg bg-slate-50 p-4 text-sm text-slate-700">
       <h3 className="font-black text-teal-700">{title}</h3>
       <ul className="mt-3 space-y-2">
         {items.filter(Boolean).map((item) => <li key={item}>{item}</li>)}
@@ -1338,15 +1338,15 @@ function AiBox({ title, items }: { title: string; items: string[] }) {
 
 function AdvisorChatCard({ chat }: { chat: AdvisorChat }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+    <div className="rounded-lg border border-slate-200 bg-slate-50 p-5">
       <p className="font-black text-slate-950">Q: {chat.question}</p>
       <p className="mt-3 leading-7 text-slate-700">{chat.answer}</p>
-      {chat.lawyerReviewRecommended && <p className="mt-3 rounded-xl bg-red-100 p-3 text-sm font-black text-red-800">Legal-aid/lawyer review strongly recommended.</p>}
+      {chat.lawyerReviewRecommended && <p className="mt-3 rounded-lg bg-red-100 p-3 text-sm font-black text-red-800">Legal-aid/lawyer review strongly recommended.</p>}
       <div className="mt-4 grid gap-3 md:grid-cols-2">
         <AiBox title="Next steps" items={chat.nextSteps} />
         <AiBox title="Missing info" items={chat.missingInfo.length ? chat.missingInfo : ["No specific missing info listed."]} />
       </div>
-      <p className="mt-3 rounded-xl bg-amber-50 p-3 text-sm font-bold text-amber-900">{chat.riskNote}</p>
+      <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm font-bold text-amber-900">{chat.riskNote}</p>
     </div>
   );
 }
@@ -1355,23 +1355,23 @@ function OfficialActionLinks({ caseData }: { caseData: CaseData }) {
   const suggestions = buildOfficialActionSuggestions(caseData);
 
   return (
-    <div className="rounded-[2rem] border border-teal-300/30 bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 p-6 shadow-2xl">
+    <div className="rounded-lg border border-teal-300/30 bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 p-6 shadow-2xl">
       <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-300">Official action link</p>
       <h2 className="mt-2 text-3xl font-black text-white">Official Action Links</h2>
       <p className="mt-2 max-w-3xl text-sm font-semibold leading-6 text-slate-300">Based on your case type, these official portals may help you report, track, or seek support.</p>
-      {suggestions.showEmergency && <p className="mt-4 rounded-2xl border border-orange-300/40 bg-orange-500/15 p-4 text-sm font-bold text-orange-100">If there is immediate danger, call 112 or contact local emergency services immediately.</p>}
-      <p className="mt-4 rounded-2xl bg-white/10 p-4 text-sm font-semibold text-slate-200">{suggestions.stateMessage}</p>
+      {suggestions.showEmergency && <p className="mt-4 rounded-lg border border-orange-300/40 bg-orange-500/15 p-4 text-sm font-bold text-orange-100">If there is immediate danger, call 112 or contact local emergency services immediately.</p>}
+      <p className="mt-4 rounded-lg bg-white/10 p-4 text-sm font-semibold text-slate-200">{suggestions.stateMessage}</p>
       <div className="mt-5 grid gap-4 md:grid-cols-2">
         {suggestions.portals.map((portal) => <PortalCard key={portal.id} portal={portal} />)}
       </div>
-      <p className="mt-5 rounded-2xl bg-slate-950 p-4 text-sm font-semibold text-slate-200">NyayMitra provides official links for convenience. Portal eligibility, FIR registration, and complaint handling depend on the concerned authority and applicable procedure.</p>
+      <p className="mt-5 rounded-lg bg-slate-950 p-4 text-sm font-semibold text-slate-200">NyayMitra provides official links for convenience. Portal eligibility, FIR registration, and complaint handling depend on the concerned authority and applicable procedure.</p>
     </div>
   );
 }
 
 function PortalCard({ portal }: { portal: OfficialPortal }) {
   return (
-    <article className="rounded-3xl border border-white/10 bg-white p-5 text-slate-950 shadow-xl">
+    <article className="rounded-lg border border-white/10 bg-white p-5 text-slate-950 shadow-xl">
       <div className="flex flex-wrap gap-2">
         <span className="rounded-full bg-teal-100 px-3 py-1 text-xs font-black text-teal-800">Official</span>
         {portal.emergencyOnly && <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-black text-orange-800">Emergency</span>}
@@ -1380,9 +1380,9 @@ function PortalCard({ portal }: { portal: OfficialPortal }) {
       </div>
       <h3 className="mt-4 text-xl font-black">{portal.title}</h3>
       <p className="mt-2 text-sm font-semibold leading-6 text-slate-700">{portal.description}</p>
-      <p className="mt-3 rounded-2xl bg-amber-50 p-3 text-sm font-semibold text-amber-900">{portal.notes}</p>
-      <div className="mt-3 rounded-2xl bg-slate-50 p-3 text-xs font-bold text-slate-600"><p>Source: {portal.sourceName}</p><p>Last checked: {portal.lastChecked}</p></div>
-      <a href={portal.url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-full bg-slate-950 px-5 py-3 text-sm font-black text-white hover:bg-teal-700">{portal.actionLabel}</a>
+      <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm font-semibold text-amber-900">{portal.notes}</p>
+      <div className="mt-3 rounded-lg bg-slate-50 p-3 text-xs font-bold text-slate-600"><p>Source: {portal.sourceName}</p><p>Last checked: {portal.lastChecked}</p></div>
+      <a href={portal.url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-lg bg-slate-950 px-5 py-3 text-sm font-black text-white hover:bg-teal-700">{portal.actionLabel}</a>
     </article>
   );
 }
@@ -1396,14 +1396,14 @@ function CaseTypeSelector({ selected, search, onSearch, onSelect }: { selected: 
   const visible = normalizedSearch ? matches : caseConfigs.filter((config) => config.caseType !== "Other / Not Sure");
 
   return (
-    <div className="rounded-3xl border border-teal-100 bg-slate-50 p-5">
-      <label className="block"><span className="mb-2 block font-black text-teal-800">Case Type</span><input value={search} onChange={(event) => onSearch(event.target.value)} placeholder="Search legal issue type..." className="w-full rounded-xl border border-slate-200 bg-white p-3 font-semibold outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" /></label>
+    <div className="rounded-lg border border-teal-100 bg-slate-50 p-5">
+      <label className="block"><span className="mb-2 block font-black text-teal-800">Case Type</span><input value={search} onChange={(event) => onSearch(event.target.value)} placeholder="Search legal issue type..." className="w-full rounded-lg border border-slate-200 bg-white p-3 font-semibold outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" /></label>
       <p className="mt-3 inline-flex rounded-full bg-teal-100 px-3 py-1 text-xs font-black text-teal-800">Selected: {selected}</p>
       <div className="mt-4 grid max-h-72 gap-2 overflow-y-auto pr-1 md:grid-cols-2">
-        {visible.map((config) => <button key={config.caseType} type="button" onClick={() => onSelect(config.caseType)} className={`rounded-2xl border p-3 text-left text-sm font-bold transition focus:outline-none focus:ring-4 focus:ring-teal-100 ${selected === config.caseType ? "border-teal-500 bg-teal-600 text-white" : "border-slate-200 bg-white text-slate-800 hover:border-teal-300"}`}>{config.caseType}</button>)}
+        {visible.map((config) => <button key={config.caseType} type="button" onClick={() => onSelect(config.caseType)} className={`rounded-lg border p-3 text-left text-sm font-bold transition focus:outline-none focus:ring-4 focus:ring-teal-100 ${selected === config.caseType ? "border-teal-500 bg-teal-600 text-white" : "border-slate-200 bg-white text-slate-800 hover:border-teal-300"}`}>{config.caseType}</button>)}
       </div>
-      {normalizedSearch && matches.length === 0 && <p className="mt-4 rounded-2xl bg-amber-50 p-4 text-sm font-bold text-amber-900">No exact match found. You can choose Other / Not Sure and explain your issue.</p>}
-      <button type="button" onClick={() => onSelect("Other / Not Sure")} className={`mt-4 w-full rounded-2xl border p-4 text-left font-black focus:outline-none focus:ring-4 focus:ring-teal-100 ${selected === "Other / Not Sure" ? "border-amber-500 bg-amber-500 text-slate-950" : "border-amber-200 bg-amber-50 text-amber-900"}`}>Other / Not Sure</button>
+      {normalizedSearch && matches.length === 0 && <p className="mt-4 rounded-lg bg-amber-50 p-4 text-sm font-bold text-amber-900">No exact match found. You can choose Other / Not Sure and explain your issue.</p>}
+      <button type="button" onClick={() => onSelect("Other / Not Sure")} className={`mt-4 w-full rounded-lg border p-4 text-left font-black focus:outline-none focus:ring-4 focus:ring-teal-100 ${selected === "Other / Not Sure" ? "border-amber-500 bg-amber-500 text-slate-950" : "border-amber-200 bg-amber-50 text-amber-900"}`}>Other / Not Sure</button>
     </div>
   );
 }
@@ -1412,10 +1412,10 @@ function CustomItemsEditor({ type, enabled, value, items, onChange, onAdd, onRem
   if (!enabled && items.length === 0) return null;
   const isProof = type === "proof";
   return (
-    <div className="mt-5 rounded-3xl border border-teal-100 bg-teal-50 p-5">
-      <label className="block"><span className="mb-2 block font-black text-teal-900">{isProof ? "Describe other proof/document" : "Describe other relief/outcome"}</span><input value={value} onChange={(event) => onChange(event.target.value)} placeholder={isProof ? "Example: old land papers, family documents, sale deed photo, revenue record, notice copy, witness details..." : "Example: stop sale, claim share, refund, apology, document correction, authority action, legal review..."} className="w-full rounded-xl border border-teal-200 bg-white p-3 font-semibold outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" /></label>
-      <button type="button" onClick={onAdd} className="mt-3 rounded-full bg-teal-600 px-5 py-3 font-black text-white hover:bg-teal-700">{isProof ? "Add Custom Proof" : "Add Custom Relief"}</button>
-      {items.length > 0 && <div className="mt-4 flex flex-wrap gap-2">{items.map((item) => <span key={item} className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow"><span>{item}</span><button type="button" onClick={() => onRemove(item)} className="rounded-full bg-red-50 px-2 py-1 text-xs font-black text-red-700">Remove</button></span>)}</div>}
+    <div className="mt-5 rounded-lg border border-teal-100 bg-teal-50 p-5">
+      <label className="block"><span className="mb-2 block font-black text-teal-900">{isProof ? "Describe other proof/document" : "Describe other relief/outcome"}</span><input value={value} onChange={(event) => onChange(event.target.value)} placeholder={isProof ? "Example: old land papers, family documents, sale deed photo, revenue record, notice copy, witness details..." : "Example: stop sale, claim share, refund, apology, document correction, authority action, legal review..."} className="w-full rounded-lg border border-teal-200 bg-white p-3 font-semibold outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" /></label>
+      <button type="button" onClick={onAdd} className="mt-3 rounded-lg bg-teal-600 px-5 py-3 font-black text-white hover:bg-teal-700">{isProof ? "Add Custom Proof" : "Add Custom Relief"}</button>
+      {items.length > 0 && <div className="mt-4 flex flex-wrap gap-2">{items.map((item) => <span key={item} className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow"><span>{item}</span><button type="button" onClick={() => onRemove(item)} className="rounded-lg bg-red-50 px-2 py-1 text-xs font-black text-red-700">Remove</button></span>)}</div>}
     </div>
   );
 }
@@ -1424,7 +1424,7 @@ function Input({ label, name, value, onChange, type = "text" }: { label: string;
   return (
     <label className="block">
       <span className="mb-2 block font-semibold">{label}</span>
-      <input name={name} type={type} value={value} onChange={onChange} className="w-full rounded-xl border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" />
+      <input name={name} type={type} value={value} onChange={onChange} className="w-full rounded-lg border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" />
     </label>
   );
 }

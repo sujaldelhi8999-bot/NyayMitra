@@ -103,19 +103,19 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 px-5 py-8 text-white sm:px-8">
-        <header className="rounded-[2rem] bg-gradient-to-br from-teal-500 to-slate-900 p-8 shadow-2xl">
-          <p className="inline-flex rounded-full bg-white/15 px-4 py-2 text-sm font-black">{t("dashDraftTool")}</p>
+        <header className="rounded-lg bg-gradient-to-br from-teal-500 to-slate-900 p-8 shadow-2xl">
+          <p className="inline-flex rounded-lg bg-white/15 px-4 py-2 text-sm font-black">{t("dashDraftTool")}</p>
           <h1 className="mt-5 text-4xl font-black tracking-tight sm:text-6xl">{t("appName")} {t("dashboard")}</h1>
           <p className="mt-3 max-w-3xl text-lg text-slate-100">{t("dashManage")}</p>
-          <p className="mt-3 rounded-2xl bg-white/10 p-4 text-sm font-semibold text-slate-100">{t("dashStartFreshNote")}</p>
-          <p className="mt-4 rounded-2xl bg-slate-950/70 p-4 text-sm font-semibold">{t("disclaimer")}</p>
+          <p className="mt-3 rounded-lg bg-white/10 p-4 text-sm font-semibold text-slate-100">{t("dashStartFreshNote")}</p>
+          <p className="mt-4 rounded-lg bg-slate-950/70 p-4 text-sm font-semibold">{t("disclaimer")}</p>
         </header>
 
         {cases.length === 0 ? (
-          <section className="mt-8 rounded-[2rem] bg-white p-10 text-center text-slate-950 shadow-2xl">
+          <section className="mt-8 rounded-lg bg-white p-10 text-center text-slate-950 shadow-2xl">
             <h2 className="text-3xl font-black">{t("dashNoCases")}</h2>
             <p className="mt-3 text-slate-600">{t("dashStartPrompt")}</p>
-            <Link href="/intake" className="mt-6 inline-flex rounded-full bg-teal-600 px-6 py-3 font-black text-white">{t("startCase")}</Link>
+            <Link href="/intake" className="mt-6 inline-flex rounded-lg bg-teal-600 px-6 py-3 font-black text-white">{t("startCase")}</Link>
           </section>
         ) : (
           <>
@@ -128,9 +128,9 @@ export default function DashboardPage() {
               <Stat title={t("statUrgentRoute")} value={String(urgentCount)} />
             </section>
 
-            <section className="mt-8 grid gap-4 rounded-3xl bg-white p-5 text-slate-950 shadow-2xl md:grid-cols-2">
-              <label className="block"><span className="text-sm font-black text-teal-700">{t("labelSearch")}</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("filterSearchPlaceholder")} className="mt-2 w-full rounded-xl border border-slate-200 p-3 outline-none focus:border-teal-500" /></label>
-              <label className="block"><span className="text-sm font-black text-teal-700">{t("labelFilter")}</span><select value={filter} onChange={(event) => setFilter(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 p-3 outline-none focus:border-teal-500"><option value="all">{t("filterAll")}</option><option value="full-preparation-kit">{t("filterFull")}</option><option value="limited-guidance-kit">{t("filterLimited")}</option><option value="urgent-legal-aid-route">{t("filterUrgent")}</option><option value="high-risk">{t("filterHighRisk")}</option><option value="lawyer-review">{t("filterLawyerReview")}</option><option value="other">{t("filterOther")}</option></select></label>
+            <section className="mt-8 grid gap-4 rounded-lg bg-white p-5 text-slate-950 shadow-2xl md:grid-cols-2">
+              <label className="block"><span className="text-sm font-black text-teal-700">{t("labelSearch")}</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("filterSearchPlaceholder")} className="mt-2 w-full rounded-lg border border-slate-200 p-3 outline-none focus:border-teal-500" /></label>
+              <label className="block"><span className="text-sm font-black text-teal-700">{t("labelFilter")}</span><select value={filter} onChange={(event) => setFilter(event.target.value)} className="mt-2 w-full rounded-lg border border-slate-200 p-3 outline-none focus:border-teal-500"><option value="all">{t("filterAll")}</option><option value="full-preparation-kit">{t("filterFull")}</option><option value="limited-guidance-kit">{t("filterLimited")}</option><option value="urgent-legal-aid-route">{t("filterUrgent")}</option><option value="high-risk">{t("filterHighRisk")}</option><option value="lawyer-review">{t("filterLawyerReview")}</option><option value="other">{t("filterOther")}</option></select></label>
             </section>
 
             <section className="mt-8 grid gap-5 lg:grid-cols-2">
@@ -141,7 +141,7 @@ export default function DashboardPage() {
                 const lawyerReview = needsLawyerReview(caseData);
 
                 return (
-                  <article key={caseData.caseId} className="rounded-[2rem] bg-white p-6 text-slate-950 shadow-2xl">
+                  <article key={caseData.caseId} className="rounded-lg bg-white p-6 text-slate-950 shadow-2xl">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div><p className="text-sm font-black text-teal-700">{caseData.caseId}</p><h2 className="mt-1 text-2xl font-black">{caseData.fullName || t("labelUnnamedCase")}</h2><p className="text-sm font-semibold text-slate-500">{caseData.caseType}</p>{caseData.aiAnalysis?.classification?.caseType && <p className="mt-1 text-sm font-bold text-amber-700">{t("labelAiSuggested")} {caseData.aiAnalysis.classification.caseType}</p>}</div>
                       <div className="flex flex-wrap gap-2"><Badge text={risk} tone={risk === "High Risk" ? "red" : risk === "Medium Risk" ? "amber" : "teal"} /><Badge text={outputModeLabel(outputMode)} tone={outputMode === "urgent-legal-aid-route" ? "red" : outputMode === "limited-guidance-kit" ? "amber" : "teal"} />{lawyerReview && <Badge text={t("statLawyerReview")} tone="red" />}<Badge text={caseData.status || t("statusDraftReady")} tone="slate" /></div>
@@ -156,12 +156,12 @@ export default function DashboardPage() {
                       <Info label={t("labelProofFiles")} value={`${caseData.proofs.filter((item) => item !== "Other proof / document").length} standard + ${(caseData.customProofs || []).length} custom, ${caseData.uploadedFiles.length} files`} />
                       <Info label={t("labelCustomReliefs")} value={`${(caseData.customReliefs || []).length} added`} />
                     </div>
-                    <label className="mt-5 block"><span className="text-sm font-black text-teal-700">{t("labelStatusUpdate")}</span><select value={caseData.status || t("statusDraftReady")} onChange={(event) => updateStatus(caseData, event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 p-3 font-bold outline-none focus:border-teal-500">{statusOptions.map((status) => <option key={status}>{status}</option>)}</select></label>
+                    <label className="mt-5 block"><span className="text-sm font-black text-teal-700">{t("labelStatusUpdate")}</span><select value={caseData.status || t("statusDraftReady")} onChange={(event) => updateStatus(caseData, event.target.value)} className="mt-2 w-full rounded-lg border border-slate-200 p-3 font-bold outline-none focus:border-teal-500">{statusOptions.map((status) => <option key={status}>{status}</option>)}</select></label>
                     <div className="mt-5 grid gap-3 sm:grid-cols-4">
-                      <button type="button" onClick={() => openLegalKit(caseData)} className="rounded-xl bg-teal-600 px-4 py-3 font-bold text-white">{t("openLegalKit")}</button>
-                      <button type="button" onClick={() => editCase(caseData)} className="rounded-xl bg-slate-950 px-4 py-3 font-bold text-white">{t("editIntake")}</button>
-                      <button type="button" onClick={() => exportCaseJson(caseData)} className="rounded-xl bg-teal-50 px-4 py-3 font-bold text-teal-800">{t("labelExportJson")}</button>
-                      <button type="button" onClick={() => deleteCase(caseData)} className="rounded-xl bg-red-50 px-4 py-3 font-bold text-red-700">{t("deleteCase")}</button>
+                      <button type="button" onClick={() => openLegalKit(caseData)} className="rounded-lg bg-teal-600 px-4 py-3 font-bold text-white">{t("openLegalKit")}</button>
+                      <button type="button" onClick={() => editCase(caseData)} className="rounded-lg bg-slate-950 px-4 py-3 font-bold text-white">{t("editIntake")}</button>
+                      <button type="button" onClick={() => exportCaseJson(caseData)} className="rounded-lg bg-teal-50 px-4 py-3 font-bold text-teal-800">{t("labelExportJson")}</button>
+                      <button type="button" onClick={() => deleteCase(caseData)} className="rounded-lg bg-red-50 px-4 py-3 font-bold text-red-700">{t("deleteCase")}</button>
                     </div>
                   </article>
                 );
@@ -178,6 +178,6 @@ function getOutputModeForCase(data: CaseData) { return data.outputMode || resolv
 function getRiskLevel(data: CaseData) { return data.aiAnalysis?.classification?.riskLevel || (getOutputModeForCase(data) === "urgent-legal-aid-route" ? "High Risk" : calculateRisk(data.amountLost)); }
 function needsLawyerReview(data: CaseData) { return getOutputModeForCase(data) === "urgent-legal-aid-route" || Boolean(data.aiAnalysis?.classification?.lawyerReviewRecommended); }
 function calculateCaseQualityScore(data: CaseData) { let score = 0; const story = data.story.toLowerCase(); const useful = storyKeywords.filter((word) => story.includes(word)).length; if (data.story.length >= 80 && useful >= 3) score += 20; if (data.incidentDate) score += 10; if (Number(data.amountLost) > 0) score += 10; if (data.oppositeParty) score += 15; if (data.proofs.includes("UPI transaction screenshot")) score += 15; if (data.proofs.includes("WhatsApp chat screenshot")) score += 10; if (data.proofs.includes("Bank SMS")) score += 10; if (data.relief.length + (data.customReliefs || []).length >= 2) score += 10; if (data.uploadedFiles.length >= 1 || (data.customProofs || []).length >= 1) score += 10; if (data.uploadedFiles.length >= 3 || (data.customProofs || []).length >= 3) score += 10; score = Math.min(100, score); return { score, label: score >= 70 ? "Strong Preparation" : score >= 40 ? "Moderate Preparation" : "Weak Preparation" }; }
-function Stat({ title, value }: { title: string; value: string }) { return <div className="rounded-3xl bg-white p-5 text-slate-950 shadow-xl"><p className="text-sm font-black uppercase tracking-[0.16em] text-teal-700">{title}</p><p className="mt-2 text-3xl font-black">{value}</p></div>; }
-function Info({ label, value }: { label: string; value: string }) { return <div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">{label}</p><p className="mt-1 font-bold">{value}</p></div>; }
-function Badge({ text, tone }: { text: string; tone: "red" | "amber" | "teal" | "slate" }) { const color = tone === "red" ? "bg-red-100 text-red-800" : tone === "amber" ? "bg-amber-100 text-amber-800" : tone === "teal" ? "bg-teal-100 text-teal-800" : "bg-slate-100 text-slate-700"; return <span className={`rounded-full px-3 py-1 text-xs font-black ${color}`}>{text}</span>; }
+function Stat({ title, value }: { title: string; value: string }) { return <div className="rounded-lg bg-white p-5 text-slate-950 shadow-xl"><p className="text-sm font-black uppercase tracking-[0.16em] text-teal-700">{title}</p><p className="mt-2 text-3xl font-black">{value}</p></div>; }
+function Info({ label, value }: { label: string; value: string }) { return <div className="rounded-lg bg-slate-50 p-4"><p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">{label}</p><p className="mt-1 font-bold">{value}</p></div>; }
+function Badge({ text, tone }: { text: string; tone: "red" | "amber" | "teal" | "slate" }) { const color = tone === "red" ? "bg-red-100 text-red-800" : tone === "amber" ? "bg-amber-100 text-amber-800" : tone === "teal" ? "bg-teal-100 text-teal-800" : "bg-slate-100 text-slate-700"; return <span className={`rounded-lg px-3 py-1 text-xs font-black ${color}`}>{text}</span>; }

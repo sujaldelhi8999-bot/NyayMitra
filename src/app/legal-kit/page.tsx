@@ -131,12 +131,12 @@ export default function LegalKitPage() {
 
   if (!loaded) return null;
 
-  if (!caseData) {
+if (!caseData) {
     return (
       <main className="min-h-screen bg-slate-950 px-6 py-12 text-white">
-          <div className="mx-auto max-w-3xl rounded-3xl bg-white p-8 text-center text-slate-950 shadow-2xl">
+          <div className="mx-auto max-w-3xl rounded-lg bg-white p-8 text-center text-slate-950 shadow-2xl">
           <h1 className="text-3xl font-black">{t("kitNoData")}</h1>
-          <Link href="/dashboard" className="mt-6 inline-flex rounded-full bg-teal-600 px-6 py-3 font-bold text-white">{t("backDashboard")}</Link>
+          <Link href="/dashboard" className="mt-6 inline-flex rounded-lg bg-teal-600 px-6 py-3 font-bold text-white">{t("backDashboard")}</Link>
         </div>
       </main>
     );
@@ -339,11 +339,11 @@ export default function LegalKitPage() {
     <main className="min-h-screen bg-slate-950 px-5 py-8 text-slate-950 sm:px-8">
       <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex items-center justify-between">
-          <Link href="/dashboard" className="rounded-full border border-white/20 px-5 py-3 text-center font-bold text-white hover:bg-white/10">{t("backDashboard")}</Link>
+          <Link href="/dashboard" className="rounded-lg border border-white/20 px-5 py-3 text-center font-bold text-white hover:bg-white/10">{t("backDashboard")}</Link>
           <select
             aria-label="Export case"
             onChange={(e) => { if (e.target.value === "json") exportCaseJson(); else if (e.target.value === "pdf") downloadPdf(); e.target.value = ""; }}
-            className="rounded-full bg-amber-400 px-5 py-3 font-black text-slate-950 shadow-lg hover:bg-amber-300"
+            className="rounded-lg bg-amber-400 px-5 py-3 font-black text-slate-950 shadow-lg hover:bg-amber-300"
           >
             <option value="">{t("exportJson")} / {t("downloadPdf")}</option>
             <option value="json">{t("exportJson")}</option>
@@ -351,9 +351,9 @@ export default function LegalKitPage() {
           </select>
         </div>
 
-        <article className="rounded-[2rem] bg-white p-6 shadow-2xl sm:p-10">
+        <article className="rounded-lg bg-white p-6 shadow-2xl sm:p-10">
           <header className="border-b border-slate-200 pb-8">
-            <p className="inline-flex rounded-full bg-teal-50 px-4 py-2 text-sm font-black text-teal-800">{t("kitDraftDisclaimer")}</p>
+            <p className="inline-flex rounded-lg bg-teal-50 px-4 py-2 text-sm font-black text-teal-800">{t("kitDraftDisclaimer")}</p>
             <h1 className="mt-5 text-4xl font-black tracking-tight text-slate-950 sm:text-6xl">NyayMitra {kitTitle}</h1>
             <p className="mt-3 text-xl font-bold text-slate-600">{caseData.caseType}</p>
             <div className="mt-5 grid gap-3 md:grid-cols-3">
@@ -362,15 +362,15 @@ export default function LegalKitPage() {
               <Info label={t("kitLabelLastUpdated")} value={caseData.updatedAt ? new Date(caseData.updatedAt).toLocaleString() : t("kitLabelNotSet")} />
               <Info label={t("kitLabelOutputMode")} value={outputModeLabel(outputMode)} />
             </div>
-            <div className="mt-5 rounded-2xl bg-slate-50 p-5">
+            <div className="mt-5 rounded-lg bg-slate-50 p-5">
               <label className="block text-sm font-black uppercase tracking-[0.18em] text-teal-700">{t("kitUpdateStatus")}</label>
-              <select value={caseData.status || "Draft Ready"} onChange={(event) => updateStatus(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-white p-3 font-bold outline-none focus:border-teal-500 md:max-w-sm">
+              <select value={caseData.status || "Draft Ready"} onChange={(event) => updateStatus(event.target.value)} className="mt-2 w-full rounded-lg border border-slate-200 bg-white p-3 font-bold outline-none focus:border-teal-500 md:max-w-sm">
                 {statusEntries.map(({ value, key }) => <option key={value} value={value}>{t(key)}</option>)}
               </select>
-              {statusMessage && <p className="mt-3 rounded-xl bg-teal-100 p-3 text-sm font-bold text-teal-900">{statusMessage}</p>}
+              {statusMessage && <p className="mt-3 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900">{statusMessage}</p>}
             </div>
-            <p className="mt-5 rounded-2xl bg-slate-950 p-4 text-sm font-semibold text-white">{t("disclaimer")}</p>
-            <div className="mt-4 rounded-2xl border border-teal-100 bg-teal-50 p-5">
+            <p className="mt-5 rounded-lg bg-slate-950 p-4 text-sm font-semibold text-white">{t("disclaimer")}</p>
+            <div className="mt-4 rounded-lg border border-teal-100 bg-teal-50 p-5">
               <h2 className="font-black text-teal-900">{t("kitSafetyNoteTitle")}</h2>
               <p className="mt-2 text-sm font-semibold leading-6 text-slate-700">{t("kitSafetyNoteDesc")}</p>
             </div>
@@ -387,36 +387,36 @@ export default function LegalKitPage() {
               <Info label={t("kitLabelOppositeParty")} value={caseData.oppositeParty || t("kitLabelNotProvided")} />
               <Info label={t("kitLabelReliefWanted")} value={[...caseData.relief.filter((item) => item !== "Other relief / outcome"), ...(caseData.customReliefs || [])].join(", ")} />
             </div>
-            <p className="mt-5 rounded-2xl bg-slate-50 p-5 leading-8"><b>{t("kitLabelUserStory")}:</b> {caseData.story}</p>
+            <p className="mt-5 rounded-lg bg-slate-50 p-5 leading-8"><b>{t("kitLabelUserStory")}:</b> {caseData.story}</p>
           </KitSection>
 
-          {amountMismatch && <KitSection title="Amount Mismatch Warning"><p className="rounded-2xl border border-red-200 bg-red-50 p-5 font-semibold text-red-900">{amountMismatch}</p></KitSection>}
+          {amountMismatch && <KitSection title="Amount Mismatch Warning"><p className="rounded-lg border border-red-200 bg-red-50 p-5 font-semibold text-red-900">{amountMismatch}</p></KitSection>}
 
           <KitSection title={t("kitTimelineOfEvents")}>
-            <div className="grid gap-4 md:grid-cols-5">{timeline(caseData).map((item, index) => <div key={item} className="rounded-2xl bg-slate-50 p-4"><p className="font-black text-teal-700">{t("kitStepLabel")} {index + 1}</p><p className="mt-2 text-sm font-semibold">{item}</p></div>)}</div>
+            <div className="grid gap-4 md:grid-cols-5">{timeline(caseData).map((item, index) => <div key={item} className="rounded-lg bg-slate-50 p-4"><p className="font-black text-teal-700">{t("kitStepLabel")} {index + 1}</p><p className="mt-2 text-sm font-semibold">{item}</p></div>)}</div>
           </KitSection>
 
           <KitSection title={outputMode === "limited-guidance-kit" ? "Evidence Organizer" : outputMode === "urgent-legal-aid-route" ? "Document Checklist" : "Evidence Index"}>
             <div className="overflow-x-auto"><table className="w-full min-w-[880px] text-left text-sm"><thead className="bg-slate-950 text-white"><tr><th className="p-3">Annexure No.</th><th className="p-3">Evidence</th><th className="p-3">Status</th><th className="p-3">Uploaded File Name</th><th className="p-3">What it helps prove</th><th className="p-3">Action</th></tr></thead><tbody>{evidenceRows(caseData).map((row) => <tr key={row.evidence} className="border-b"><td className="p-3 font-black">{row.annexure}</td><td className="p-3">{row.evidence}</td><td className="p-3">{row.status}</td><td className="p-3">{row.fileName}</td><td className="p-3">{row.proves}</td><td className="p-3">{row.action}</td></tr>)}</tbody></table></div>
           </KitSection>
-          <KitSection title={t("kitCustomProofs")}><List items={(caseData.customProofs || []).length ? caseData.customProofs || [] : [t("kitNoCustomProofs")]} />{(caseData.customProofs || []).length > 0 && <p className="mt-4 rounded-xl bg-teal-50 p-4 text-sm font-bold text-teal-900">{t("kitCustomProofsNote")}</p>}</KitSection>
+          <KitSection title={t("kitCustomProofs")}><List items={(caseData.customProofs || []).length ? caseData.customProofs || [] : [t("kitNoCustomProofs")]} />{(caseData.customProofs || []).length > 0 && <p className="mt-4 rounded-lg bg-teal-50 p-4 text-sm font-bold text-teal-900">{t("kitCustomProofsNote")}</p>}</KitSection>
           <KitSection title={t("kitCustomRelief")}><List items={(caseData.customReliefs || []).length ? caseData.customReliefs || [] : [t("kitNoCustomRelief")]} /></KitSection>
 
           <KitSection title={t("kitUploadedAnnexures")}>
-            {caseData.uploadedFiles.length ? <div className="overflow-x-auto"><table className="w-full min-w-[760px] text-left text-sm"><thead className="bg-teal-950 text-white"><tr><th className="p-3">{t("kitLabelAnnexureNo")}</th><th className="p-3">{t("kitLabelFileName")}</th><th className="p-3">{t("labelProofFiles")}</th><th className="p-3">{t("kitLabelFileType")}</th><th className="p-3">{t("kitLabelFileSize")}</th><th className="p-3">{t("kitLabelUploadedAt")}</th></tr></thead><tbody>{caseData.uploadedFiles.map((file, index) => <tr key={file.id} className="border-b"><td className="p-3 font-black">A{index + 1}</td><td className="p-3 font-semibold">{file.fileName}</td><td className="p-3">{file.evidenceCategory}</td><td className="p-3">{file.fileType}</td><td className="p-3">{formatFileSize(file.fileSize)}</td><td className="p-3">{new Date(file.uploadedAt).toLocaleString()}</td></tr>)}</tbody></table></div> : <p className="rounded-2xl bg-slate-50 p-5 font-semibold">{t("kitNoUploadedAnnexures")}</p>}
+            {caseData.uploadedFiles.length ? <div className="overflow-x-auto"><table className="w-full min-w-[760px] text-left text-sm"><thead className="bg-teal-950 text-white"><tr><th className="p-3">{t("kitLabelAnnexureNo")}</th><th className="p-3">{t("kitLabelFileName")}</th><th className="p-3">{t("labelProofFiles")}</th><th className="p-3">{t("kitLabelFileType")}</th><th className="p-3">{t("kitLabelFileSize")}</th><th className="p-3">{t("kitLabelUploadedAt")}</th></tr></thead><tbody>{caseData.uploadedFiles.map((file, index) => <tr key={file.id} className="border-b"><td className="p-3 font-black">A{index + 1}</td><td className="p-3 font-semibold">{file.fileName}</td><td className="p-3">{file.evidenceCategory}</td><td className="p-3">{file.fileType}</td><td className="p-3">{formatFileSize(file.fileSize)}</td><td className="p-3">{new Date(file.uploadedAt).toLocaleString()}</td></tr>)}</tbody></table></div> : <p className="rounded-lg bg-slate-50 p-5 font-semibold">{t("kitNoUploadedAnnexures")}</p>}
           </KitSection>
           <OfficialActionLinks caseData={caseData} language={language} />
 
-          <KitSection title={t("kitMissingProof")}><p className="rounded-2xl bg-amber-50 p-5 font-semibold text-amber-900">{missingProofs.length ? missingProofs.join(", ") : t("kitNoBasicProofMissing")}</p></KitSection>
+          <KitSection title={t("kitMissingProof")}><p className="rounded-lg bg-amber-50 p-5 font-semibold text-amber-900">{missingProofs.length ? missingProofs.join(", ") : t("kitNoBasicProofMissing")}</p></KitSection>
           <KitSection title={t("kitFollowUpAnswers")}>
-            {answeredFollowUps.length ? <div className="space-y-3">{answeredFollowUps.map(([question, answer]) => <div key={question} className="rounded-2xl bg-slate-50 p-4"><p className="font-black text-teal-700">{question}</p><p className="mt-2 leading-7 text-slate-700">{answer}</p></div>)}</div> : <p className="rounded-2xl bg-slate-50 p-5 font-semibold">{t("kitNoFollowUpAnswers")}</p>}
+            {answeredFollowUps.length ? <div className="space-y-3">{answeredFollowUps.map(([question, answer]) => <div key={question} className="rounded-lg bg-slate-50 p-4"><p className="font-black text-teal-700">{question}</p><p className="mt-2 leading-7 text-slate-700">{answer}</p></div>)}</div> : <p className="rounded-lg bg-slate-50 p-5 font-semibold">{t("kitNoFollowUpAnswers")}</p>}
           </KitSection>
           <KitSection title={t("kitAiHistory")}>
-            {caseData.advisorChats?.length ? <div className="space-y-4">{caseData.advisorChats.map((chat) => <div key={chat.id} className="rounded-2xl bg-slate-50 p-5"><p className="font-black text-slate-950">Q: {chat.question}</p><p className="mt-3 leading-7 text-slate-700">{chat.answer}</p>{chat.lawyerReviewRecommended && <p className="mt-3 rounded-xl bg-red-100 p-3 text-sm font-black text-red-800">{t("kitLawyerReviewRecommended")}</p>}<p className="mt-3 rounded-xl bg-amber-50 p-3 text-sm font-bold text-amber-900">{chat.riskNote}</p><List items={chat.nextSteps} /></div>)}</div> : <p className="rounded-2xl bg-slate-50 p-5 font-semibold">{t("kitNoAiHistory")}</p>}
+            {caseData.advisorChats?.length ? <div className="space-y-4">{caseData.advisorChats.map((chat) => <div key={chat.id} className="rounded-lg bg-slate-50 p-5"><p className="font-black text-slate-950">Q: {chat.question}</p><p className="mt-3 leading-7 text-slate-700">{chat.answer}</p>{chat.lawyerReviewRecommended && <p className="mt-3 rounded-lg bg-red-100 p-3 text-sm font-black text-red-800">{t("kitLawyerReviewRecommended")}</p>}<p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm font-bold text-amber-900">{chat.riskNote}</p><List items={chat.nextSteps} /></div>)}</div> : <p className="rounded-lg bg-slate-50 p-5 font-semibold">{t("kitNoAiHistory")}</p>}
           </KitSection>
           <KitSection title={t("kitVerifiedSources")}>
-            {verifiedSourceNotes.length ? <div className="grid gap-3 md:grid-cols-2">{verifiedSourceNotes.map((source) => <div key={source.title + source.sourceUrl} className="rounded-2xl bg-slate-50 p-4"><h3 className="font-black text-teal-700">{source.title}</h3><p className="mt-2 text-sm font-semibold">{source.sourceName}</p><p className="text-sm text-slate-600">Last checked: {source.lastChecked || "Source provided by AI"}</p><a className="mt-2 inline-flex text-sm font-bold text-teal-700" href={source.sourceUrl} target="_blank" rel="noreferrer">{source.sourceUrl}</a></div>)}</div> : <p className="rounded-2xl bg-amber-50 p-5 font-semibold text-amber-900">{t("kitNoVerifiedSources")}</p>}
-            {hasLawHallucinationRisk(JSON.stringify(caseData.aiAnalysis || {}) + JSON.stringify(caseData.advisorChats || []), verifiedSourceNotes) && <p className="mt-4 rounded-xl bg-red-100 p-3 text-sm font-bold text-red-800">{t("kitAiHallucinationRisk")}</p>}
+            {verifiedSourceNotes.length ? <div className="grid gap-3 md:grid-cols-2">{verifiedSourceNotes.map((source) => <div key={source.title + source.sourceUrl} className="rounded-lg bg-slate-50 p-4"><h3 className="font-black text-teal-700">{source.title}</h3><p className="mt-2 text-sm font-semibold">{source.sourceName}</p><p className="text-sm text-slate-600">Last checked: {source.lastChecked || "Source provided by AI"}</p><a className="mt-2 inline-flex text-sm font-bold text-teal-700" href={source.sourceUrl} target="_blank" rel="noreferrer">{source.sourceUrl}</a></div>)}</div> : <p className="rounded-lg bg-amber-50 p-5 font-semibold text-amber-900">{t("kitNoVerifiedSources")}</p>}
+            {hasLawHallucinationRisk(JSON.stringify(caseData.aiAnalysis || {}) + JSON.stringify(caseData.advisorChats || []), verifiedSourceNotes) && <p className="mt-4 rounded-lg bg-red-100 p-3 text-sm font-bold text-red-800">{t("kitAiHallucinationRisk")}</p>}
           </KitSection>
           {caseData.aiAnalysis && (
             <KitSection title={t("kitAiAnalysis")}>
@@ -429,25 +429,25 @@ export default function LegalKitPage() {
             </KitSection>
           )}
           <KitSection title={t("kitQualityScore")}>
-            <div className="rounded-2xl bg-slate-50 p-5">
+            <div className="rounded-lg bg-slate-50 p-5">
               <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <div><p className="text-4xl font-black text-slate-950">{quality.score}/100</p><p className="mt-1 font-bold text-slate-600">{quality.label}</p></div>
                 <div className="h-4 w-full overflow-hidden rounded-full bg-white md:w-80"><div className={`h-full ${quality.score >= 70 ? "bg-teal-500" : quality.score >= 40 ? "bg-amber-500" : "bg-orange-500"}`} style={{ width: `${quality.score}%` }} /></div>
               </div>
-              <div className={`mt-5 rounded-2xl p-4 ${quality.score >= 70 ? "bg-teal-100 text-teal-900" : "bg-amber-100 text-amber-900"}`}>
+              <div className={`mt-5 rounded-lg p-4 ${quality.score >= 70 ? "bg-teal-100 text-teal-900" : "bg-amber-100 text-amber-900"}`}>
                 {quality.suggestions.length ? <List items={quality.suggestions} /> : <p className="font-semibold">{t("kitGoodPrep")}</p>}
               </div>
             </div>
           </KitSection>
           <KitSection title={t("kitRelevantLegalRoute")}><List items={getLegalRoutes(caseData)} /></KitSection>
           <KitSection title={outputMode === "urgent-legal-aid-route" ? t("kitLegalAidNote") : outputMode === "limited-guidance-kit" ? t("kitDraftRepresentation") : t("kitDraftComplaint")}>
-            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-lg">
+            <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-lg">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="font-semibold text-slate-600">{t("kitDraftReviewNote")}</p>
-                <button type="button" onClick={copyComplaintDraft} className="rounded-full bg-slate-950 px-5 py-3 font-bold text-white hover:bg-slate-800">{t("kitCopyDraft")}</button>
+                <button type="button" onClick={copyComplaintDraft} className="rounded-lg bg-slate-950 px-5 py-3 font-bold text-white hover:bg-slate-800">{t("kitCopyDraft")}</button>
               </div>
-              {copyMessage && <p className="mt-3 rounded-xl bg-teal-100 p-3 text-sm font-bold text-teal-900">{copyMessage}</p>}
-              <pre className="mt-5 whitespace-pre-wrap rounded-2xl bg-slate-50 p-5 font-sans leading-8">{complaint}</pre>
+              {copyMessage && <p className="mt-3 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900">{copyMessage}</p>}
+              <pre className="mt-5 whitespace-pre-wrap rounded-lg bg-slate-50 p-5 font-sans leading-8">{complaint}</pre>
             </div>
           </KitSection>
           <KitSection title={t("kitHearingPrep")}><List items={visitChecklist} /></KitSection>
@@ -812,11 +812,11 @@ function KitSection({ title, children }: { title: string; children: React.ReactN
 }
 
 function Info({ label, value }: { label: string; value: string }) {
-  return <div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-black uppercase tracking-[0.18em] text-teal-700">{label}</p><p className="mt-2 font-bold">{value}</p></div>;
+  return <div className="rounded-lg bg-slate-50 p-4"><p className="text-xs font-black uppercase tracking-[0.18em] text-teal-700">{label}</p><p className="mt-2 font-bold">{value}</p></div>;
 }
 
 function List({ items }: { items: string[] }) {
-  return <ul className="space-y-3">{items.map((item) => <li key={item} className="rounded-2xl bg-slate-50 p-4 font-semibold leading-7">{item}</li>)}</ul>;
+  return <ul className="space-y-3">{items.map((item) => <li key={item} className="rounded-lg bg-slate-50 p-4 font-semibold leading-7">{item}</li>)}</ul>;
 }
 
 function OfficialActionLinks({ caseData, language }: { caseData: CaseData; language: Language }) {
@@ -825,14 +825,14 @@ function OfficialActionLinks({ caseData, language }: { caseData: CaseData; langu
 
   return (
     <KitSection title={t("kitOfficialLinks")}>
-      <div className="rounded-[2rem] border border-teal-100 bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 p-6 text-white shadow-2xl">
+      <div className="rounded-lg border border-teal-100 bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 p-6 text-white shadow-2xl">
         <p className="max-w-3xl text-sm font-semibold leading-6 text-slate-300">{t("kitOfficialLinksDesc")}</p>
-        {suggestions.showEmergency && <p className="mt-4 rounded-2xl border border-orange-300/40 bg-orange-500/15 p-4 text-sm font-bold text-orange-100">{t("kitEmergencyWarning")}</p>}
-        <p className="mt-4 rounded-2xl bg-white/10 p-4 text-sm font-semibold text-slate-200">{suggestions.stateMessage}</p>
+        {suggestions.showEmergency && <p className="mt-4 rounded-lg border border-orange-300/40 bg-orange-500/15 p-4 text-sm font-bold text-orange-100">{t("kitEmergencyWarning")}</p>}
+        <p className="mt-4 rounded-lg bg-white/10 p-4 text-sm font-semibold text-slate-200">{suggestions.stateMessage}</p>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           {suggestions.portals.map((portal) => <PortalCard key={portal.id} portal={portal} />)}
         </div>
-        <p className="mt-5 rounded-2xl bg-slate-950 p-4 text-sm font-semibold text-slate-200">{t("kitPortalDisclaimer")}</p>
+        <p className="mt-5 rounded-lg bg-slate-950 p-4 text-sm font-semibold text-slate-200">{t("kitPortalDisclaimer")}</p>
       </div>
     </KitSection>
   );
@@ -840,22 +840,22 @@ function OfficialActionLinks({ caseData, language }: { caseData: CaseData; langu
 
 function PortalCard({ portal }: { portal: OfficialPortal }) {
   return (
-    <article className="rounded-3xl border border-white/10 bg-white p-5 text-slate-950 shadow-xl">
+    <article className="rounded-lg border border-white/10 bg-white p-5 text-slate-950 shadow-xl">
       <div className="flex flex-wrap gap-2">
-        <span className="rounded-full bg-teal-100 px-3 py-1 text-xs font-black text-teal-800">Official</span>
-        {portal.emergencyOnly && <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-black text-orange-800">Emergency</span>}
-        {portal.stateSpecific && <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-black text-yellow-800">State-specific</span>}
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">{portal.category}</span>
+        <span className="rounded-lg bg-teal-100 px-3 py-1 text-xs font-black text-teal-800">Official</span>
+        {portal.emergencyOnly && <span className="rounded-lg bg-orange-100 px-3 py-1 text-xs font-black text-orange-800">Emergency</span>}
+        {portal.stateSpecific && <span className="rounded-lg bg-yellow-100 px-3 py-1 text-xs font-black text-yellow-800">State-specific</span>}
+        <span className="rounded-lg bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">{portal.category}</span>
       </div>
       <h3 className="mt-4 text-xl font-black">{portal.title}</h3>
       <p className="mt-2 text-sm font-semibold leading-6 text-slate-700">{portal.description}</p>
-      <p className="mt-3 rounded-2xl bg-amber-50 p-3 text-sm font-semibold text-amber-900">{portal.notes}</p>
-      <div className="mt-3 rounded-2xl bg-slate-50 p-3 text-xs font-bold text-slate-600"><p>Source: {portal.sourceName}</p><p>Last checked: {portal.lastChecked}</p></div>
-      <a href={portal.url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-full bg-slate-950 px-5 py-3 text-sm font-black text-white hover:bg-teal-700">{portal.actionLabel}</a>
+      <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm font-semibold text-amber-900">{portal.notes}</p>
+      <div className="mt-3 rounded-lg bg-slate-50 p-3 text-xs font-bold text-slate-600"><p>Source: {portal.sourceName}</p><p>Last checked: {portal.lastChecked}</p></div>
+      <a href={portal.url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-lg bg-slate-950 px-5 py-3 text-sm font-black text-white hover:bg-teal-700">{portal.actionLabel}</a>
     </article>
   );
 }
 
 function AiInfo({ title, items }: { title: string; items: string[] }) {
-  return <div className="rounded-2xl bg-slate-50 p-4"><h3 className="font-black text-teal-700">{title}</h3><ul className="mt-3 space-y-2 text-sm font-semibold text-slate-700">{items.filter(Boolean).map((item) => <li key={item}>{item}</li>)}</ul></div>;
+  return <div className="rounded-lg bg-slate-50 p-4"><h3 className="font-black text-teal-700">{title}</h3><ul className="mt-3 space-y-2 text-sm font-semibold text-slate-700">{items.filter(Boolean).map((item) => <li key={item}>{item}</li>)}</ul></div>;
 }

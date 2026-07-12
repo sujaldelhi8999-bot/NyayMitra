@@ -12,7 +12,7 @@ export function Navbar({ language, onChangeLanguage }: { language: Language; onC
     <header className="sticky top-0 z-50 border-b border-white/20 bg-white/85 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
         <Link href="/" className="flex items-center gap-3" aria-label="NyayMitra home">
-          <span className="grid size-10 place-items-center rounded-2xl bg-gradient-to-br from-teal-400 to-cyan-600 text-lg font-black text-white shadow-lg shadow-teal-900/20">
+          <span className="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-teal-400 to-cyan-600 text-lg font-black text-white shadow-lg shadow-teal-900/20">
             N
           </span>
           <span className="text-xl font-black tracking-tight text-slate-950">
@@ -31,7 +31,7 @@ export function Navbar({ language, onChangeLanguage }: { language: Language; onC
           <LanguageSwitcher language={language} onChange={onChangeLanguage} />
           <Link
             href="/intake"
-            className="rounded-full bg-slate-950 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-teal-700"
+            className="rounded-lg bg-slate-950 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-teal-700"
           >
             {t("navStartCase")}
           </Link>
