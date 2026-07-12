@@ -58,12 +58,6 @@ export async function POST(request: Request) {
       ? "Property / Land Dispute is high-risk. Do not provide legal advice. Do not draft a final complaint. Produce document organization and legal-aid/lawyer consultation guidance only. Ask about property location, title papers, revenue records, court case details, notices, and urgent sale/possession issues."
       : "";
 
-    if (process.env.NODE_ENV === "development") {
-      console.log("AI route called with mode:", mode);
-      console.log("API key exists:", Boolean(process.env.OPENROUTER_API_KEY));
-      console.log("Model:", process.env.OPENROUTER_MODEL);
-    }
-
     const openRouterResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -83,11 +77,6 @@ export async function POST(request: Request) {
     });
 
     const responseText = await openRouterResponse.text();
-
-    if (process.env.NODE_ENV === "development") {
-      console.log("OpenRouter status:", openRouterResponse.status);
-      console.log("OpenRouter raw response:", responseText.slice(0, 500));
-    }
 
     if (!openRouterResponse.ok) {
       return NextResponse.json({
