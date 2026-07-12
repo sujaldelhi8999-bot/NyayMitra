@@ -975,7 +975,7 @@ function getVerifiedSources(caseData: CaseData) {
                 <button type="button" onClick={handleAiImproveDraft} className="rounded-xl bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "draft" ? "Improving..." : "AI Improve Draft"}</button>
                 <button type="button" onClick={handleAiReview} className="rounded-xl bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "review" ? "Reviewing..." : "AI Review Case Strength"}</button>
               </div>
-              {aiMessage && <p className={`mt-4 rounded-xl p-3 text-sm font-bold ${lastAiError ? "bg-red-100 text-red-800" : "bg-teal-100 text-teal-900"}`} aria-live="polite">{aiMessage}</p>}
+              {aiMessage && <p className={`mt-4 rounded-xl p-3 text-sm font-bold ${aiMessage.startsWith("AI could not") || aiMessage.startsWith("OpenRouter") || aiMessage.includes("error") || aiMessage.includes("Error") ? "bg-red-100 text-red-800" : "bg-teal-100 text-teal-900"}`} aria-live="polite">{aiMessage}</p>}
               {submittedCase.aiAnalysis && (
                 <div className="mt-5 space-y-4">
                   {(submittedCase.aiAnalysis.classification || submittedCase.aiAnalysis.extraction) && (
