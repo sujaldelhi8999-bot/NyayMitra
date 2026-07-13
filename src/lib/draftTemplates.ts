@@ -1,8 +1,6 @@
 import type { CaseData } from "@/types/case";
 import { resolveOutputMode } from "./caseConfig";
-
-const OTHER_PROOF_OPTION = "Other proof / document";
-const OTHER_RELIEF_OPTION = "Other relief / outcome";
+import { OTHER_PROOF_OPTION, OTHER_RELIEF_OPTION } from "./constants";
 
 export function generateComplaintDraft(data: CaseData) {
   const today = new Date().toISOString().split("T")[0];
