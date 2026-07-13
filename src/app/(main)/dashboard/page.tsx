@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
+import { caseStatuses, caseStatusLabel, normalizeCaseStatus, type CaseStatus } from "@/lib/caseStatus";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
 import { translate, useLanguage } from "@/lib/i18n";
 import type { CaseData } from "@/types/case";
@@ -20,7 +21,6 @@ export default function DashboardPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
-  const statusOptions = [t("statusIntakeStarted"), t("statusDraftReady"), t("statusReviewNeeded"), t("statusFiled"), t("statusClosed")];
 
   useEffect(() => {
     let cancelled = false;
@@ -28,7 +28,7 @@ export default function DashboardPage() {
       if (cancelled) return;
       try {
         const saved = JSON.parse(localStorage.getItem("nyaymitra_saved_cases") || "[]") as CaseData[];
-        setCases(saved.map((item) => ({ ...item, uploadedFiles: item.uploadedFiles || [], customProofs: item.customProofs || [], customReliefs: item.customReliefs || [], followUpAnswers: item.followUpAnswers || {} })));
+        setCases(saved.map((item) => ({ ...item, uploadedFiles: item.uploadedFiles || [], customProofs: item.customProofs || [], customReliefs: item.customReliefs || [], followUpAnswers: item.followUpAnswers || {}, status: normalizeCaseStatus(item.status) })));
       } catch {
         setCases([]);
       }
@@ -64,7 +64,7 @@ export default function DashboardPage() {
     setCases(nextCases);
   }
 
-  function updateStatus(caseData: CaseData, status: string) {
+  function updateStatus(caseData: CaseData, status: CaseStatus) {
     const nextCase = { ...caseData, status, updatedAt: new Date().toISOString() };
     const nextCases = cases.map((item) => item.caseId === caseData.caseId ? nextCase : item);
     try {
@@ -89,7 +89,7 @@ export default function DashboardPage() {
   if (!loaded) return null;
 
   const totalAmount = cases.reduce((sum, item) => sum + (Number(item.amountLost) || 0), 0);
-  const draftReady = cases.filter((item) => item.status === "Draft Ready").length;
+  const draftReady = cases.filter((item) => normalizeCaseStatus(item.status) === "draft-ready").length;
   const highRisk = cases.filter((item) => getRiskLevel(item) === "High Risk").length;
   const urgentCount = cases.filter((item) => getOutputModeForCase(item) === "urgent-legal-aid-route").length;
   const lawyerReviewCount = cases.filter((item) => needsLawyerReview(item)).length;
@@ -144,7 +144,7 @@ export default function DashboardPage() {
                   <article key={caseData.caseId} className="rounded-lg bg-white p-6 text-slate-950 shadow-2xl">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div><p className="text-sm font-black text-teal-700">{caseData.caseId}</p><h2 className="mt-1 text-2xl font-black">{caseData.fullName || t("labelUnnamedCase")}</h2><p className="text-sm font-semibold text-slate-500">{caseData.caseType}</p>{caseData.aiAnalysis?.classification?.caseType && <p className="mt-1 text-sm font-bold text-amber-700">{t("labelAiSuggested")} {caseData.aiAnalysis.classification.caseType}</p>}</div>
-                      <div className="flex flex-wrap gap-2"><Badge text={risk} tone={risk === "High Risk" ? "red" : risk === "Medium Risk" ? "amber" : "teal"} /><Badge text={outputModeLabel(outputMode)} tone={outputMode === "urgent-legal-aid-route" ? "red" : outputMode === "limited-guidance-kit" ? "amber" : "teal"} />{lawyerReview && <Badge text={t("statLawyerReview")} tone="red" />}<Badge text={caseData.status || t("statusDraftReady")} tone="slate" /></div>
+                      <div className="flex flex-wrap gap-2"><Badge text={risk} tone={risk === "High Risk" ? "red" : risk === "Medium Risk" ? "amber" : "teal"} /><Badge text={outputModeLabel(outputMode)} tone={outputMode === "urgent-legal-aid-route" ? "red" : outputMode === "limited-guidance-kit" ? "amber" : "teal"} />{lawyerReview && <Badge text={t("statLawyerReview")} tone="red" />}<Badge text={caseStatusLabel(normalizeCaseStatus(caseData.status), language)} tone="slate" /></div>
                     </div>
                     <div className="mt-5 grid gap-3 sm:grid-cols-2">
                       <Info label={t("labelIncidentDate")} value={caseData.incidentDate || "Not set"} />
@@ -156,7 +156,7 @@ export default function DashboardPage() {
                       <Info label={t("labelProofFiles")} value={`${caseData.proofs.filter((item) => item !== "Other proof / document").length} standard + ${(caseData.customProofs || []).length} custom, ${caseData.uploadedFiles.length} files`} />
                       <Info label={t("labelCustomReliefs")} value={`${(caseData.customReliefs || []).length} added`} />
                     </div>
-                    <label className="mt-5 block"><span className="text-sm font-black text-teal-700">{t("labelStatusUpdate")}</span><select value={caseData.status || t("statusDraftReady")} onChange={(event) => updateStatus(caseData, event.target.value)} className="mt-2 w-full rounded-lg border border-slate-200 p-3 font-bold outline-none focus:border-teal-500">{statusOptions.map((status) => <option key={status}>{status}</option>)}</select></label>
+                    <label className="mt-5 block"><span className="text-sm font-black text-teal-700">{t("labelStatusUpdate")}</span><select value={normalizeCaseStatus(caseData.status)} onChange={(event) => updateStatus(caseData, normalizeCaseStatus(event.target.value))} className="mt-2 w-full rounded-lg border border-slate-200 p-3 font-bold outline-none focus:border-teal-500">{caseStatuses.map((status) => <option key={status} value={status}>{caseStatusLabel(status, language)}</option>)}</select></label>
                     <div className="mt-5 grid gap-3 sm:grid-cols-4">
                       <button type="button" onClick={() => openLegalKit(caseData)} className="rounded-lg bg-teal-600 px-4 py-3 font-bold text-white">{t("openLegalKit")}</button>
                       <button type="button" onClick={() => editCase(caseData)} className="rounded-lg bg-slate-950 px-4 py-3 font-bold text-white">{t("editIntake")}</button>
