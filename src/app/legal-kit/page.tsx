@@ -348,7 +348,7 @@ if (!caseData) {
           <KitSection title={t("kitUploadedAnnexures")}>
             {caseData.uploadedFiles.length ? <div className="overflow-x-auto"><table className="w-full min-w-[760px] text-left text-sm"><thead className="bg-teal-950 text-white"><tr><th className="p-3">{t("kitLabelAnnexureNo")}</th><th className="p-3">{t("kitLabelFileName")}</th><th className="p-3">{t("labelProofFiles")}</th><th className="p-3">{t("kitLabelFileType")}</th><th className="p-3">{t("kitLabelFileSize")}</th><th className="p-3">{t("kitLabelUploadedAt")}</th></tr></thead><tbody>{caseData.uploadedFiles.map((file, index) => <tr key={file.id} className="border-b"><td className="p-3 font-black">A{index + 1}</td><td className="p-3 font-semibold">{file.fileName}</td><td className="p-3">{file.evidenceCategory}</td><td className="p-3">{file.fileType}</td><td className="p-3">{formatFileSize(file.fileSize)}</td><td className="p-3">{new Date(file.uploadedAt).toLocaleString()}</td></tr>)}</tbody></table></div> : <p className="rounded-lg bg-slate-50 p-5 font-semibold">{t("kitNoUploadedAnnexures")}</p>}
           </KitSection>
-          <OfficialActionLinks caseData={caseData} language={language} />
+          <OfficialActionLinks suggestions={officialActionSuggestions} language={language} />
 
           <KitSection title={t("kitMissingProof")}><p className="rounded-lg bg-amber-50 p-5 font-semibold text-amber-900">{missingProofs.length ? missingProofs.join(", ") : t("kitNoBasicProofMissing")}</p></KitSection>
           <KitSection title={t("kitFollowUpAnswers")}>
@@ -422,9 +422,8 @@ function List({ items }: { items: string[] }) {
   return <ul className="space-y-3">{items.map((item) => <li key={item} className="rounded-lg bg-slate-50 p-4 font-semibold leading-7">{item}</li>)}</ul>;
 }
 
-function OfficialActionLinks({ caseData, language }: { caseData: CaseData; language: Language }) {
+function OfficialActionLinks({ suggestions, language }: { suggestions: ReturnType<typeof buildOfficialActionSuggestions>; language: Language }) {
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
-  const suggestions = buildOfficialActionSuggestions(caseData);
 
   return (
     <KitSection title={t("kitOfficialLinks")}>
