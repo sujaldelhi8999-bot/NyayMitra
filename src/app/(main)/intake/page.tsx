@@ -129,21 +129,27 @@ function IntakeContent() {
   useEffect(() => {
     if (searchParams.get("edit") !== "true") return;
 
-    const saved = localStorage.getItem("nyaymitra_edit_case");
-    if (!saved) return;
+    try {
+      const saved = localStorage.getItem("nyaymitra_edit_case");
+      if (!saved) return;
 
-    const parsed = JSON.parse(saved) as CaseData;
-    const nextCase = { ...parsed, uploadedFiles: parsed.uploadedFiles || [], followUpAnswers: parsed.followUpAnswers || {}, customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [] };
-    setCaseData(nextCase);
-    setFollowUpAnswers(nextCase.followUpAnswers || {});
-    setEditableDraft(nextCase.complaintDraft || "");
-    setSubmittedCase(nextCase);
-    setIsEditingSavedCase(true);
+      const parsed = JSON.parse(saved) as CaseData;
+      const nextCase = { ...parsed, uploadedFiles: parsed.uploadedFiles || [], followUpAnswers: parsed.followUpAnswers || {}, customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [] };
+      setCaseData(nextCase);
+      setFollowUpAnswers(nextCase.followUpAnswers || {});
+      setEditableDraft(nextCase.complaintDraft || "");
+      setSubmittedCase(nextCase);
+      setIsEditingSavedCase(true);
+    } catch {}
   }, [searchParams]);
 
   useEffect(() => {
     if (searchParams.get("edit") === "true") return;
-    setDraftFound(Boolean(localStorage.getItem("nyaymitra_intake_draft")));
+    try {
+      setDraftFound(Boolean(localStorage.getItem("nyaymitra_intake_draft")));
+    } catch {
+      setDraftFound(false);
+    }
   }, [searchParams]);
 
   function handleInputChange(
@@ -576,41 +582,50 @@ function getVerifiedSources(caseData: CaseData) {
       language,
       outputMode: resolveOutputMode(submittedCase.caseType, submittedCase.story, submittedCase.aiAnalysis?.classification?.caseType, submittedCase.aiAnalysis?.classification?.outputMode),
     };
-    const savedCases = JSON.parse(localStorage.getItem("nyaymitra_saved_cases") || "[]") as CaseData[];
-    const withoutDuplicate = savedCases.filter((item) => item.caseId !== caseWithLatestAnswers.caseId);
-
-    localStorage.setItem("nyaymitra_case_data", JSON.stringify(caseWithLatestAnswers));
-    localStorage.setItem("nyaymitra_saved_cases", JSON.stringify([caseWithLatestAnswers, ...withoutDuplicate]));
+    try {
+      const savedCases = JSON.parse(localStorage.getItem("nyaymitra_saved_cases") || "[]") as CaseData[];
+      const withoutDuplicate = savedCases.filter((item) => item.caseId !== caseWithLatestAnswers.caseId);
+      localStorage.setItem("nyaymitra_case_data", JSON.stringify(caseWithLatestAnswers));
+      localStorage.setItem("nyaymitra_saved_cases", JSON.stringify([caseWithLatestAnswers, ...withoutDuplicate]));
+    } catch {}
     router.push("/legal-kit");
   }
 
   function saveProgress() {
-    localStorage.setItem("nyaymitra_intake_draft", JSON.stringify({ ...formData, followUpAnswers, complaintDraft: editableDraft, language }));
+    try {
+      localStorage.setItem("nyaymitra_intake_draft", JSON.stringify({ ...formData, followUpAnswers, complaintDraft: editableDraft, language }));
+    } catch {}
     setDraftFound(true);
     setProgressMessage(t("msgProgressSaved"));
   }
 
   function continueDraft() {
-    const saved = localStorage.getItem("nyaymitra_intake_draft");
-    if (!saved) return;
-    const parsed = JSON.parse(saved) as CaseData;
-    setCaseData({ ...parsed, uploadedFiles: parsed.uploadedFiles || [], followUpAnswers: parsed.followUpAnswers || {}, customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [] });
-    setFollowUpAnswers(parsed.followUpAnswers || {});
-    setEditableDraft(parsed.complaintDraft || "");
-    if (parsed.language) setLanguage(parsed.language);
-    setProgressMessage(t("msgDraftLoaded"));
+    try {
+      const saved = localStorage.getItem("nyaymitra_intake_draft");
+      if (!saved) return;
+      const parsed = JSON.parse(saved) as CaseData;
+      setCaseData({ ...parsed, uploadedFiles: parsed.uploadedFiles || [], followUpAnswers: parsed.followUpAnswers || {}, customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [] });
+      setFollowUpAnswers(parsed.followUpAnswers || {});
+      setEditableDraft(parsed.complaintDraft || "");
+      if (parsed.language) setLanguage(parsed.language);
+      setProgressMessage(t("msgDraftLoaded"));
+    } catch {}
   }
 
   function clearDraft() {
-    localStorage.removeItem("nyaymitra_intake_draft");
+    try {
+      localStorage.removeItem("nyaymitra_intake_draft");
+    } catch {}
     setDraftFound(false);
     setProgressMessage(t("msgDraftCleared"));
   }
 
   function startFreshCase() {
-    localStorage.removeItem("nyaymitra_case_data");
-    localStorage.removeItem("nyaymitra_edit_case");
-    localStorage.removeItem("nyaymitra_intake_draft");
+    try {
+      localStorage.removeItem("nyaymitra_case_data");
+      localStorage.removeItem("nyaymitra_edit_case");
+      localStorage.removeItem("nyaymitra_intake_draft");
+    } catch {}
     const fresh: CaseData = { fullName: "", contact: "", caseType: "Cyber Fraud / UPI Scam", stateOrUT: "", story: "", incidentDate: "", amountLost: "", oppositeParty: "", proofs: [], relief: [], customProofs: [], customReliefs: [], uploadedFiles: [] };
     setCaseData(fresh);
     setSubmittedCase(null);
