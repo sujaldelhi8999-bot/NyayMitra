@@ -1382,6 +1382,8 @@ function PortalCard({ portal }: { portal: OfficialPortal }) {
 }
 
 function CaseTypeSelector({ selected, search, onSearch, onSelect }: { selected: string; search: string; onSearch: (value: string) => void; onSelect: (caseType: string) => void }) {
+  const { language } = useLanguage();
+  const t = (key: string) => translate(language, key as keyof typeof import("@/lib/i18n").translations.en);
   const normalizedSearch = search.trim().toLowerCase();
   const matches = caseConfigs.filter((config) => {
     const aliases = caseTypeAliases[config.caseType] || [];
@@ -1389,15 +1391,31 @@ function CaseTypeSelector({ selected, search, onSearch, onSelect }: { selected: 
   });
   const visible = normalizedSearch ? matches : caseConfigs.filter((config) => config.caseType !== "Other / Not Sure");
 
+  const getDisplayCaseType = (config: typeof caseConfigs[0]) => {
+    if (language === "hi") return config.caseTypeHi;
+    if (language === "hinglish") return config.caseTypeHinglish;
+    return config.caseType;
+  };
+
+  const fallbackConfig = {
+    caseType: selected,
+    caseTypeHi: selected,
+    caseTypeHinglish: selected,
+    proofs: [],
+    relief: [],
+    outputMode: "limited-guidance-kit" as const,
+    riskMessage: "",
+  };
+
   return (
     <div className="rounded-lg border border-teal-100 bg-slate-50 p-5">
-      <label className="block"><span className="mb-2 block font-black text-teal-800">Case Type</span><input value={search} onChange={(event) => onSearch(event.target.value)} placeholder="Search legal issue type..." className="w-full rounded-lg border border-slate-200 bg-white p-3 font-semibold outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" /></label>
-      <p className="mt-3 inline-flex rounded-full bg-teal-100 px-3 py-1 text-xs font-black text-teal-800">Selected: {selected}</p>
+      <label className="block"><span className="mb-2 block font-black text-teal-800">{t("caseType")}</span><input value={search} onChange={(event) => onSearch(event.target.value)} placeholder={t("filterSearchPlaceholder")} className="w-full rounded-lg border border-slate-200 bg-white p-3 font-semibold outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" /></label>
+      <p className="mt-3 inline-flex rounded-full bg-teal-100 px-3 py-1 text-xs font-black text-teal-800">{t("filterSelected")}: {getDisplayCaseType(caseConfigs.find(c => c.caseType === selected) || fallbackConfig)}</p>
       <div className="mt-4 grid max-h-72 gap-2 overflow-y-auto pr-1 md:grid-cols-2">
-        {visible.map((config) => <button key={config.caseType} type="button" onClick={() => onSelect(config.caseType)} className={`rounded-lg border p-3 text-left text-sm font-bold transition focus:outline-none focus:ring-4 focus:ring-teal-100 ${selected === config.caseType ? "border-teal-500 bg-teal-600 text-white" : "border-slate-200 bg-white text-slate-800 hover:border-teal-300"}`}>{config.caseType}</button>)}
+        {visible.map((config) => <button key={config.caseType} type="button" onClick={() => onSelect(config.caseType)} className={`rounded-lg border p-3 text-left text-sm font-bold transition focus:outline-none focus:ring-4 focus:ring-teal-100 ${selected === config.caseType ? "border-teal-500 bg-teal-600 text-white" : "border-slate-200 bg-white text-slate-800 hover:border-teal-300"}`}>{getDisplayCaseType(config)}</button>)}
       </div>
-      {normalizedSearch && matches.length === 0 && <p className="mt-4 rounded-lg bg-amber-50 p-4 text-sm font-bold text-amber-900">No exact match found. You can choose Other / Not Sure and explain your issue.</p>}
-      <button type="button" onClick={() => onSelect("Other / Not Sure")} className={`mt-4 w-full rounded-lg border p-4 text-left font-black focus:outline-none focus:ring-4 focus:ring-teal-100 ${selected === "Other / Not Sure" ? "border-amber-500 bg-amber-500 text-slate-950" : "border-amber-200 bg-amber-50 text-amber-900"}`}>Other / Not Sure</button>
+      {normalizedSearch && matches.length === 0 && <p className="mt-4 rounded-lg bg-amber-50 p-4 text-sm font-bold text-amber-900">{t("filterNoMatch")}</p>}
+      <button type="button" onClick={() => onSelect("Other / Not Sure")} className={`mt-4 w-full rounded-lg border p-4 text-left font-black focus:outline-none focus:ring-4 focus:ring-teal-100 ${selected === "Other / Not Sure" ? "border-amber-500 bg-amber-500 text-slate-950" : "border-amber-200 bg-amber-50 text-amber-900"}`}>{t("filterOther")}</button>
     </div>
   );
 }

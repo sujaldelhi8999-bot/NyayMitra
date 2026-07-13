@@ -250,6 +250,8 @@ export const translations = {
     filterHighRisk: "High Risk Only",
     filterLawyerReview: "Lawyer Review Required",
     filterOther: "Other / Not Sure",
+    filterSelected: "Selected:",
+    filterNoMatch: "No exact match found. You can choose Other / Not Sure and explain your issue.",
 
     statusIntakeStarted: "Complaint Started",
     statusDraftReady: "Draft Ready",
@@ -764,6 +766,8 @@ export const translations = {
     filterHighRisk: "केवल उच्च जोखिम",
     filterLawyerReview: "वकील समीक्षा आवश्यक",
     filterOther: "अन्य / निश्चित नहीं",
+    filterSelected: "चयनित:",
+    filterNoMatch: "कोई सटीक मिलान नहीं मिला। आप अन्य / निश्चित नहीं चुन सकते हैं और अपनी समस्या बता सकते हैं।",
 
     statusIntakeStarted: "शिकायत शुरू",
     statusDraftReady: "ड्राफ्ट तैयार",
@@ -1259,6 +1263,8 @@ export const translations = {
     filterHighRisk: "High Risk Only",
     filterLawyerReview: "Lawyer Review Required",
     filterOther: "Other / Not Sure",
+    filterSelected: "Selected:",
+    filterNoMatch: "No exact match found. You can choose Other / Not Sure and explain your issue.",
 
     statusIntakeStarted: "Complaint Started",
     statusDraftReady: "Draft Ready",
