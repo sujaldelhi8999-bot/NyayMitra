@@ -1015,6 +1015,21 @@ export const translations = {
     removeBtn: "हटाएं",
     generateCaseSummary: "केस सारांश जनरेट करें",
     whatHappened: "क्या हुआ?",
+
+    // AI Analysis results - Hindi translations
+    probableCaseType: "संभावित केस प्रकार:",
+    confidence: "विश्वास स्तर:",
+    outputMode: "आउटपुट मोड:",
+    riskLevel: "जोखिम स्तर:",
+    riskReason: "जोखिम कारण:",
+    shortSummary: "संक्षिप्त सारांश:",
+    suggestedProofs: "सुझाए गए सबूत:",
+    suggestedReliefs: "सुझाई गई राहत:",
+    missingDetails: "गायब विवरण:",
+    nextSteps: "अगले कदम:",
+    lawyerReviewRecommended: "वकील समीक्षा अनुशंसित:",
+    useAISuggestedCaseType: "AI द्वारा सुझाया गया केस प्रकार उपयोग करें",
+    keepAsOtherNotSure: "अन्य / निश्चित नहीं रखें",
   },
   hinglish: {
     appName: "NyayMitra",
