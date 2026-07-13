@@ -2,10 +2,11 @@ import type { CaseData, VerifiedSource } from "@/types/case";
 import { buildKnowledgeContext } from "./legalKnowledge";
 import { buildOfficialActionSuggestions } from "./officialPortals";
 import { getCaseConfig } from "./caseConfig";
+import { OTHER_PROOF_OPTION } from "./constants";
 
-const OTHER_PROOF_OPTION = "Other proof / document";
+export { OTHER_PROOF_OPTION };
 
-const proofMeaning: Record<string, string> = {
+export const proofMeaning: Record<string, string> = {
   "WhatsApp chat screenshot": "Conversation, demand, scam message, contact identity.",
   "UPI transaction screenshot": "Payment amount, transaction ID, receiver UPI ID.",
   "Bank SMS": "Debit alert and transaction timing.",
@@ -22,7 +23,7 @@ const proofMeaning: Record<string, string> = {
   "Other supporting proof": "User-provided supporting material that should be reviewed before relying on it.",
 };
 
-const proofAction: Record<string, string> = {
+export const proofAction: Record<string, string> = {
   "WhatsApp chat screenshot": "Save full chat screenshots with visible phone number and date.",
   "UPI transaction screenshot": "Attach screenshot and bank statement entry.",
   "Bank SMS": "Keep SMS screenshot and bank statement.",
@@ -31,7 +32,7 @@ const proofAction: Record<string, string> = {
   "Police/cyber complaint acknowledgement": "Attach acknowledgement number and date.",
 };
 
-const cyberLegalRoutes = [
+export const cyberLegalRoutes = [
   "Report cyber fraud on official cybercrime portal.",
   "Contact bank support immediately and request transaction dispute/freeze support.",
   "Prepare written complaint with transaction ID, screenshots, phone number, UPI ID, and timeline.",
@@ -39,7 +40,7 @@ const cyberLegalRoutes = [
   "Exact law sections should be verified from official sources before filing.",
 ];
 
-const propertyLegalRoutes = [
+export const propertyLegalRoutes = [
   "Use this kit as a Legal Aid Consultation Note only.",
   "Approach legal aid/lawyer with property papers, revenue/mutation/tax records, notices, photos, and timeline.",
   "Do not sign or submit property documents without legal review.",
