@@ -334,7 +334,7 @@ if (!caseData) {
             <p className="mt-5 rounded-lg bg-slate-50 p-5 leading-8"><b>{t("kitLabelUserStory")}:</b> {caseData.story}</p>
           </KitSection>
 
-          {amountMismatch && <KitSection title="Amount Mismatch Warning"><p className="rounded-lg border border-red-200 bg-red-50 p-5 font-semibold text-red-900">{amountMismatch}</p></KitSection>}
+          {amountMismatch && <KitSection title={t("labelAmountMismatch")}><p className="rounded-lg border border-red-200 bg-red-50 p-5 font-semibold text-red-900">{amountMismatch}</p></KitSection>}
 
           <KitSection title={t("kitTimelineOfEvents")}>
             <div className="grid gap-4 md:grid-cols-5">{timeline(caseData).map((item, index) => <div key={item} className="rounded-lg bg-slate-50 p-4"><p className="font-black text-teal-700">{t("kitStepLabel")} {index + 1}</p><p className="mt-2 text-sm font-semibold">{item}</p></div>)}</div>
@@ -394,7 +394,7 @@ if (!caseData) {
               <pre className="mt-5 whitespace-pre-wrap rounded-lg bg-slate-50 p-5 font-sans leading-8">{complaint}</pre>
             </div>
           </KitSection>
-          <KitSection title={t("kitHearingPrep")}><List items={visitChecklist} /></KitSection>
+          <KitSection title={t("kitHearingPrep")}><List items={[t("kitVisitChecklist1"), t("kitVisitChecklist2"), t("kitVisitChecklist3"), t("kitVisitChecklist4"), t("kitVisitChecklist5"), t("kitVisitChecklist6"), t("kitVisitChecklist7")]} /></KitSection>
           <KitSection title={t("kitLegalAidRoute")}><List items={[t("kitLegalAidRouteDesc"), t("kitLegalAidRouteSerious")]} /></KitSection>
         </article>
       </div>
