@@ -8,7 +8,7 @@ import { caseStatuses, caseStatusLabel, normalizeCaseStatus, type CaseStatus } f
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
 import { translate, useLanguage } from "@/lib/i18n";
 import type { CaseData } from "@/types/case";
-import { calculateRiskLevel } from "@/lib/caseUtils";
+import { getCaseRiskLevel } from "@/lib/caseUtils";
 import { calculateCaseQualityScore } from "@/lib/qualityScore";
 
 export const dynamic = "force-dynamic";
@@ -90,12 +90,12 @@ export default function DashboardPage() {
 
   const totalAmount = cases.reduce((sum, item) => sum + (Number(item.amountLost) || 0), 0);
   const draftReady = cases.filter((item) => normalizeCaseStatus(item.status) === "draft-ready").length;
-  const highRisk = cases.filter((item) => getRiskLevel(item) === "High Risk").length;
+  const highRisk = cases.filter((item) => getCaseRiskLevel(item) === "High Risk").length;
   const urgentCount = cases.filter((item) => getOutputModeForCase(item) === "urgent-legal-aid-route").length;
   const lawyerReviewCount = cases.filter((item) => needsLawyerReview(item)).length;
   const filteredCases = cases.filter((item) => {
       const outputMode = getOutputModeForCase(item);
-      const risk = getRiskLevel(item);
+      const risk = getCaseRiskLevel(item);
       const matchesSearch = [item.caseId, item.fullName, item.caseType, item.stateOrUT, item.status, ...(item.customProofs || []), ...(item.customReliefs || [])].join(" ").toLowerCase().includes(search.toLowerCase());
     const matchesFilter = filter === "all" || outputMode === filter || (filter === "high-risk" && risk === "High Risk") || (filter === "lawyer-review" && needsLawyerReview(item)) || (filter === "other" && item.caseType === "Other / Not Sure");
     return matchesSearch && matchesFilter;
@@ -135,7 +135,7 @@ export default function DashboardPage() {
 
             <section className="mt-8 grid gap-5 lg:grid-cols-2">
               {filteredCases.map((caseData) => {
-                const risk = getRiskLevel(caseData);
+                const risk = getCaseRiskLevel(caseData);
                 const quality = calculateCaseQualityScore(caseData);
                 const outputMode = getOutputModeForCase(caseData);
                 const lawyerReview = needsLawyerReview(caseData);
@@ -173,7 +173,6 @@ export default function DashboardPage() {
   );
 }
 
-function getRiskLevel(data: CaseData) { return data.aiAnalysis?.classification?.riskLevel || (getOutputModeForCase(data) === "urgent-legal-aid-route" ? "High Risk" : calculateRiskLevel(data.amountLost)); }
 function needsLawyerReview(data: CaseData) { return getOutputModeForCase(data) === "urgent-legal-aid-route" || Boolean(data.aiAnalysis?.classification?.lawyerReviewRecommended); }
 function Stat({ title, value }: { title: string; value: string }) { return <div className="rounded-lg bg-white p-5 text-slate-950 shadow-xl"><p className="text-sm font-black uppercase tracking-[0.16em] text-teal-700">{title}</p><p className="mt-2 text-3xl font-black">{value}</p></div>; }
 function Info({ label, value }: { label: string; value: string }) { return <div className="rounded-lg bg-slate-50 p-4"><p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">{label}</p><p className="mt-1 font-bold">{value}</p></div>; }

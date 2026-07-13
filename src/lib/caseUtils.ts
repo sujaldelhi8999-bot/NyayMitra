@@ -1,7 +1,7 @@
 import type { CaseData, VerifiedSource } from "@/types/case";
 import { buildKnowledgeContext } from "./legalKnowledge";
 import { buildOfficialActionSuggestions } from "./officialPortals";
-import { getCaseConfig } from "./caseConfig";
+import { getCaseConfig, getOutputModeForCase } from "./caseConfig";
 import { OTHER_PROOF_OPTION } from "./constants";
 
 const proofMeaning: Record<string, string> = {
@@ -176,6 +176,10 @@ export function calculateRiskLevel(amount: string) {
   if (value > 50000) return "High Risk";
   if (value > 10000) return "Medium Risk";
   return "Low Risk";
+}
+
+export function getCaseRiskLevel(data: CaseData) {
+  return data.aiAnalysis?.classification?.riskLevel || (getOutputModeForCase(data) === "urgent-legal-aid-route" ? "High Risk" : calculateRiskLevel(data.amountLost));
 }
 
 export function detectAmountMismatch(data: CaseData) {
