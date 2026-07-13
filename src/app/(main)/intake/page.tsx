@@ -6,10 +6,10 @@ import { aiAskAdvisor, aiClassifyCase, aiExtractFacts, aiGenerateDraft, aiGenera
 import { caseConfigs, getCaseConfig, highRiskCaseTypes, outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
 import { getInitialLanguage, type Language, translate, useLanguage, translateWithFallback } from "@/lib/i18n";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
-import type { OfficialPortal } from "@/data/officialPortals";
 import type { CaseData, AiClassification, AiExtraction, AiReview, AdvisorChat, UploadedFile } from "@/types/case";
 import { generateComplaintDraft } from "@/lib/draftTemplates";
 import { calculateCaseQualityScore } from "@/lib/qualityScore";
+import { PortalCard } from "@/components/portal-card";
 import {
   getMissingProofSuggestions,
   getVerifiedSourceNotes,
@@ -1372,24 +1372,6 @@ function OfficialActionLinks({ caseData }: { caseData: CaseData }) {
       </div>
       <p className="mt-5 rounded-lg bg-slate-950 p-4 text-sm font-semibold text-slate-200">NyayMitra provides official links for convenience. Portal eligibility, FIR registration, and complaint handling depend on the concerned authority and applicable procedure.</p>
     </div>
-  );
-}
-
-function PortalCard({ portal }: { portal: OfficialPortal }) {
-  return (
-    <article className="rounded-lg border border-white/10 bg-white p-5 text-slate-950 shadow-xl">
-      <div className="flex flex-wrap gap-2">
-        <span className="rounded-full bg-teal-100 px-3 py-1 text-xs font-black text-teal-800">Official</span>
-        {portal.emergencyOnly && <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-black text-orange-800">Emergency</span>}
-        {portal.stateSpecific && <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-black text-yellow-800">State-specific</span>}
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">{portal.category}</span>
-      </div>
-      <h3 className="mt-4 text-xl font-black">{portal.title}</h3>
-      <p className="mt-2 text-sm font-semibold leading-6 text-slate-700">{portal.description}</p>
-      <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm font-semibold text-amber-900">{portal.notes}</p>
-      <div className="mt-3 rounded-lg bg-slate-50 p-3 text-xs font-bold text-slate-600"><p>Source: {portal.sourceName}</p><p>Last checked: {portal.lastChecked}</p></div>
-      <a href={portal.url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex rounded-lg bg-slate-950 px-5 py-3 text-sm font-black text-white hover:bg-teal-700">{portal.actionLabel}</a>
-    </article>
   );
 }
 
