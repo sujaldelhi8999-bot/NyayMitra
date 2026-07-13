@@ -254,7 +254,7 @@ function getVerifiedSources(caseData: CaseData) {
     return getVerifiedSourceNotes(caseData);
   }
 
-  function detectAmountMismatch(caseData: CaseData) {
+  function getLocalizedAmountMismatch(caseData: CaseData) {
     const fieldAmount = Number(caseData.amountLost);
     const matches = Array.from(caseData.story.matchAll(/(?:₹|rs\.?|inr)?\s*([0-9][0-9,]*(?:\.\d+)?)/gi));
     const storyAmounts = matches.map((match) => Number(match[1].replace(/,/g, ""))).filter((amount) => amount > 0);
@@ -1001,10 +1001,10 @@ function getVerifiedSources(caseData: CaseData) {
               {(submittedCase.advisorChats || []).length > 0 && <div className="mt-5 space-y-4">{submittedCase.advisorChats?.map((chat) => <AdvisorChatCard key={chat.id} chat={chat} />)}</div>}
             </div>
 
-            {detectAmountMismatch(submittedCase) && (
+            {getLocalizedAmountMismatch(submittedCase) && (
               <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-900 shadow-2xl">
                 <h2 className="text-xl font-black">Amount Mismatch Warning</h2>
-                <p className="mt-2 font-semibold leading-7">{detectAmountMismatch(submittedCase)}</p>
+                <p className="mt-2 font-semibold leading-7">{getLocalizedAmountMismatch(submittedCase)}</p>
               </div>
             )}
 
