@@ -7,7 +7,8 @@ import { outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
 import { translate, useLanguage } from "@/lib/i18n";
 import type { CaseData } from "@/types/case";
-import { storyKeywords } from "@/lib/constants";
+import { calculateRiskLevel } from "@/lib/caseUtils";
+import { calculateCaseQualityScore } from "@/lib/qualityScore";
 
 export const dynamic = "force-dynamic";
 
@@ -172,11 +173,9 @@ export default function DashboardPage() {
   );
 }
 
-function calculateRisk(amount: string) { const value = Number(amount); if (value > 50000) return "High Risk"; if (value > 10000) return "Medium Risk"; return "Low Risk"; }
 function getOutputModeForCase(data: CaseData) { return data.outputMode || resolveOutputMode(data.caseType, data.story, data.aiAnalysis?.classification?.caseType, data.aiAnalysis?.classification?.outputMode); }
-function getRiskLevel(data: CaseData) { return data.aiAnalysis?.classification?.riskLevel || (getOutputModeForCase(data) === "urgent-legal-aid-route" ? "High Risk" : calculateRisk(data.amountLost)); }
+function getRiskLevel(data: CaseData) { return data.aiAnalysis?.classification?.riskLevel || (getOutputModeForCase(data) === "urgent-legal-aid-route" ? "High Risk" : calculateRiskLevel(data.amountLost)); }
 function needsLawyerReview(data: CaseData) { return getOutputModeForCase(data) === "urgent-legal-aid-route" || Boolean(data.aiAnalysis?.classification?.lawyerReviewRecommended); }
-function calculateCaseQualityScore(data: CaseData) { let score = 0; const story = data.story.toLowerCase(); const useful = storyKeywords.filter((word) => story.includes(word)).length; if (data.story.length >= 80 && useful >= 3) score += 20; if (data.incidentDate) score += 10; if (Number(data.amountLost) > 0) score += 10; if (data.oppositeParty) score += 15; if (data.proofs.includes("UPI transaction screenshot")) score += 15; if (data.proofs.includes("WhatsApp chat screenshot")) score += 10; if (data.proofs.includes("Bank SMS")) score += 10; if (data.relief.length + (data.customReliefs || []).length >= 2) score += 10; if (data.uploadedFiles.length >= 1 || (data.customProofs || []).length >= 1) score += 10; if (data.uploadedFiles.length >= 3 || (data.customProofs || []).length >= 3) score += 10; score = Math.min(100, score); return { score, label: score >= 70 ? "Strong Preparation" : score >= 40 ? "Moderate Preparation" : "Weak Preparation" }; }
 function Stat({ title, value }: { title: string; value: string }) { return <div className="rounded-lg bg-white p-5 text-slate-950 shadow-xl"><p className="text-sm font-black uppercase tracking-[0.16em] text-teal-700">{title}</p><p className="mt-2 text-3xl font-black">{value}</p></div>; }
 function Info({ label, value }: { label: string; value: string }) { return <div className="rounded-lg bg-slate-50 p-4"><p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">{label}</p><p className="mt-1 font-bold">{value}</p></div>; }
 function Badge({ text, tone }: { text: string; tone: "red" | "amber" | "teal" | "slate" }) { const color = tone === "red" ? "bg-red-100 text-red-800" : tone === "amber" ? "bg-amber-100 text-amber-800" : tone === "teal" ? "bg-teal-100 text-teal-800" : "bg-slate-100 text-slate-700"; return <span className={`rounded-lg px-3 py-1 text-xs font-black ${color}`}>{text}</span>; }

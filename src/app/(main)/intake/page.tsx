@@ -17,6 +17,7 @@ import {
   getNextStepsChecklist,
   generateFollowUpQuestions,
   formatFileSize,
+  calculateRiskLevel,
 } from "@/lib/caseUtils";
 import { OTHER_PROOF_OPTION, OTHER_RELIEF_OPTION, storyKeywords, propertyKeywords, consumerKeywords, rtiKeywords } from "@/lib/constants";
 
@@ -221,14 +222,6 @@ function IntakeContent() {
 
   function splitCustomItems(value: string) {
     return value.split(/[\n,;]+/).map((item) => item.trim().replace(/^[-*•]\s*/, "")).filter(Boolean);
-  }
-
-  function calculateRiskLevel(amount: string) {
-    const value = Number(amount);
-
-    if (value > 50000) return "High Risk";
-    if (value > 10000) return "Medium Risk";
-    return "Low Risk";
   }
 
   function getCaseOutputMode(caseData: CaseData) {

@@ -131,6 +131,13 @@ export function formatFileSize(size: number) {
   return `${(size / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+export function calculateRiskLevel(amount: string) {
+  const value = Number(amount);
+  if (value > 50000) return "High Risk";
+  if (value > 10000) return "Medium Risk";
+  return "Low Risk";
+}
+
 export function detectAmountMismatch(data: CaseData) {
   const fieldAmount = Number(data.amountLost);
   const matches = Array.from(data.story.matchAll(/(?:₹|rs\.?|inr)?\s*([0-9][0-9,]*(?:\.\d+)?)/gi));
