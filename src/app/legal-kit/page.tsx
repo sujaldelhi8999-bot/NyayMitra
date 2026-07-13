@@ -117,12 +117,16 @@ export default function LegalKitPage() {
 
   useEffect(() => {
     window.setTimeout(() => {
-      const saved = localStorage.getItem("nyaymitra_case_data");
-      if (saved) {
-        const parsed = JSON.parse(saved) as CaseData;
-        setLanguage(parsed.language || getInitialLanguage());
-        setCaseData({ ...parsed, uploadedFiles: parsed.uploadedFiles || [], customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [], status: parsed.status || "Draft Ready" });
-      } else {
+      try {
+        const saved = localStorage.getItem("nyaymitra_case_data");
+        if (saved) {
+          const parsed = JSON.parse(saved) as CaseData;
+          setLanguage(parsed.language || getInitialLanguage());
+          setCaseData({ ...parsed, uploadedFiles: parsed.uploadedFiles || [], customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [], status: parsed.status || "Draft Ready" });
+        } else {
+          setLanguage(getInitialLanguage());
+        }
+      } catch {
         setLanguage(getInitialLanguage());
       }
       setLoaded(true);
@@ -167,10 +171,12 @@ if (!caseData) {
   }
 
   function persistCase(nextCase: CaseData) {
-    const savedCases = JSON.parse(localStorage.getItem("nyaymitra_saved_cases") || "[]") as CaseData[];
-    const withoutDuplicate = savedCases.filter((item) => item.caseId !== nextCase.caseId);
-    localStorage.setItem("nyaymitra_case_data", JSON.stringify(nextCase));
-    localStorage.setItem("nyaymitra_saved_cases", JSON.stringify([nextCase, ...withoutDuplicate]));
+    try {
+      const savedCases = JSON.parse(localStorage.getItem("nyaymitra_saved_cases") || "[]") as CaseData[];
+      const withoutDuplicate = savedCases.filter((item) => item.caseId !== nextCase.caseId);
+      localStorage.setItem("nyaymitra_case_data", JSON.stringify(nextCase));
+      localStorage.setItem("nyaymitra_saved_cases", JSON.stringify([nextCase, ...withoutDuplicate]));
+    } catch {}
     setCaseData(nextCase);
   }
 
