@@ -355,8 +355,30 @@ export function generateFollowUpQuestions(data: CaseData) {
 }
 
 export function getLegalRoutes(data: CaseData) {
-  if (data.caseType === "Property / Land Dispute") {
-    return propertyLegalRoutes;
+  switch (data.caseType) {
+    case "Cyber Fraud / UPI Scam":
+    case "Defamation / Online Abuse":
+      return cyberLegalRoutes;
+    case "Property / Land Dispute":
+      return propertyLegalRoutes;
+    case "Consumer Complaint":
+    case "Online Shopping Fraud":
+    case "Education / College Fee Dispute":
+      return consumerLegalRoutes;
+    case "RTI / Government Service Delay":
+    case "Government Document / Certificate Issue":
+      return rtiLegalRoutes;
+    case "Lost Documents / Police Complaint":
+      return lostDocumentLegalRoutes;
+    case "Unpaid Salary / Gig Worker Payment":
+    case "Employment Termination":
+      return salaryLegalRoutes;
+    case "Domestic Violence / Family Safety Concern":
+    case "Divorce / Custody / Family Matter":
+    case "Bail / Arrest / Criminal Defence":
+    case "Harassment / Threat Complaint":
+      return urgentLegalAidRoutes;
+    default:
+      return generalLegalRoutes;
   }
-  return cyberLegalRoutes;
 }
