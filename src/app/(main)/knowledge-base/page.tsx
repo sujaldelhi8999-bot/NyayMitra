@@ -4,23 +4,20 @@ import { useState } from "react";
 import Link from "next/link";
 import { verifiedLegalKnowledge } from "@/data/legalKnowledgeBase";
 import { officialPortals } from "@/data/officialPortals";
-import { getInitialLanguage, type Language, translate } from "@/lib/i18n";
+import { type Language, translate, useLanguage } from "@/lib/i18n";
+
+export const dynamic = "force-dynamic";
 
 export default function KnowledgeBasePage() {
+  const { language } = useLanguage();
   const caseTypes = ["All", ...Array.from(new Set(verifiedLegalKnowledge.map((entry) => entry.caseType)))];
   const [filter, setFilter] = useState("All");
   const [tab, setTab] = useState<"legal" | "portals">("legal");
-  const [language, setLanguage] = useState<Language>("en");
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
   const entries = filter === "All" ? verifiedLegalKnowledge : verifiedLegalKnowledge.filter((entry) => entry.caseType === filter);
   const portalCaseTypes = ["All", ...Array.from(new Set(officialPortals.flatMap((p) => p.caseTypes).filter((ct) => ct !== "all")))];
   const [portalFilter, setPortalFilter] = useState("All");
   const filteredPortals = portalFilter === "All" ? officialPortals : officialPortals.filter((p) => p.caseTypes.includes("all") ? false : p.caseTypes.includes(portalFilter));
-
-  function changeLanguage(nextLanguage: Language) {
-    setLanguage(nextLanguage);
-    localStorage.setItem("nyaymitra_language", nextLanguage);
-  }
 
   return (
     <div className="min-h-screen bg-slate-950 px-5 py-8 text-white sm:px-8">

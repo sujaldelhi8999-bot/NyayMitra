@@ -1,17 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { SectionHeading } from "@/components/section-heading";
-import { getInitialLanguage, type Language, translate } from "@/lib/i18n";
+import { type Language, translate, useLanguage } from "@/lib/i18n";
+
+export const dynamic = "force-dynamic";
 
 export default function Home() {
-  const [language, setLanguage] = useState<Language>("en");
+  const { language } = useLanguage();
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
-
-  useEffect(() => {
-    window.setTimeout(() => setLanguage(getInitialLanguage()), 0);
-  }, []);
 
   const features = [
     [t("feature1Title"), t("feature1Desc")],

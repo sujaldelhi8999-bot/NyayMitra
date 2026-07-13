@@ -1,3 +1,5 @@
+"use client";
+
 export type Language = "en" | "hi" | "hinglish";
 
 export const translations = {
@@ -1395,4 +1397,50 @@ export function getInitialLanguage(): Language {
 
 export function translate(language: Language, key: keyof typeof translations.en) {
   return translations[language][key] || translations.en[key];
+}
+
+export function translateWithFallback(language: Language, key: keyof typeof translations.en) {
+  return translations[language][key] || translations.hi[key] || translations.en[key];
+}
+
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+
+type LanguageContextType = {
+  language: Language;
+  setLanguage: (lang: Language) => void;
+};
+
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const [language, setLanguageState] = useState<Language>("en");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setLanguageState(getInitialLanguage());
+    setMounted(true);
+  }, []);
+
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    localStorage.setItem("nyaymitra_language", lang);
+  };
+
+  if (!mounted) {
+    return <>{children}</>;
+  }
+
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+}
+
+export function useLanguage() {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error("useLanguage must be used within a LanguageProvider");
+  }
+  return context;
 }

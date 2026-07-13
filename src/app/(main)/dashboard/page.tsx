@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
-import { getInitialLanguage, type Language, translate } from "@/lib/i18n";
+import { type Language, translate, useLanguage } from "@/lib/i18n";
+
+export const dynamic = "force-dynamic";
 
 type UploadedFile = { id: string; fileName: string; fileType: string; fileSize: number; evidenceCategory: string; uploadedAt: string };
 type CaseData = {
@@ -21,24 +23,18 @@ const storyKeywords = ["whatsapp", "upi", "payment", "paid", "blocked", "message
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { language } = useLanguage();
   const [cases, setCases] = useState<CaseData[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const [language, setLanguage] = useState<Language>("en");
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
   const statusOptions = [t("statusIntakeStarted"), t("statusDraftReady"), t("statusReviewNeeded"), t("statusFiled"), t("statusClosed")];
 
-  function changeLanguage(nextLanguage: Language) {
-    setLanguage(nextLanguage);
-    localStorage.setItem("nyaymitra_language", nextLanguage);
-  }
-
   useEffect(() => {
     window.setTimeout(() => {
-      setLanguage(getInitialLanguage());
       const saved = JSON.parse(localStorage.getItem("nyaymitra_saved_cases") || "[]") as CaseData[];
-      setCases(saved.map((item) => ({ ...item, uploadedFiles: item.uploadedFiles || [], customProofs: item.customProofs || [], customReliefs: item.customReliefs || [] })));
+      setCases(saved.map((item) => ({ ...item, uploadedFiles: item.uploadedFiles || [], customProofs: item.customProofs || [], customReliefs: item.customReliefs || [], followUpAnswers: item.followUpAnswers || {} })));
       setLoaded(true);
     }, 0);
   }, []);

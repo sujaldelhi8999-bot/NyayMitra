@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { getInitialLanguage, type Language, translate } from "@/lib/i18n";
+import { useLanguage, type Language, translate } from "@/lib/i18n";
 
-export function Navbar({ language, onChangeLanguage }: { language: Language; onChangeLanguage: (lang: Language) => void }) {
+function Navbar({ language, onChangeLanguage }: { language: Language; onChangeLanguage: (lang: Language) => void }) {
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
 
   return (
@@ -41,7 +40,7 @@ export function Navbar({ language, onChangeLanguage }: { language: Language; onC
   );
 }
 
-export function Footer({ language }: { language: Language }) {
+function Footer({ language }: { language: Language }) {
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
 
   return (
@@ -52,18 +51,12 @@ export function Footer({ language }: { language: Language }) {
 }
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState<Language>("en");
-  useEffect(() => { setLanguage(getInitialLanguage()); }, []); // eslint-disable-line react-hooks/set-state-in-effect
-
-  function changeLanguage(nextLanguage: Language) {
-    setLanguage(nextLanguage);
-    localStorage.setItem("nyaymitra_language", nextLanguage);
-  }
+  const { language, setLanguage } = useLanguage();
 
   return (
     <>
-      <Navbar language={language} onChangeLanguage={changeLanguage} />
-      <main key={language} className="flex-1">{children}</main>
+      <Navbar language={language} onChangeLanguage={setLanguage} />
+      <main>{children}</main>
       <Footer language={language} />
     </>
   );

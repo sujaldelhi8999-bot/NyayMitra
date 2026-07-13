@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { aiAskAdvisor, aiClassifyCase, aiExtractFacts, aiGenerateDraft, aiGenerateFollowups, aiReviewCase, type AiClientError } from "@/lib/aiClient";
 import { caseConfigs, getCaseConfig, highRiskCaseTypes, outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
-import { getInitialLanguage, type Language, translate } from "@/lib/i18n";
+import { getInitialLanguage, type Language, translate, useLanguage, translateWithFallback } from "@/lib/i18n";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
 import type { OfficialPortal } from "@/data/officialPortals";
 import type { CaseData, AiClassification, AiExtraction, AiReview, AdvisorChat, UploadedFile } from "@/types/case";
@@ -17,6 +17,8 @@ import {
   getNextStepsChecklist,
   generateFollowUpQuestions,
 } from "@/lib/caseUtils";
+
+export const dynamic = "force-dynamic";
 
 type AdvisorAnswer = Omit<AdvisorChat, "id" | "question" | "createdAt">;
 
@@ -53,6 +55,7 @@ export default function IntakePage() {
 function IntakeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { language, setLanguage } = useLanguage();
   const [formData, setCaseData] = useState<CaseData>({
     fullName: "",
     contact: "",
@@ -79,7 +82,6 @@ function IntakeContent() {
   const [editableDraft, setEditableDraft] = useState("");
   const [draftMessage, setDraftMessage] = useState("");
   const [isEditingSavedCase, setIsEditingSavedCase] = useState(false);
-  const [language, setLanguage] = useState<Language>("en");
   const [mode, setMode] = useState<"full" | "guided">("full");
   const [wizardStep, setWizardStep] = useState(0);
   const [draftFound, setDraftFound] = useState(false);
@@ -123,34 +125,24 @@ function IntakeContent() {
     [OTHER_PROOF_OPTION]: t("evidenceMeaningOther"),
   };
 
-  function changeLanguage(nextLanguage: Language) {
-    setLanguage(nextLanguage);
-    localStorage.setItem("nyaymitra_language", nextLanguage);
-  }
-
   useEffect(() => {
-    window.setTimeout(() => {
-      setLanguage(getInitialLanguage());
-      if (searchParams.get("edit") !== "true") return;
+    if (searchParams.get("edit") !== "true") return;
 
-      const saved = localStorage.getItem("nyaymitra_edit_case");
-      if (!saved) return;
+    const saved = localStorage.getItem("nyaymitra_edit_case");
+    if (!saved) return;
 
-      const parsed = JSON.parse(saved) as CaseData;
-      const nextCase = { ...parsed, uploadedFiles: parsed.uploadedFiles || [], followUpAnswers: parsed.followUpAnswers || {}, customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [] };
-      setCaseData(nextCase);
-      setFollowUpAnswers(nextCase.followUpAnswers || {});
-      setEditableDraft(nextCase.complaintDraft || "");
-      setSubmittedCase(nextCase);
-      setIsEditingSavedCase(true);
-    }, 0);
+    const parsed = JSON.parse(saved) as CaseData;
+    const nextCase = { ...parsed, uploadedFiles: parsed.uploadedFiles || [], followUpAnswers: parsed.followUpAnswers || {}, customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [] };
+    setCaseData(nextCase);
+    setFollowUpAnswers(nextCase.followUpAnswers || {});
+    setEditableDraft(nextCase.complaintDraft || "");
+    setSubmittedCase(nextCase);
+    setIsEditingSavedCase(true);
   }, [searchParams]);
 
   useEffect(() => {
-    window.setTimeout(() => {
-      if (searchParams.get("edit") === "true") return;
-      setDraftFound(Boolean(localStorage.getItem("nyaymitra_intake_draft")));
-    }, 0);
+    if (searchParams.get("edit") === "true") return;
+    setDraftFound(Boolean(localStorage.getItem("nyaymitra_intake_draft")));
   }, [searchParams]);
 
   function handleInputChange(
@@ -596,7 +588,7 @@ function getVerifiedSources(caseData: CaseData) {
     setCaseData({ ...parsed, uploadedFiles: parsed.uploadedFiles || [], followUpAnswers: parsed.followUpAnswers || {}, customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [] });
     setFollowUpAnswers(parsed.followUpAnswers || {});
     setEditableDraft(parsed.complaintDraft || "");
-    if (parsed.language) changeLanguage(parsed.language);
+    if (parsed.language) setLanguage(parsed.language);
     setProgressMessage(t("msgDraftLoaded"));
   }
 
