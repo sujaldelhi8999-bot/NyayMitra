@@ -6,20 +6,10 @@ import Link from "next/link";
 import { outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
 import { type Language, translate, useLanguage } from "@/lib/i18n";
+import type { CaseData } from "@/types/case";
+import { storyKeywords } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
-
-type UploadedFile = { id: string; fileName: string; fileType: string; fileSize: number; evidenceCategory: string; uploadedAt: string };
-type CaseData = {
-  fullName: string; contact: string; caseType: string; story: string; incidentDate: string; amountLost: string; oppositeParty: string;
-  stateOrUT?: string;
-  proofs: string[]; relief: string[]; customProofs?: string[]; customReliefs?: string[]; followUpAnswers?: Record<string, string>; uploadedFiles: UploadedFile[]; complaintDraft?: string;
-  caseId?: string; createdAt?: string; updatedAt?: string; status?: string;
-  outputMode?: string;
-  aiAnalysis?: { classification?: { caseType: string; outputMode: "full-preparation-kit" | "limited-guidance-kit" | "urgent-legal-aid-route"; riskLevel?: string; lawyerReviewRecommended?: boolean } };
-};
-
-const storyKeywords = ["whatsapp", "upi", "payment", "paid", "blocked", "message", "scam", "fraud", "transaction", "bank", "job", "refund"];
 
 export default function DashboardPage() {
   const router = useRouter();
