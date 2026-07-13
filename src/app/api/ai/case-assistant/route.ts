@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     }
 
     if (!process.env.OPENROUTER_API_KEY) {
-      return NextResponse.json({ success: false, error: "AI is not configured. Add OPENROUTER_API_KEY in .env.local and restart the dev server." });
+      return NextResponse.json({ success: false, error: "AI is not configured. Add OPENROUTER_API_KEY in .env.local and restart the dev server." }, { status: 503 });
     }
 
     const verifiedKnowledgeContext = buildKnowledgeContext(caseData);
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
           status: openRouterResponse.status,
           message: responseText.slice(0, 500),
         }),
-      });
+      }, { status: 502 });
     }
 
     let openRouterJson;
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
         success: false,
         error: "OpenRouter returned invalid response JSON",
         debug: developmentDebug({ rawPreview: responseText.slice(0, 500) }),
-      });
+      }, { status: 502 });
     }
 
     const content = openRouterJson?.choices?.[0]?.message?.content;
@@ -107,7 +107,7 @@ export async function POST(request: Request) {
         success: false,
         error: "AI response did not contain message content.",
         debug: developmentDebug({ rawPreview: JSON.stringify(openRouterJson).slice(0, 500) }),
-      });
+      }, { status: 502 });
     }
 
     try {
@@ -117,9 +117,9 @@ export async function POST(request: Request) {
         success: false,
         error: "AI returned invalid JSON. Rule-based mode is still available.",
         debug: developmentDebug({ rawPreview: content.slice(0, 500) }),
-      });
+      }, { status: 502 });
     }
   } catch {
-    return NextResponse.json({ success: false, error: "AI could not respond right now." });
+    return NextResponse.json({ success: false, error: "AI could not respond right now." }, { status: 500 });
   }
 }
