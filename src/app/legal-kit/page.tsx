@@ -51,7 +51,9 @@ export default function LegalKitPage() {
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
 
   useEffect(() => {
+    let cancelled = false;
     window.setTimeout(() => {
+      if (cancelled) return;
       try {
         const saved = localStorage.getItem("nyaymitra_case_data");
         if (saved) {
@@ -66,6 +68,7 @@ export default function LegalKitPage() {
       }
       setLoaded(true);
     }, 0);
+    return () => { cancelled = true; };
   }, []);
 
   if (!loaded) return null;
@@ -448,5 +451,5 @@ function OfficialActionLinks({ caseData, language }: { caseData: CaseData; langu
 }
 
 function AiInfo({ title, items }: { title: string; items: string[] }) {
-  return <div className="rounded-lg bg-slate-50 p-4"><h3 className="font-black text-teal-700">{title}</h3><ul className="mt-3 space-y-2 text-sm font-semibold text-slate-700">{items.filter(Boolean).map((item) => <li key={item}>{item}</li>)}</ul></div>;
+  return <div className="rounded-lg bg-slate-50 p-4"><h3 className="font-black text-teal-700">{title}</h3><ul className="mt-3 space-y-2 text-sm font-semibold text-slate-700">{items.filter(Boolean).map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}</ul></div>;
 }

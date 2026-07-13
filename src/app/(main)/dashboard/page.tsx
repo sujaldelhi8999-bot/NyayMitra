@@ -22,7 +22,9 @@ export default function DashboardPage() {
   const statusOptions = [t("statusIntakeStarted"), t("statusDraftReady"), t("statusReviewNeeded"), t("statusFiled"), t("statusClosed")];
 
   useEffect(() => {
+    let cancelled = false;
     window.setTimeout(() => {
+      if (cancelled) return;
       try {
         const saved = JSON.parse(localStorage.getItem("nyaymitra_saved_cases") || "[]") as CaseData[];
         setCases(saved.map((item) => ({ ...item, uploadedFiles: item.uploadedFiles || [], customProofs: item.customProofs || [], customReliefs: item.customReliefs || [], followUpAnswers: item.followUpAnswers || {} })));
@@ -31,6 +33,7 @@ export default function DashboardPage() {
       }
       setLoaded(true);
     }, 0);
+    return () => { cancelled = true; };
   }, []);
 
   function openLegalKit(caseData: CaseData) {

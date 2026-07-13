@@ -96,8 +96,8 @@ function IntakeContent() {
   const todayISO = new Date().toISOString().split("T")[0];
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
   const currentCaseConfig = getCaseConfig(formData.caseType);
-  const suggestedProofs = formData.aiAnalysis?.classification?.suggestedProofs || [];
-  const suggestedReliefs = formData.aiAnalysis?.classification?.suggestedReliefs || [];
+  const suggestedProofs = formData.aiAnalysis?.classification?.suggestedProofs ?? [];
+  const suggestedReliefs = formData.aiAnalysis?.classification?.suggestedReliefs ?? [];
   const proofKeys = ["proofWhatsApp", "proofUPI", "proofBankSMS", "proofPhone", "proofEmail", "proofPolice"] as const;
   const reliefKeys = ["reliefRefund", "reliefPolice", "reliefCyber", "reliefBank", "reliefLegalAid"] as const;
   const defaultProofOpts = proofKeys.map((k) => t(k));
@@ -1334,7 +1334,7 @@ function AiBox({ title, items }: { title: string; items: string[] }) {
     <div className="rounded-lg bg-slate-50 p-4 text-sm text-slate-700">
       <h3 className="font-black text-teal-700">{title}</h3>
       <ul className="mt-3 space-y-2">
-        {items.filter(Boolean).map((item) => <li key={item}>{item}</li>)}
+        {items.filter(Boolean).map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}
       </ul>
     </div>
   );
