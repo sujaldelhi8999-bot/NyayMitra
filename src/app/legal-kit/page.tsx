@@ -21,6 +21,7 @@ import {
   getLegalRoutes,
 } from "@/lib/caseUtils";
 import { PortalCard } from "@/components/portal-card";
+import { OTHER_RELIEF_OPTION } from "@/lib/constants";
 
 const visitChecklist = [
   "Carry original ID proof",
@@ -179,7 +180,7 @@ if (!caseData) {
       `${t("kitLabelIncidentDate")}: ${caseData.incidentDate}`,
       `${t("kitLabelAmountLost")}: Rs. ${caseData.amountLost}`,
       `${t("kitLabelOppositeParty")}: ${caseData.oppositeParty || t("kitLabelNotProvided")}`,
-      `${t("kitLabelReliefWanted")}: ${[...caseData.relief.filter((item) => item !== "Other relief / outcome"), ...(caseData.customReliefs || [])].join(", ")}`,
+      `${t("kitLabelReliefWanted")}: ${[...caseData.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(caseData.customReliefs || [])].join(", ")}`,
     ]);
     text(`${t("kitLabelUserStory")}: ${caseData.story}`);
 
@@ -328,7 +329,7 @@ if (!caseData) {
               <Info label={t("kitLabelIncidentDate")} value={caseData.incidentDate} />
               <Info label={t("kitLabelAmountLost")} value={`Rs. ${caseData.amountLost}`} />
               <Info label={t("kitLabelOppositeParty")} value={caseData.oppositeParty || t("kitLabelNotProvided")} />
-              <Info label={t("kitLabelReliefWanted")} value={[...caseData.relief.filter((item) => item !== "Other relief / outcome"), ...(caseData.customReliefs || [])].join(", ")} />
+              <Info label={t("kitLabelReliefWanted")} value={[...caseData.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(caseData.customReliefs || [])].join(", ")} />
             </div>
             <p className="mt-5 rounded-lg bg-slate-50 p-5 leading-8"><b>{t("kitLabelUserStory")}:</b> {caseData.story}</p>
           </KitSection>
