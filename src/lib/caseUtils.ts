@@ -213,8 +213,10 @@ export function getVerifiedSourceNotes(data: CaseData): VerifiedSource[] {
   return Array.from(new Map([...aiSources, ...localSources, ...portalSources].map((source) => [source.title + source.sourceUrl, source])).values());
 }
 
-export function hasLawHallucinationRisk(text: string, sources: VerifiedSource[]) {
-  return (/\b(IPC|BNS|BNSS|BSA)\b/.test(text) || /\bSection\s+\d+/i.test(text) || /\bAct,?\s+\d{4}/i.test(text)) && sources.length === 0;
+export function hasLawHallucinationRisk(payload: unknown, sources: VerifiedSource[]) {
+  if (sources.length > 0) return false;
+  const text = JSON.stringify(payload) || "";
+  return /\b(IPC|BNS|BNSS|BSA)\b/.test(text) || /\bSection\s+\d+/i.test(text) || /\bAct,?\s+\d{4}/i.test(text);
 }
 
 export function getNextStepsChecklist(data: CaseData) {

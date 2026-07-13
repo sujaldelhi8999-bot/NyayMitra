@@ -360,7 +360,7 @@ if (!caseData) {
           </KitSection>
           <KitSection title={t("kitVerifiedSources")}>
             {verifiedSourceNotes.length ? <div className="grid gap-3 md:grid-cols-2">{verifiedSourceNotes.map((source) => <div key={source.title + source.sourceUrl} className="rounded-lg bg-slate-50 p-4"><h3 className="font-black text-teal-700">{source.title}</h3><p className="mt-2 text-sm font-semibold">{source.sourceName}</p><p className="text-sm text-slate-600">Last checked: {source.lastChecked || "Source provided by AI"}</p><a className="mt-2 inline-flex text-sm font-bold text-teal-700" href={source.sourceUrl} target="_blank" rel="noreferrer">{source.sourceUrl}</a></div>)}</div> : <p className="rounded-lg bg-amber-50 p-5 font-semibold text-amber-900">{t("kitNoVerifiedSources")}</p>}
-            {hasLawHallucinationRisk(JSON.stringify(caseData.aiAnalysis || {}) + JSON.stringify(caseData.advisorChats || []), verifiedSourceNotes) && <p className="mt-4 rounded-lg bg-red-100 p-3 text-sm font-bold text-red-800">{t("kitAiHallucinationRisk")}</p>}
+            {hasLawHallucinationRisk([caseData.aiAnalysis, caseData.advisorChats], verifiedSourceNotes) && <p className="mt-4 rounded-lg bg-red-100 p-3 text-sm font-bold text-red-800">{t("kitAiHallucinationRisk")}</p>}
           </KitSection>
           {caseData.aiAnalysis && (
             <KitSection title={t("kitAiAnalysis")}>
