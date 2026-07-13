@@ -33,41 +33,51 @@ export default function DashboardPage() {
 
   useEffect(() => {
     window.setTimeout(() => {
-      const saved = JSON.parse(localStorage.getItem("nyaymitra_saved_cases") || "[]") as CaseData[];
-      setCases(saved.map((item) => ({ ...item, uploadedFiles: item.uploadedFiles || [], customProofs: item.customProofs || [], customReliefs: item.customReliefs || [], followUpAnswers: item.followUpAnswers || {} })));
+      try {
+        const saved = JSON.parse(localStorage.getItem("nyaymitra_saved_cases") || "[]") as CaseData[];
+        setCases(saved.map((item) => ({ ...item, uploadedFiles: item.uploadedFiles || [], customProofs: item.customProofs || [], customReliefs: item.customReliefs || [], followUpAnswers: item.followUpAnswers || {} })));
+      } catch {
+        setCases([]);
+      }
       setLoaded(true);
     }, 0);
   }, []);
 
   function openLegalKit(caseData: CaseData) {
-    localStorage.setItem("nyaymitra_case_data", JSON.stringify(caseData));
+    try {
+      localStorage.setItem("nyaymitra_case_data", JSON.stringify(caseData));
+    } catch {}
     router.push("/legal-kit");
   }
 
   function editCase(caseData: CaseData) {
-    localStorage.setItem("nyaymitra_edit_case", JSON.stringify(caseData));
+    try {
+      localStorage.setItem("nyaymitra_edit_case", JSON.stringify(caseData));
+    } catch {}
     router.push("/intake?edit=true");
   }
 
   function deleteCase(caseData: CaseData) {
     if (!window.confirm(t("labelDeleteConfirm"))) return;
     const nextCases = cases.filter((item) => item.caseId !== caseData.caseId);
-    const current = localStorage.getItem("nyaymitra_case_data");
-
-    if (current && (JSON.parse(current) as CaseData).caseId === caseData.caseId) {
-      localStorage.removeItem("nyaymitra_case_data");
-    }
-
-    localStorage.setItem("nyaymitra_saved_cases", JSON.stringify(nextCases));
+    try {
+      const current = localStorage.getItem("nyaymitra_case_data");
+      if (current && (JSON.parse(current) as CaseData).caseId === caseData.caseId) {
+        localStorage.removeItem("nyaymitra_case_data");
+      }
+      localStorage.setItem("nyaymitra_saved_cases", JSON.stringify(nextCases));
+    } catch {}
     setCases(nextCases);
   }
 
   function updateStatus(caseData: CaseData, status: string) {
     const nextCase = { ...caseData, status, updatedAt: new Date().toISOString() };
     const nextCases = cases.map((item) => item.caseId === caseData.caseId ? nextCase : item);
-    const current = localStorage.getItem("nyaymitra_case_data");
-    if (current && (JSON.parse(current) as CaseData).caseId === caseData.caseId) localStorage.setItem("nyaymitra_case_data", JSON.stringify(nextCase));
-    localStorage.setItem("nyaymitra_saved_cases", JSON.stringify(nextCases));
+    try {
+      const current = localStorage.getItem("nyaymitra_case_data");
+      if (current && (JSON.parse(current) as CaseData).caseId === caseData.caseId) localStorage.setItem("nyaymitra_case_data", JSON.stringify(nextCase));
+      localStorage.setItem("nyaymitra_saved_cases", JSON.stringify(nextCases));
+    } catch {}
     setCases(nextCases);
   }
 
