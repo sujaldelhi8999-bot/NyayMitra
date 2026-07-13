@@ -214,7 +214,7 @@ export function getVerifiedSourceNotes(data: CaseData): VerifiedSource[] {
 }
 
 export function hasLawHallucinationRisk(text: string, sources: VerifiedSource[]) {
-  return /\b(Section|IPC|BNS|BNSS|BSA|Act)\b/i.test(text) && sources.length === 0;
+  return (/\b(IPC|BNS|BNSS|BSA)\b/.test(text) || /\bSection\s+\d+/i.test(text) || /\bAct,?\s+\d{4}/i.test(text)) && sources.length === 0;
 }
 
 export function getNextStepsChecklist(data: CaseData) {
