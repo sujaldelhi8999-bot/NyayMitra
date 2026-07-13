@@ -8,6 +8,14 @@ async function callAi(mode: AiMode, caseData: unknown, question?: string) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ mode, caseData, question }),
     });
+    if (!response.ok) {
+      let detail: string | undefined;
+      try {
+        const errBody = await response.json();
+        detail = errBody?.error;
+      } catch {}
+      return { error: detail || `AI request failed (HTTP ${response.status}).` };
+    }
     const result = await response.json();
     return result?.success ? result.data : { error: result?.error || "AI request failed.", debug: result?.debug };
   } catch (error) {
