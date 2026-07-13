@@ -966,10 +966,10 @@ function IntakeContent() {
               <h2 className="mt-2 text-2xl font-bold">AI Assist</h2>
               <p className="mt-2 text-sm leading-6 text-slate-300">Let NyayMitra analyze your story and improve your preparation kit. Rule-based mode still works if AI is unavailable.</p>
               <div className="mt-5 grid gap-3 md:grid-cols-4">
-                <button type="button" onClick={handleAiAnalyzeStory} className="rounded-lg bg-teal-500 px-4 py-3 font-bold text-slate-950">{aiLoading === "analyze" ? "Analyzing..." : "AI Analyze Story"}</button>
-                <button type="button" onClick={handleAiFollowups} className="rounded-lg bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "followup" ? "Generating..." : "AI Generate Follow-up Questions"}</button>
-                <button type="button" onClick={handleAiImproveDraft} className="rounded-lg bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "draft" ? "Improving..." : "AI Improve Draft"}</button>
-                <button type="button" onClick={handleAiReview} className="rounded-lg bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "review" ? "Reviewing..." : "AI Review Case Strength"}</button>
+                <button type="button" onClick={handleAiAnalyzeStory} className="rounded-lg bg-teal-500 px-4 py-3 font-bold text-slate-950">{aiLoading === "analyze" ? t("aiAnalyzingCase") : t("aiAnalyze")}</button>
+                <button type="button" onClick={handleAiFollowups} className="rounded-lg bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "followup" ? t("aiAnalyzingCase") : t("aiFollowups")}</button>
+                <button type="button" onClick={handleAiImproveDraft} className="rounded-lg bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "draft" ? t("aiAnalyzingCase") : t("aiImproveDraft")}</button>
+                <button type="button" onClick={handleAiReview} className="rounded-lg bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "review" ? t("aiAnalyzingCase") : t("aiReview")}</button>
               </div>
               {aiMessage && <p className={`mt-4 rounded-lg p-3 text-sm font-bold ${aiMessage.startsWith("AI could not") || aiMessage.startsWith("OpenRouter") || aiMessage.includes("error") || aiMessage.includes("Error") ? "bg-red-100 text-red-800" : "bg-teal-100 text-teal-900"}`} aria-live="polite">{aiMessage}</p>}
               {submittedCase.aiAnalysis && (
@@ -984,39 +984,39 @@ function IntakeContent() {
                   {submittedCase.aiAnalysis.followupQuestions && <AiBox title="AI Suggested Follow-up Questions" items={submittedCase.aiAnalysis.followupQuestions} />}
                   {submittedCase.aiAnalysis.review && <div className="rounded-lg bg-white p-5 text-slate-950"><h3 className="text-xl font-black">AI Case Review</h3><p className="mt-2"><b>Quality score:</b> {submittedCase.aiAnalysis.review.qualityScore}</p><div className="mt-4 grid gap-4 md:grid-cols-2"><AiBox title="Strengths" items={submittedCase.aiAnalysis.review.strengths} /><AiBox title="Weaknesses" items={submittedCase.aiAnalysis.review.weaknesses} /><AiBox title="Missing proof" items={submittedCase.aiAnalysis.review.missingProof} /><AiBox title="Suggestions" items={submittedCase.aiAnalysis.review.suggestions} /></div></div>}
                   {getVerifiedSourceNotes(submittedCase).length > 0 && <AiBox title="Verified Sources Used" items={getVerifiedSourceNotes(submittedCase).map((source) => `${source.title} - ${source.sourceName}`)} />}
-                  {hasLawHallucinationRisk(submittedCase.aiAnalysis, getVerifiedSourceNotes(submittedCase)) && <p className="rounded-lg bg-red-100 p-3 text-sm font-bold text-red-800">AI mentioned legal terms without verified source mapping. Please verify with legal aid/lawyer before relying on it.</p>}
+                  {hasLawHallucinationRisk(submittedCase.aiAnalysis, getVerifiedSourceNotes(submittedCase)) && <p className="rounded-lg bg-red-100 p-3 text-sm font-bold text-red-800">{t("kitAiHallucinationRisk")}</p>}
                 </div>
               )}
             </div>
 
             <div className="rounded-lg bg-white p-6 text-slate-950 shadow-2xl">
               <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-700">Safe preparation guidance</p>
-              <h2 className="mt-2 text-3xl font-black">AI Legal Guidance Mode</h2>
+              <h2 className="mt-2 text-3xl font-black">{t("sectionAdvisor")}</h2>
               <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">Ask NyayMitra for preparation guidance, possible routes, risks, and next steps. This is not legal advice.</p>
               <p className="mt-3 rounded-lg bg-slate-950 p-4 text-sm font-semibold text-white">NyayMitra can explain preparation options and next steps, but it is not a substitute for a licensed advocate. Please verify important decisions with legal aid or a lawyer.</p>
               <textarea value={advisorQuestion} onChange={(event) => setAdvisorQuestion(event.target.value)} rows={3} className="mt-5 w-full rounded-lg border border-slate-200 bg-slate-50 p-4 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" placeholder="Ask a question about your case preparation... Example: What proof is missing? How should I explain this to the authority?" />
-              <button type="button" onClick={handleAskAdvisor} className="mt-4 rounded-lg bg-teal-600 px-6 py-3 font-black text-white hover:bg-teal-700">{advisorLoading ? "NyayMitra is thinking..." : "Ask NyayMitra"}</button>
+              <button type="button" onClick={handleAskAdvisor} className="mt-4 rounded-lg bg-teal-600 px-6 py-3 font-black text-white hover:bg-teal-700">{advisorLoading ? t("aiThinkingNyayMitra") : t("aiAskAdvisor")}</button>
               {advisorMessage && <p className="mt-3 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900" aria-live="polite">{advisorMessage}</p>}
               {(submittedCase.advisorChats || []).length > 0 && <div className="mt-5 space-y-4">{submittedCase.advisorChats?.map((chat) => <AdvisorChatCard key={chat.id} chat={chat} />)}</div>}
             </div>
 
             {getLocalizedAmountMismatch(submittedCase) && (
               <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-900 shadow-2xl">
-                <h2 className="text-xl font-black">Amount Mismatch Warning</h2>
+                <h2 className="text-xl font-black">{t("labelAmountMismatch")}</h2>
                 <p className="mt-2 font-semibold leading-7">{getLocalizedAmountMismatch(submittedCase)}</p>
               </div>
             )}
 
             {storyWarning && (
               <div className="rounded-lg border border-amber-200 bg-amber-50 p-6 text-amber-900 shadow-2xl">
-                <h2 className="text-xl font-black">Story Quality Warning</h2>
+                <h2 className="text-xl font-black">{t("labelStoryQuality")}</h2>
                 <p className="mt-2 font-semibold leading-7">{storyWarning}</p>
               </div>
             )}
 
             {caseTypeMismatch && (
               <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-900 shadow-2xl">
-                <h2 className="text-xl font-black">Case Type Mismatch Warning</h2>
+                <h2 className="text-xl font-black">{t("labelCaseTypeMismatch")}</h2>
                 <p className="mt-2 font-semibold leading-7">{caseTypeMismatch}</p>
                 {submittedCase.caseType === "Cyber Fraud / UPI Scam" && <div className="mt-4 flex flex-wrap gap-3"><button type="button" onClick={() => { const next = { ...submittedCase, caseType: "Property / Land Dispute", proofs: [], relief: [], customProofs: [], customReliefs: [], uploadedFiles: [], aiAnalysis: undefined, complaintDraft: "" }; setSubmittedCase(next); setCaseData(next); setEditableDraft(""); }} className="rounded-lg bg-red-600 px-5 py-3 font-bold text-white">Switch to Property / Land Dispute</button><button type="button" className="rounded-lg bg-white px-5 py-3 font-bold text-red-700">Keep Cyber Fraud / UPI Scam</button></div>}
               </div>
@@ -1024,10 +1024,10 @@ function IntakeContent() {
 
             <div className="rounded-lg border border-teal-400/30 bg-white/10 p-6 shadow-2xl">
               <p className="mb-2 text-sm font-semibold text-teal-300">
-                Legal Action Kit Preview
+                {t("preview")}
               </p>
 
-              <h2 className="text-3xl font-bold">Case Snapshot</h2>
+              <h2 className="text-3xl font-bold">{t("caseSnapshot")}</h2>
 
               <p className="mt-4 text-slate-200">
                 {Number(submittedCase.amountLost) > 0 ? <>Based on the information provided, this appears to be a <b>{submittedCase.caseType}</b> preparation matter where <b>{submittedCase.fullName}</b> reports a value/loss of <b>₹{submittedCase.amountLost}</b> on <b>{submittedCase.incidentDate}</b>. </> : <>Based on the information provided, this appears to be a <b>{submittedCase.caseType}</b> matter where <b>{submittedCase.fullName}</b> wants help organizing documents and preparing for legal-aid/lawyer review. </>}Opposite party details:{" "}
@@ -1041,13 +1041,13 @@ function IntakeContent() {
               </p>
 
               <div className="mt-5 rounded-lg bg-slate-900 p-4 text-sm text-slate-300">
-                <b>User story:</b> {submittedCase.story}
+                <b>{t("kitLabelUserStory")}:</b> {submittedCase.story}
               </div>
             </div>
 
             <div className="rounded-lg border border-teal-400/30 bg-slate-900 p-6 shadow-2xl">
               <p className="text-sm font-semibold text-teal-300">Rule-based preparation assistant</p>
-              <h2 className="mt-2 text-2xl font-bold">Smart Follow-up Questions</h2>
+              <h2 className="mt-2 text-2xl font-bold">{t("followUps")}</h2>
               <div className="mt-5 space-y-4">
                 {generateFollowUpQuestions(submittedCase).map((question) => (
                   <label key={question} className="block rounded-lg border border-white/10 bg-white/5 p-4">
@@ -1063,7 +1063,7 @@ function IntakeContent() {
                 ))}
               </div>
               <button type="button" onClick={handleUpdatePreviewWithAnswers} className="mt-5 w-full rounded-lg bg-teal-500 px-6 py-4 font-bold text-slate-950 shadow-lg transition hover:bg-teal-400">
-                Update Preview with Answers
+                {t("btnUpdatePreview")}
               </button>
               {updateMessage && <p className="mt-3 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900">{updateMessage}</p>}
             </div>
@@ -1083,7 +1083,7 @@ function IntakeContent() {
             )}
 
             <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
-              <h2 className="text-2xl font-bold">Timeline Builder</h2>
+              <h2 className="text-2xl font-bold">{t("timeline")}</h2>
 
               <div className="mt-5 grid gap-4 md:grid-cols-5">
                 <div className="rounded-lg bg-slate-100 p-4">
@@ -1122,17 +1122,17 @@ function IntakeContent() {
             </div>
 
             <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
-              <h2 className="text-2xl font-bold">Evidence Table</h2>
+              <h2 className="text-2xl font-bold">{t("evidenceTable")}</h2>
 
               <div className="mt-5 overflow-x-auto">
                 <table className="w-full min-w-[880px] border-collapse text-left">
                   <thead>
                     <tr className="bg-slate-900 text-white">
-                      <th className="p-3">Annexure No.</th>
-                      <th className="p-3">Evidence</th>
+                      <th className="p-3">{t("kitLabelAnnexureNo")}</th>
+                      <th className="p-3">{t("kitLabelEvidence")}</th>
                       <th className="p-3">Available?</th>
                       <th className="p-3">Uploaded File Name</th>
-                      <th className="p-3">What it helps prove</th>
+                      <th className="p-3">{t("kitLabelProves")}</th>
                       <th className="p-3">Suggested action</th>
                     </tr>
                   </thead>
@@ -1148,7 +1148,7 @@ function IntakeContent() {
                           <td className="p-3 font-black">{uploadedFile ? `A${submittedCase.uploadedFiles.findIndex((file) => file.id === uploadedFile.id) + 1}` : "-"}</td>
                           <td className="p-3 font-semibold">{proof}</td>
                           <td className="p-3">
-                            {custom || available ? "Yes" : "Missing"}
+                            {custom || available ? "Yes" : t("kitLabelMissing")}
                           </td>
                           <td className="p-3">
                             {uploadedFile?.fileName || (custom ? "Custom proof added, file not uploaded yet." : available ? "Marked available, file not uploaded yet." : "No file / not marked.")}
@@ -1173,7 +1173,7 @@ function IntakeContent() {
               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div>
                   <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-700">Rule-based draft generator</p>
-                  <h2 className="mt-2 text-3xl font-black text-slate-950">{submittedOutputMode === "urgent-legal-aid-route" ? "Editable Legal Aid Consultation Note" : "Editable Draft Complaint"}</h2>
+                  <h2 className="mt-2 text-3xl font-black text-slate-950">{submittedOutputMode === "urgent-legal-aid-route" ? t("sectionDraftLegalAid") : t("editableDraft")}</h2>
                   <p className="mt-2 text-sm font-semibold text-slate-600">Generated locally from your case details. Review and edit before using.</p>
                 </div>
                 <div className="flex flex-col gap-2 sm:flex-row">
@@ -1196,7 +1196,7 @@ function IntakeContent() {
                 onChange={(event) => handleDraftChange(event.target.value)}
                 rows={18}
                 className="mt-6 w-full rounded-lg border border-slate-200 bg-slate-50 p-5 font-mono text-sm leading-7 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
-                placeholder={submittedOutputMode === "urgent-legal-aid-route" ? "Click Generate Legal Aid Consultation Note to create an editable note." : "Click Generate Draft Complaint to create an editable complaint draft."}
+                placeholder={submittedOutputMode === "urgent-legal-aid-route" ? t("msgNoLegalAidDraft") : t("msgNoDraft")}
               />
 
               {editableDraft && <DraftQualityCard result={analyzeDraftQuality(editableDraft)} />}
@@ -1204,11 +1204,11 @@ function IntakeContent() {
             </div>
 
             <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
-              <h2 className="text-2xl font-bold">Missing Proof</h2>
+              <h2 className="text-2xl font-bold">{t("missingProof")}</h2>
 
               {displayedMissingProofs.length === 0 ? (
                 <p className="mt-3 rounded-lg bg-green-100 p-4">
-                  Great. No missing proof from the basic checklist.
+                  {t("labelNoMissing")}
                 </p>
               ) : (
                 <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -1217,17 +1217,17 @@ function IntakeContent() {
                       key={item}
                       className="rounded-lg border border-orange-300 bg-orange-50 p-4"
                     >
-                      <b>Missing:</b> {item}. Try to collect this before final
+                      <b>{t("labelMissingProofs")}</b> {item}. Try to collect this before final
                       PDF.
                     </div>
                   ))}
                 </div>
               )}
-              {(submittedCase.customProofs || []).length > 0 && <p className="mt-4 rounded-lg bg-teal-50 p-4 text-sm font-bold text-teal-900">Additional custom proofs added by user. These should be reviewed before filing.</p>}
+              {(submittedCase.customProofs || []).length > 0 && <p className="mt-4 rounded-lg bg-teal-50 p-4 text-sm font-bold text-teal-900">{t("labelCustomProofsNote")}</p>}
             </div>
 
             <div className="rounded-lg border border-teal-400/30 bg-white/10 p-6 shadow-2xl">
-              <h2 className="text-2xl font-bold">Risk & Safety Router</h2>
+              <h2 className="text-2xl font-bold">{t("riskRouter")}</h2>
 
               <p className="mt-3 text-xl font-bold text-teal-300">
                 {getCaseRiskLabel(submittedCase)}
@@ -1247,7 +1247,7 @@ function IntakeContent() {
             </div>
 
             <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
-              <h2 className="text-2xl font-bold">Next Steps Checklist</h2>
+              <h2 className="text-2xl font-bold">{t("sectionNextSteps")}</h2>
 
               <ul className="mt-4 space-y-2">
                 {getNextStepsChecklist(submittedCase).map((step) => <li key={step}>✅ {step}</li>)}
@@ -1258,7 +1258,7 @@ function IntakeContent() {
                 onClick={handleGeneratePdf}
                 className="mt-6 w-full rounded-lg bg-teal-600 px-6 py-4 font-bold text-white shadow-lg transition hover:bg-teal-700"
               >
-                Generate Legal Action Kit PDF
+                {t("generatePdf")}
               </button>
             </div>
           </section>
