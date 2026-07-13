@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
 import { type Language, translate, useLanguage } from "@/lib/i18n";
 import { getCaseConfig, outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
+import { caseStatuses, caseStatusLabel, normalizeCaseStatus, type CaseStatus } from "@/lib/caseStatus";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
 import type { CaseData } from "@/types/case";
 import { generateComplaintDraft } from "@/lib/draftTemplates";
@@ -31,14 +32,6 @@ const visitChecklist = [
   "Do not delete original chats or SMS",
 ];
 
-const statusEntries = [
-  { value: "Intake Started", key: "statusIntakeStarted" },
-  { value: "Draft Ready", key: "statusDraftReady" },
-  { value: "Review Needed", key: "statusReviewNeeded" },
-  { value: "Filed", key: "statusFiled" },
-  { value: "Closed", key: "statusClosed" },
-] as const;
-
 export default function LegalKitPage() {
   const { language: contextLanguage } = useLanguage();
   const [caseData, setCaseData] = useState<CaseData | null>(null);
@@ -57,7 +50,7 @@ export default function LegalKitPage() {
         if (saved) {
           const parsed = JSON.parse(saved) as CaseData;
           setLanguage(parsed.language || contextLanguage);
-          setCaseData({ ...parsed, uploadedFiles: parsed.uploadedFiles || [], customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [], status: parsed.status || "Draft Ready" });
+          setCaseData({ ...parsed, uploadedFiles: parsed.uploadedFiles || [], customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [], status: normalizeCaseStatus(parsed.status) });
         } else {
           setLanguage(contextLanguage);
         }
@@ -116,7 +109,7 @@ if (!caseData) {
     setCaseData(nextCase);
   }
 
-  function updateStatus(status: string) {
+  function updateStatus(status: CaseStatus) {
     if (!caseData) return;
     persistCase({ ...caseData, status, updatedAt: new Date().toISOString() });
     setStatusMessage(t("kitCaseStatusUpdated"));
@@ -308,14 +301,14 @@ if (!caseData) {
             <p className="mt-3 text-xl font-bold text-slate-600">{caseData.caseType}</p>
             <div className="mt-5 grid gap-3 md:grid-cols-3">
               <Info label={t("kitLabelCaseId")} value={caseData.caseId || t("kitLabelNotSaved")} />
-              <Info label={t("kitLabelStatus")} value={caseData.status || t("statusDraftReady")} />
+              <Info label={t("kitLabelStatus")} value={caseStatusLabel(normalizeCaseStatus(caseData.status), language)} />
               <Info label={t("kitLabelLastUpdated")} value={caseData.updatedAt ? new Date(caseData.updatedAt).toLocaleString() : t("kitLabelNotSet")} />
               <Info label={t("kitLabelOutputMode")} value={outputModeLabel(outputMode)} />
             </div>
             <div className="mt-5 rounded-lg bg-slate-50 p-5">
               <label className="block text-sm font-black uppercase tracking-[0.18em] text-teal-700">{t("kitUpdateStatus")}</label>
-              <select value={caseData.status || "Draft Ready"} onChange={(event) => updateStatus(event.target.value)} className="mt-2 w-full rounded-lg border border-slate-200 bg-white p-3 font-bold outline-none focus:border-teal-500 md:max-w-sm">
-                {statusEntries.map(({ value, key }) => <option key={value} value={value}>{t(key)}</option>)}
+              <select value={normalizeCaseStatus(caseData.status)} onChange={(event) => updateStatus(normalizeCaseStatus(event.target.value))} className="mt-2 w-full rounded-lg border border-slate-200 bg-white p-3 font-bold outline-none focus:border-teal-500 md:max-w-sm">
+                {caseStatuses.map((status) => <option key={status} value={status}>{caseStatusLabel(status, language)}</option>)}
               </select>
               {statusMessage && <p className="mt-3 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900">{statusMessage}</p>}
             </div>
