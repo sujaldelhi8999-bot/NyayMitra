@@ -24,3 +24,22 @@ const caseStatusLabelKeys: Record<CaseStatus, keyof typeof import("@/lib/i18n").
 export function caseStatusLabel(status: CaseStatus, language: Language) {
   return translate(language, caseStatusLabelKeys[status]);
 }
+
+const legacyStatusValues: Record<string, CaseStatus> = {
+  "Complaint Started": "intake-started",
+  "Draft Ready": "draft-ready",
+  "Review Needed": "review-needed",
+  Filed: "filed",
+  Closed: "closed",
+  "शिकायत शुरू": "intake-started",
+  "ड्राफ्ट तैयार": "draft-ready",
+  "समीक्षा आवश्यक": "review-needed",
+  "दायर": "filed",
+  "बंद": "closed",
+};
+
+export function normalizeCaseStatus(status?: string): CaseStatus {
+  if (!status) return DEFAULT_CASE_STATUS;
+  if (caseStatuses.includes(status as CaseStatus)) return status as CaseStatus;
+  return legacyStatusValues[status] || DEFAULT_CASE_STATUS;
+}
