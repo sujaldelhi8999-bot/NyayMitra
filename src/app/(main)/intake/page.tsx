@@ -16,7 +16,9 @@ import {
   hasLawHallucinationRisk,
   getNextStepsChecklist,
   generateFollowUpQuestions,
+  formatFileSize,
 } from "@/lib/caseUtils";
+import { OTHER_PROOF_OPTION, OTHER_RELIEF_OPTION, storyKeywords, propertyKeywords, consumerKeywords, rtiKeywords } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -24,13 +26,6 @@ type AdvisorAnswer = Omit<AdvisorChat, "id" | "question" | "createdAt">;
 
 const uploadCategories = Array.from(new Set(caseConfigs.flatMap((config) => config.proofs).concat("Other supporting proof")));
 
-const storyKeywords = ["whatsapp", "upi", "payment", "paid", "blocked", "message", "scam", "fraud", "transaction", "bank", "job", "refund"];
-const propertyKeywords = ["property", "land", "grandfather", "ancestral", "sale deed", "revenue", "mutation", "tax", "possession", "court", "case", "khasra", "survey", "plot", "family"];
-const consumerKeywords = ["order", "invoice", "refund", "replacement", "damaged", "defective", "delivery", "seller", "platform", "customer support", "product"];
-const rtiKeywords = ["department", "application", "receipt", "acknowledgement", "delay", "certificate", "government", "follow-up", "rti", "service"];
-
-const OTHER_PROOF_OPTION = "Other proof / document";
-const OTHER_RELIEF_OPTION = "Other relief / outcome";
 const caseTypeAliases: Record<string, string[]> = {
   "Cyber Fraud / UPI Scam": ["cyber", "upi", "fraud", "scam", "transaction", "bank", "whatsapp"],
   "Consumer Complaint": ["consumer", "refund", "replacement", "seller", "platform", "damaged", "product"],
@@ -245,15 +240,9 @@ function IntakeContent() {
     return calculateRiskLevel(caseData.amountLost);
   }
 
-  function formatFileSize(size: number) {
-    if (size < 1024) return `${size} B`;
-    if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
-    return `${(size / (1024 * 1024)).toFixed(1)} MB`;
-  }
-
   function countCaseUsefulKeywords(caseData: CaseData) {
     const lowerStory = caseData.story.toLowerCase();
-    const keywords = caseData.caseType === "Property / Land Dispute" ? propertyKeywords : caseData.caseType === "Consumer Complaint" ? consumerKeywords : caseData.caseType === "RTI / Government Service Delay" ? rtiKeywords : storyKeywords;
+    const keywords = caseData.caseType === "Property / Land Dispute" ? propertyKeywords : caseData.caseType === "Consumer Complaint" ? consumerKeywords : caseData.caseType === "RTI / Government Service Delay" || caseData.caseType === "Government Document / Certificate Issue" ? rtiKeywords : storyKeywords;
     return keywords.filter((keyword) => lowerStory.includes(keyword)).length;
   }
 
