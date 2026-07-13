@@ -303,19 +303,19 @@ function getVerifiedSources(caseData: CaseData) {
     if (!submittedCase) return;
     const nextDraft = generateComplaintDraft(submittedCase);
     setEditableDraft(nextDraft);
-    setSubmittedCase({ ...submittedCase, complaintDraft: nextDraft });
+    setSubmittedCase((prev) => prev ? { ...prev, complaintDraft: nextDraft } : null);
     setDraftMessage("");
   }
 
   function handleResetDraft() {
     setEditableDraft("");
     setDraftMessage("");
-    if (submittedCase) setSubmittedCase({ ...submittedCase, complaintDraft: "" });
+    setSubmittedCase((prev) => prev ? { ...prev, complaintDraft: "" } : prev);
   }
 
   function handleDraftChange(value: string) {
     setEditableDraft(value);
-    if (submittedCase) setSubmittedCase({ ...submittedCase, complaintDraft: value });
+    setSubmittedCase((prev) => prev ? { ...prev, complaintDraft: value } : prev);
   }
 
   async function handleCopyDraft() {
@@ -401,12 +401,10 @@ function getVerifiedSources(caseData: CaseData) {
     const failed = isAiError(result);
     const answer = failed ? fallbackAdvisor(submittedCase) : result;
     const chat: AdvisorChat = { ...answer, id: `CHAT-${Date.now()}`, question: advisorQuestion, createdAt: new Date().toISOString() };
-    setSubmittedCase({ ...submittedCase, advisorChats: [...(submittedCase.advisorChats || []), chat] });
+    setSubmittedCase((prev) => prev ? { ...prev, advisorChats: [...(prev.advisorChats || []), chat] } : null);
     setAdvisorQuestion("");
-    setAdvisorLoading(false);
-    if (failed) {
-    }
     setAdvisorMessage(failed ? `${result.error} ${t("aiRuleBasedFallback")}` : t("aiGuidanceGenerated"));
+    setAdvisorLoading(false);
   }
 
   async function handleOtherClassification() {
@@ -431,9 +429,11 @@ function getVerifiedSources(caseData: CaseData) {
   }
 
   function mergeAiAnalysis(next: Partial<NonNullable<CaseData["aiAnalysis"]>>) {
-    if (!submittedCase) return;
-    const merged = { ...(submittedCase.aiAnalysis || {}), ...next, lastAnalyzedAt: new Date().toISOString() };
-    setSubmittedCase({ ...submittedCase, aiAnalysis: merged });
+    setSubmittedCase((prev) => {
+      if (!prev) return null;
+      const merged = { ...(prev.aiAnalysis || {}), ...next, lastAnalyzedAt: new Date().toISOString() };
+      return { ...prev, aiAnalysis: merged };
+    });
   }
 
   async function handleAiAnalyzeStory() {
@@ -480,7 +480,7 @@ function getVerifiedSources(caseData: CaseData) {
       return;
     }
     setEditableDraft(result.draftText);
-    setSubmittedCase({ ...submittedCase, complaintDraft: result.draftText, aiAnalysis: { ...(submittedCase.aiAnalysis || {}), generatedDraft: result.draftText, lastAnalyzedAt: new Date().toISOString() } });
+    setSubmittedCase((prev) => prev ? { ...prev, complaintDraft: result.draftText, aiAnalysis: { ...(prev.aiAnalysis || {}), generatedDraft: result.draftText, lastAnalyzedAt: new Date().toISOString() } } : null);
     setAiMessage(t("aiDraftGenerated"));
   }
 
@@ -549,9 +549,7 @@ function getVerifiedSources(caseData: CaseData) {
   }
 
   function handleUpdatePreviewWithAnswers() {
-    if (!submittedCase) return;
-
-    setSubmittedCase({ ...submittedCase, followUpAnswers });
+    setSubmittedCase((prev) => prev ? { ...prev, followUpAnswers } : null);
     setUpdateMessage(t("msgPreviewUpdated"));
   }
 
