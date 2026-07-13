@@ -1,10 +1,6 @@
 import type { CaseData } from "@/types/case";
-import { caseConfigs } from "@/lib/caseConfig";
-
-const storyKeywords = ["whatsapp", "upi", "payment", "paid", "blocked", "message", "scam", "fraud", "transaction", "bank", "job", "refund"];
-const propertyKeywords = ["property", "land", "grandfather", "ancestral", "sale deed", "revenue", "mutation", "tax", "possession", "court", "case", "khasra", "survey", "plot", "family"];
-const consumerKeywords = ["order", "invoice", "refund", "replacement", "damaged", "defective", "delivery", "seller", "platform", "customer support", "product"];
-const rtiKeywords = ["department", "application", "receipt", "acknowledgement", "delay", "certificate", "government", "follow-up", "rti", "service"];
+import { getCaseConfig } from "@/lib/caseConfig";
+import { storyKeywords, propertyKeywords, consumerKeywords, rtiKeywords } from "./constants";
 
 function countUsefulStoryKeywords(story: string, caseType: string) {
   const lowerStory = story.toLowerCase();
@@ -22,10 +18,6 @@ function hasTooManyRandomSymbols(story: string) {
   if (!story.trim()) return false;
   const symbolMatches = story.match(/[^a-zA-Z0-9\s.,₹@/-]/g) || [];
   return symbolMatches.length / story.length > 0.15;
-}
-
-function getCaseConfig(caseType: string) {
-  return caseConfigs.find((c) => c.caseType === caseType) || caseConfigs[0];
 }
 
 export function calculateCaseQualityScore(data: CaseData) {
