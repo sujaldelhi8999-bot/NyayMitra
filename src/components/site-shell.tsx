@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { getInitialLanguage, type Language, translate } from "@/lib/i18n";
 
@@ -52,7 +52,8 @@ export function Footer({ language }: { language: Language }) {
 }
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState<Language>(() => getInitialLanguage());
+  const [language, setLanguage] = useState<Language>("en");
+  useEffect(() => { setLanguage(getInitialLanguage()); }, []); // eslint-disable-line react-hooks/set-state-in-effect
 
   function changeLanguage(nextLanguage: Language) {
     setLanguage(nextLanguage);
