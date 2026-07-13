@@ -1559,7 +1559,7 @@ export function translate(language: Language, key: keyof typeof translations.en)
   return (translations[language] as Record<string, string>)[key] || translations.en[key];
 }
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 
 type LanguageContextType = {
   language: Language;
@@ -1569,11 +1569,7 @@ type LanguageContextType = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("en");
-
-  useEffect(() => {
-    setLanguageState(getInitialLanguage());
-  }, []);
+  const [language, setLanguageState] = useState<Language>(() => getInitialLanguage());
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);

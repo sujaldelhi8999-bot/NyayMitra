@@ -123,7 +123,7 @@ function IntakeContent() {
     [OTHER_PROOF_OPTION]: t("evidenceMeaningOther"),
   };
 
-  useEffect(() => {
+useEffect(() => {
     if (searchParams.get("edit") !== "true") return;
 
     try {
@@ -132,6 +132,7 @@ function IntakeContent() {
 
       const parsed = JSON.parse(saved) as CaseData;
       const nextCase = { ...parsed, uploadedFiles: parsed.uploadedFiles || [], followUpAnswers: parsed.followUpAnswers || {}, customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [], status: normalizeCaseStatus(parsed.status) };
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount hydration from localStorage
       setCaseData(nextCase);
       setFollowUpAnswers(nextCase.followUpAnswers || {});
       setEditableDraft(nextCase.complaintDraft || "");
@@ -143,15 +144,12 @@ function IntakeContent() {
   useEffect(() => {
     if (searchParams.get("edit") === "true") return;
     try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount hydration from localStorage
       setDraftFound(Boolean(localStorage.getItem("nyaymitra_intake_draft")));
     } catch {
       setDraftFound(false);
     }
   }, [searchParams]);
-
-  useEffect(() => {
-    setDraftLanguage(language);
-  }, [language]);
 
   function handleInputChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
