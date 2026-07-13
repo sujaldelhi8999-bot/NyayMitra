@@ -9,6 +9,7 @@ import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
 import { translate, useLanguage } from "@/lib/i18n";
 import type { CaseData } from "@/types/case";
 import { getCaseRiskLevel } from "@/lib/caseUtils";
+import { OTHER_PROOF_OPTION, OTHER_RELIEF_OPTION } from "@/lib/constants";
 import { calculateCaseQualityScore } from "@/lib/qualityScore";
 
 export const dynamic = "force-dynamic";
@@ -152,8 +153,8 @@ export default function DashboardPage() {
                       <Info label={t("labelAmountLost")} value={`₹${Number(caseData.amountLost || 0).toLocaleString("en-IN")}`} />
                       <Info label={t("labelQualityScore")} value={`${quality.score}/100 (${quality.label})`} />
                       <Info label={t("labelLastUpdated")} value={caseData.updatedAt ? new Date(caseData.updatedAt).toLocaleString() : "Not set"} />
-                      <Info label={t("labelReliefWanted")} value={[...caseData.relief.filter((item) => item !== "Other relief / outcome"), ...(caseData.customReliefs || [])].join(", ") || "Not selected"} />
-                      <Info label={t("labelProofFiles")} value={`${caseData.proofs.filter((item) => item !== "Other proof / document").length} standard + ${(caseData.customProofs || []).length} custom, ${caseData.uploadedFiles.length} files`} />
+                      <Info label={t("labelReliefWanted")} value={[...caseData.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(caseData.customReliefs || [])].join(", ") || "Not selected"} />
+                      <Info label={t("labelProofFiles")} value={`${caseData.proofs.filter((item) => item !== OTHER_PROOF_OPTION).length} standard + ${(caseData.customProofs || []).length} custom, ${caseData.uploadedFiles.length} files`} />
                       <Info label={t("labelCustomReliefs")} value={`${(caseData.customReliefs || []).length} added`} />
                     </div>
                     <label className="mt-5 block"><span className="text-sm font-black text-teal-700">{t("labelStatusUpdate")}</span><select value={normalizeCaseStatus(caseData.status)} onChange={(event) => updateStatus(caseData, normalizeCaseStatus(event.target.value))} className="mt-2 w-full rounded-lg border border-slate-200 p-3 font-bold outline-none focus:border-teal-500">{caseStatuses.map((status) => <option key={status} value={status}>{caseStatusLabel(status, language)}</option>)}</select></label>
