@@ -1545,7 +1545,7 @@ export const translations = {
   },
 } as const;
 
-export function getInitialLanguage(): Language {
+function getInitialLanguage(): Language {
   if (typeof window === "undefined") return "en";
   try {
     const saved = localStorage.getItem("nyaymitra_language");
@@ -1559,10 +1559,6 @@ export function translate(language: Language, key: keyof typeof translations.en)
   return (translations[language] as Record<string, string>)[key] || translations.en[key];
 }
 
-export function translateWithFallback(language: Language, key: keyof typeof translations.en) {
-  return (translations[language] as Record<string, string>)[key] || (translations.hi as Record<string, string>)[key] || translations.en[key];
-}
-
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 type LanguageContextType = {
@@ -1574,11 +1570,9 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>("en");
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setLanguageState(getInitialLanguage());
-    setMounted(true);
   }, []);
 
   const setLanguage = (lang: Language) => {

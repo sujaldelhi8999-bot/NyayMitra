@@ -11,20 +11,11 @@ function isDelhi(state?: string) {
   return Boolean(state && /delhi|nct/i.test(state));
 }
 
-export function getEmergencyPortals() {
-  return officialPortals.filter((portal) => portal.emergencyOnly);
-}
-
-export function getLegalAidPortals() {
+function getLegalAidPortals() {
   return officialPortals.filter((portal) => portal.category === "Legal Aid");
 }
 
-export function getStateSpecificPolicePortals(state?: string) {
-  if (!isDelhi(state)) return [];
-  return officialPortals.filter((portal) => portal.stateSpecific && portal.category === "State Police");
-}
-
-export function shouldShowEmergencyWarning(caseData: PortalCaseData) {
+function shouldShowEmergencyWarning(caseData: PortalCaseData) {
   return Boolean(
     caseData.outputMode === "urgent-legal-aid-route" ||
     caseData.aiAnalysis?.classification?.outputMode === "urgent-legal-aid-route" ||
@@ -35,7 +26,7 @@ export function shouldShowEmergencyWarning(caseData: PortalCaseData) {
   );
 }
 
-export function getOfficialPortalsForCase(caseType?: string, stateOrUTOrOptions?: string | { stateOrUT?: string; includeExamples?: boolean; includeEmergency?: boolean }) {
+function getOfficialPortalsForCase(caseType?: string, stateOrUTOrOptions?: string | { stateOrUT?: string; includeExamples?: boolean; includeEmergency?: boolean }) {
   const options = typeof stateOrUTOrOptions === "string" ? { stateOrUT: stateOrUTOrOptions } : stateOrUTOrOptions;
   const entries = officialPortals.filter((portal) => {
     if (portal.emergencyOnly && !options?.includeEmergency) return false;

@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { verifiedLegalKnowledge } from "@/data/legalKnowledgeBase";
 import { officialPortals } from "@/data/officialPortals";
-import { type Language, translate, useLanguage } from "@/lib/i18n";
+import { translate, useLanguage } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 

@@ -1,6 +1,6 @@
 export type OutputMode = "full-preparation-kit" | "limited-guidance-kit" | "urgent-legal-aid-route";
 
-export type CaseConfig = {
+type CaseConfig = {
   caseType: string;
   caseTypeHi: string;
   caseTypeHinglish: string;
@@ -10,7 +10,7 @@ export type CaseConfig = {
   riskMessage: string;
 };
 
-export const urgentSafetyKeywords = ["immediate danger", "arrest", "detention", "custody", "eviction threat", "court deadline", "suicide", "self-harm", "serious criminal", "serious violence", "threat to safety", "violence"];
+const urgentSafetyKeywords = ["immediate danger", "arrest", "detention", "custody", "eviction threat", "court deadline", "suicide", "self-harm", "serious criminal", "serious violence", "threat to safety", "violence"];
 const commonProofs = ["Messages / emails", "Screenshots", "Payment proof", "ID proof if relevant", "Witness details", "Timeline notes", "Other supporting proof"];
 const otherProofs = ["Any document", "Screenshots", "Messages / emails", "Payment proof", "Photos / videos", "ID proof if relevant", "Notice / letter", "Police/court/government acknowledgement", "Witness details", "Timeline notes"];
 const otherRelief = ["Legal aid guidance", "Document organization", "Complaint/application draft", "Lawyer review", "Authority visit preparation", "Next-step guidance", "Safety guidance if urgent"];
@@ -54,7 +54,7 @@ export function getCaseConfig(caseType: string) {
   return caseConfigs.find((config) => config.caseType === caseType) || caseConfigs[0];
 }
 
-export function getOutputMode(caseType: string): OutputMode {
+function getOutputMode(caseType: string): OutputMode {
   return getCaseConfig(caseType).outputMode;
 }
 

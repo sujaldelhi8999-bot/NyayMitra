@@ -254,10 +254,6 @@ function IntakeContent() {
     return "";
   }
 
-function getVerifiedSources(caseData: CaseData) {
-    return getVerifiedSourceNotes(caseData);
-  }
-
   function getLocalizedAmountMismatch(caseData: CaseData) {
     const fieldAmount = Number(caseData.amountLost);
     const matches = Array.from(caseData.story.matchAll(/(?:₹|rs\.?|inr)?\s*([0-9][0-9,]*(?:\.\d+)?)/gi));
@@ -988,8 +984,8 @@ function getVerifiedSources(caseData: CaseData) {
                   )}
                   {submittedCase.aiAnalysis.followupQuestions && <AiBox title="AI Suggested Follow-up Questions" items={submittedCase.aiAnalysis.followupQuestions} />}
                   {submittedCase.aiAnalysis.review && <div className="rounded-lg bg-white p-5 text-slate-950"><h3 className="text-xl font-black">AI Case Review</h3><p className="mt-2"><b>Quality score:</b> {submittedCase.aiAnalysis.review.qualityScore}</p><div className="mt-4 grid gap-4 md:grid-cols-2"><AiBox title="Strengths" items={submittedCase.aiAnalysis.review.strengths} /><AiBox title="Weaknesses" items={submittedCase.aiAnalysis.review.weaknesses} /><AiBox title="Missing proof" items={submittedCase.aiAnalysis.review.missingProof} /><AiBox title="Suggestions" items={submittedCase.aiAnalysis.review.suggestions} /></div></div>}
-                  {getVerifiedSources(submittedCase).length > 0 && <AiBox title="Verified Sources Used" items={getVerifiedSources(submittedCase).map((source) => `${source.title} - ${source.sourceName}`)} />}
-                  {hasLawHallucinationRisk(JSON.stringify(submittedCase.aiAnalysis), getVerifiedSources(submittedCase)) && <p className="rounded-lg bg-red-100 p-3 text-sm font-bold text-red-800">AI mentioned legal terms without verified source mapping. Please verify with legal aid/lawyer before relying on it.</p>}
+                  {getVerifiedSourceNotes(submittedCase).length > 0 && <AiBox title="Verified Sources Used" items={getVerifiedSourceNotes(submittedCase).map((source) => `${source.title} - ${source.sourceName}`)} />}
+                  {hasLawHallucinationRisk(JSON.stringify(submittedCase.aiAnalysis), getVerifiedSourceNotes(submittedCase)) && <p className="rounded-lg bg-red-100 p-3 text-sm font-bold text-red-800">AI mentioned legal terms without verified source mapping. Please verify with legal aid/lawyer before relying on it.</p>}
                 </div>
               )}
             </div>

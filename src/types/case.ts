@@ -91,5 +91,3 @@ export type CaseData = {
   };
   advisorChats?: AdvisorChat[];
 };
-
-export type FormData = CaseData;

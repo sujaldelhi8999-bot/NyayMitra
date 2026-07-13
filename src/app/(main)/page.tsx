@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { SectionHeading } from "@/components/section-heading";
-import { type Language, translate, useLanguage } from "@/lib/i18n";
+import { translate, useLanguage } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
