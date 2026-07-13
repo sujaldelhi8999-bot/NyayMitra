@@ -93,7 +93,7 @@ function IntakeContent() {
   const [caseTypeSearch, setCaseTypeSearch] = useState("");
   const [customProofInput, setCustomProofInput] = useState("");
   const [customReliefInput, setCustomReliefInput] = useState("");
-  const [draftLanguage, setDraftLanguage] = useState<Language>("en");
+  const [draftLanguage, setDraftLanguage] = useState<Language>(language);
   const todayISO = new Date().toISOString().split("T")[0];
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
   const currentCaseConfig = getCaseConfig(formData.caseType);
@@ -147,6 +147,10 @@ function IntakeContent() {
       setDraftFound(false);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    setDraftLanguage(language);
+  }, [language]);
 
   function handleInputChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -294,7 +298,7 @@ function getVerifiedSources(caseData: CaseData) {
 
   function handleGenerateDraftComplaint() {
     if (!submittedCase) return;
-    const nextDraft = generateComplaintDraft(submittedCase);
+    const nextDraft = generateComplaintDraft({ ...submittedCase, language: draftLanguage });
     setEditableDraft(nextDraft);
     setSubmittedCase((prev) => prev ? { ...prev, complaintDraft: nextDraft } : null);
     setDraftMessage("");
