@@ -6,8 +6,7 @@ import { jsPDF } from "jspdf";
 import { getInitialLanguage, type Language, translate } from "@/lib/i18n";
 import { getCaseConfig, outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
-import type { OfficialPortal } from "@/data/officialPortals";
-import type { CaseData, VerifiedSource } from "@/types/case";
+import type { CaseData } from "@/types/case";
 import { generateComplaintDraft } from "@/lib/draftTemplates";
 import { calculateCaseQualityScore } from "@/lib/qualityScore";
 import {
@@ -19,9 +18,7 @@ import {
   getVerifiedSourceNotes,
   hasLawHallucinationRisk,
   getLegalRoutes,
-  cyberLegalRoutes,
 } from "@/lib/caseUtils";
-import { OTHER_PROOF_OPTION } from "@/lib/constants";
 import { PortalCard } from "@/components/portal-card";
 
 const visitChecklist = [

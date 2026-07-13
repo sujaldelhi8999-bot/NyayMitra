@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
-import { type Language, translate, useLanguage } from "@/lib/i18n";
+import { translate, useLanguage } from "@/lib/i18n";
 import type { CaseData } from "@/types/case";
 import { storyKeywords } from "@/lib/constants";
 

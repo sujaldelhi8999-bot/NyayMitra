@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { aiAskAdvisor, aiClassifyCase, aiExtractFacts, aiGenerateDraft, aiGenerateFollowups, aiReviewCase, type AiClientError } from "@/lib/aiClient";
 import { caseConfigs, getCaseConfig, highRiskCaseTypes, outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
-import { getInitialLanguage, type Language, translate, useLanguage, translateWithFallback } from "@/lib/i18n";
+import { type Language, translate, useLanguage } from "@/lib/i18n";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
 import type { CaseData, AiClassification, AiExtraction, AiReview, AdvisorChat, UploadedFile } from "@/types/case";
 import { generateComplaintDraft } from "@/lib/draftTemplates";
