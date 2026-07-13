@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
-import { getInitialLanguage, type Language, translate } from "@/lib/i18n";
+import { type Language, translate, useLanguage } from "@/lib/i18n";
 import { getCaseConfig, outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
 import type { CaseData } from "@/types/case";
@@ -40,6 +40,7 @@ const statusEntries = [
 ] as const;
 
 export default function LegalKitPage() {
+  const { language: contextLanguage } = useLanguage();
   const [caseData, setCaseData] = useState<CaseData | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [copyMessage, setCopyMessage] = useState("");
@@ -55,18 +56,18 @@ export default function LegalKitPage() {
         const saved = localStorage.getItem("nyaymitra_case_data");
         if (saved) {
           const parsed = JSON.parse(saved) as CaseData;
-          setLanguage(parsed.language || getInitialLanguage());
+          setLanguage(parsed.language || contextLanguage);
           setCaseData({ ...parsed, uploadedFiles: parsed.uploadedFiles || [], customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [], status: parsed.status || "Draft Ready" });
         } else {
-          setLanguage(getInitialLanguage());
+          setLanguage(contextLanguage);
         }
       } catch {
-        setLanguage(getInitialLanguage());
+        setLanguage(contextLanguage);
       }
       setLoaded(true);
     }, 0);
     return () => { cancelled = true; };
-  }, []);
+  }, [contextLanguage]);
 
   if (!loaded) return null;
 
