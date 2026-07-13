@@ -154,8 +154,16 @@ if (!caseData) {
   const officialActionSuggestions = buildOfficialActionSuggestions(caseData);
 
   async function copyComplaintDraft() {
-    await navigator.clipboard.writeText(complaint);
-    setCopyMessage(t("kitComplaintCopied"));
+    try {
+      if (typeof navigator === "undefined" || !navigator.clipboard) {
+        setCopyMessage("Clipboard is not available in this context.");
+        return;
+      }
+      await navigator.clipboard.writeText(complaint);
+      setCopyMessage(t("kitComplaintCopied"));
+    } catch {
+      setCopyMessage("Failed to copy. Please copy manually.");
+    }
   }
 
   function persistCase(nextCase: CaseData) {

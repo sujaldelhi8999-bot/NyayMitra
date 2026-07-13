@@ -325,8 +325,16 @@ function getVerifiedSources(caseData: CaseData) {
 
   async function handleCopyDraft() {
     if (!editableDraft) return;
-    await navigator.clipboard.writeText(editableDraft);
-    setDraftMessage(t("msgDraftCopied"));
+    try {
+      if (typeof navigator === "undefined" || !navigator.clipboard) {
+        setDraftMessage("Clipboard is not available in this context.");
+        return;
+      }
+      await navigator.clipboard.writeText(editableDraft);
+      setDraftMessage(t("msgDraftCopied"));
+    } catch {
+      setDraftMessage("Failed to copy. Please copy manually.");
+    }
   }
 
   function handleAddEvidenceFile() {
