@@ -46,6 +46,48 @@ const propertyLegalRoutes = [
   "This point needs verification from legal aid/lawyer or official sources.",
 ];
 
+const consumerLegalRoutes = [
+  "Organize invoice/order receipt, payment proof, photos/videos, delivery proof, and complaint history.",
+  "Prepare a clear refund/replacement representation for review.",
+  "Use National Consumer Helpline where applicable.",
+  "Verify next steps with legal aid/lawyer for serious or high-value disputes.",
+];
+
+const rtiLegalRoutes = [
+  "Keep application acknowledgement, receipt, and reference number ready.",
+  "Note the department/public authority name and delay timeline.",
+  "Use RTI Online for Central Government public authorities where applicable.",
+  "Verify the State/UT or department-specific route before submitting.",
+];
+
+const lostDocumentLegalRoutes = [
+  "Keep ID proof copy and document details ready.",
+  "Note the approximate loss date, location, and authority details.",
+  "Check the State/UT police lost-report route where applicable.",
+  "Visit the local police station if an online route is not available.",
+];
+
+const salaryLegalRoutes = [
+  "Organize work agreement/messages, attendance or work proof, payment promises, invoices, and employer/client details.",
+  "Prepare a date-wise timeline of work performed and payment due.",
+  "Use this as preparation for labour/legal-aid review, not final legal advice.",
+  "Verify the correct labour authority or legal route with legal aid/lawyer.",
+];
+
+const urgentLegalAidRoutes = [
+  "Use this kit as a Legal Aid Consultation Note only.",
+  "Keep original documents and communication proof safe.",
+  "Do not sign, submit, delete, or alter anything without legal review.",
+  "For immediate danger, call 112 or contact local emergency services immediately.",
+  "Approach legal aid/lawyer urgently with the consultation note and documents.",
+];
+
+const generalLegalRoutes = [
+  "Organize facts, documents, names, dates, and requested outcome before approaching an authority or legal aid.",
+  "Use this kit for preparation and document organization only.",
+  "Verify the correct forum, authority, deadline, and filing route with legal aid/lawyer or official sources.",
+];
+
 export function getMissingProofSuggestions(data: CaseData, standardMissing: string[]) {
   if (data.caseType === "Property / Land Dispute") {
     return ["Title/sale/property papers", "Revenue/mutation/tax records", "Property location/identifier", "Court papers/case number if any", "Notices/messages"].slice(0, 5);
