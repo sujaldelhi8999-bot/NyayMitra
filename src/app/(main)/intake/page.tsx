@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { aiAskAdvisor, aiClassifyCase, aiExtractFacts, aiGenerateDraft, aiGenerateFollowups, aiReviewCase, type AiClientError } from "@/lib/aiClient";
 import { caseConfigs, getCaseConfig, highRiskCaseTypes, outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
+import { normalizeCaseStatus } from "@/lib/caseStatus";
 import { type Language, translate, useLanguage } from "@/lib/i18n";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
 import type { CaseData, AiClassification, AiExtraction, AiReview, AdvisorChat, UploadedFile } from "@/types/case";
@@ -130,7 +131,7 @@ function IntakeContent() {
       if (!saved) return;
 
       const parsed = JSON.parse(saved) as CaseData;
-      const nextCase = { ...parsed, uploadedFiles: parsed.uploadedFiles || [], followUpAnswers: parsed.followUpAnswers || {}, customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [] };
+      const nextCase = { ...parsed, uploadedFiles: parsed.uploadedFiles || [], followUpAnswers: parsed.followUpAnswers || {}, customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [], status: normalizeCaseStatus(parsed.status) };
       setCaseData(nextCase);
       setFollowUpAnswers(nextCase.followUpAnswers || {});
       setEditableDraft(nextCase.complaintDraft || "");
@@ -558,7 +559,7 @@ function IntakeContent() {
       caseId: submittedCase.caseId || `CASE-${Date.now()}`,
       createdAt: submittedCase.createdAt || now,
       updatedAt: now,
-      status: submittedCase.status || "Draft Ready",
+      status: normalizeCaseStatus(submittedCase.status),
       language,
       outputMode: resolveOutputMode(submittedCase.caseType, submittedCase.story, submittedCase.aiAnalysis?.classification?.caseType, submittedCase.aiAnalysis?.classification?.outputMode),
     };
@@ -584,7 +585,7 @@ function IntakeContent() {
       const saved = localStorage.getItem("nyaymitra_intake_draft");
       if (!saved) return;
       const parsed = JSON.parse(saved) as CaseData;
-      setCaseData({ ...parsed, uploadedFiles: parsed.uploadedFiles || [], followUpAnswers: parsed.followUpAnswers || {}, customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [] });
+      setCaseData({ ...parsed, uploadedFiles: parsed.uploadedFiles || [], followUpAnswers: parsed.followUpAnswers || {}, customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [], status: normalizeCaseStatus(parsed.status) });
       setFollowUpAnswers(parsed.followUpAnswers || {});
       setEditableDraft(parsed.complaintDraft || "");
       if (parsed.language) setLanguage(parsed.language);
