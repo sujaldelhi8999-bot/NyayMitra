@@ -73,3 +73,7 @@ export function outputModeLabel(mode: string) {
   if (mode === "limited-guidance-kit") return "Limited Guidance Kit";
   return "Urgent Legal Aid Review";
 }
+
+export function getOutputModeForCase(data: { caseType: string; story: string; outputMode?: string; aiAnalysis?: { classification?: { caseType?: string; outputMode?: OutputMode } } }): OutputMode {
+  return data.outputMode as OutputMode || resolveOutputMode(data.caseType, data.story, data.aiAnalysis?.classification?.caseType, data.aiAnalysis?.classification?.outputMode);
+}

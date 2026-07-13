@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
+import { getOutputModeForCase, outputModeLabel } from "@/lib/caseConfig";
 import { caseStatuses, caseStatusLabel, normalizeCaseStatus, type CaseStatus } from "@/lib/caseStatus";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
 import { translate, useLanguage } from "@/lib/i18n";
@@ -173,7 +173,6 @@ export default function DashboardPage() {
   );
 }
 
-function getOutputModeForCase(data: CaseData) { return data.outputMode || resolveOutputMode(data.caseType, data.story, data.aiAnalysis?.classification?.caseType, data.aiAnalysis?.classification?.outputMode); }
 function getRiskLevel(data: CaseData) { return data.aiAnalysis?.classification?.riskLevel || (getOutputModeForCase(data) === "urgent-legal-aid-route" ? "High Risk" : calculateRiskLevel(data.amountLost)); }
 function needsLawyerReview(data: CaseData) { return getOutputModeForCase(data) === "urgent-legal-aid-route" || Boolean(data.aiAnalysis?.classification?.lawyerReviewRecommended); }
 function Stat({ title, value }: { title: string; value: string }) { return <div className="rounded-lg bg-white p-5 text-slate-950 shadow-xl"><p className="text-sm font-black uppercase tracking-[0.16em] text-teal-700">{title}</p><p className="mt-2 text-3xl font-black">{value}</p></div>; }

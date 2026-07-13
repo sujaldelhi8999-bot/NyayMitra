@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { aiAskAdvisor, aiClassifyCase, aiExtractFacts, aiGenerateDraft, aiGenerateFollowups, aiReviewCase, type AiClientError } from "@/lib/aiClient";
-import { caseConfigs, getCaseConfig, highRiskCaseTypes, outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
+import { getOutputModeForCase, caseConfigs, getCaseConfig, highRiskCaseTypes, outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
 import { normalizeCaseStatus } from "@/lib/caseStatus";
 import { type Language, translate, useLanguage } from "@/lib/i18n";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
@@ -230,7 +230,7 @@ function IntakeContent() {
   }
 
   function getCaseOutputMode(caseData: CaseData) {
-    return resolveOutputMode(caseData.caseType, caseData.story, caseData.aiAnalysis?.classification?.caseType, caseData.aiAnalysis?.classification?.outputMode);
+    return getOutputModeForCase(caseData);
   }
 
   function getCaseRiskLabel(caseData: CaseData) {
@@ -361,9 +361,7 @@ function IntakeContent() {
 
   function safetyOutputMode(caseData: CaseData, classification?: AiClassification) {
     return resolveOutputMode(caseData.caseType, caseData.story, classification?.caseType, classification?.outputMode);
-  }
-
-  function isHighRiskCase(caseData: CaseData) {
+  }  function isHighRiskCase(caseData: CaseData) {
     return highRiskCaseTypes.includes(caseData.caseType) || Number(caseData.amountLost) > 50000;
   }
 
@@ -561,7 +559,7 @@ function IntakeContent() {
       updatedAt: now,
       status: normalizeCaseStatus(submittedCase.status),
       language,
-      outputMode: resolveOutputMode(submittedCase.caseType, submittedCase.story, submittedCase.aiAnalysis?.classification?.caseType, submittedCase.aiAnalysis?.classification?.outputMode),
+      outputMode: getOutputModeForCase(submittedCase),
     };
     try {
       const savedCases = JSON.parse(localStorage.getItem("nyaymitra_saved_cases") || "[]") as CaseData[];

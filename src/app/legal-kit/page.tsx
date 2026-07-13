@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
 import { type Language, translate, useLanguage } from "@/lib/i18n";
-import { getCaseConfig, outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
+import { getCaseConfig, getOutputModeForCase, outputModeLabel } from "@/lib/caseConfig";
 import { caseStatuses, caseStatusLabel, normalizeCaseStatus, type CaseStatus } from "@/lib/caseStatus";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
 import type { CaseData } from "@/types/case";
@@ -82,7 +82,7 @@ if (!caseData) {
   const answeredFollowUps = Object.entries(caseData.followUpAnswers || {}).filter(([, answer]) => answer.trim());
   const amountMismatch = detectAmountMismatch(caseData);
   const verifiedSourceNotes = getVerifiedSourceNotes(caseData);
-  const outputMode = caseData.outputMode || resolveOutputMode(caseData.caseType, caseData.story, caseData.aiAnalysis?.classification?.caseType, caseData.aiAnalysis?.classification?.outputMode);
+  const outputMode = getOutputModeForCase(caseData);
   const kitTitle = getKitTitle(caseData.caseType, outputMode);
   const officialActionSuggestions = buildOfficialActionSuggestions(caseData);
 
