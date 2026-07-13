@@ -1532,8 +1532,12 @@ export const translations = {
 
 export function getInitialLanguage(): Language {
   if (typeof window === "undefined") return "en";
-  const saved = localStorage.getItem("nyaymitra_language");
-  return saved === "hi" || saved === "hinglish" || saved === "en" ? saved : "en";
+  try {
+    const saved = localStorage.getItem("nyaymitra_language");
+    return saved === "hi" || saved === "hinglish" || saved === "en" ? saved : "en";
+  } catch {
+    return "en";
+  }
 }
 
 export function translate(language: Language, key: keyof typeof translations.en) {
@@ -1564,7 +1568,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem("nyaymitra_language", lang);
+    try {
+      localStorage.setItem("nyaymitra_language", lang);
+    } catch {}
   };
 
   return (
