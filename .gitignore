@@ -56,7 +56,7 @@ TEST_REPORT.md
 # playwright
 test-results/
 playwright-report/
-tests/screenshots/
+tests/
 
 # editor/ide
 .vscode/
