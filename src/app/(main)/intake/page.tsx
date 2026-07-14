@@ -102,7 +102,7 @@ function IntakeContent() {
   const [aiState, setAiState] = useState<{
     analysis: CaseData["aiAnalysis"];
     followupQuestions: string[];
-    advisorChats: AdvisorChat[];
+    advisorChats?: AdvisorChat[];
     lastAnalyzedAt: string | undefined;
   }>({
     analysis: undefined,
