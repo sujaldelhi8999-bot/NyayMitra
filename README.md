@@ -100,6 +100,17 @@ npm run build
 npm start
 ```
 
+### Visual Regression Testing (Playwright)
+```bash
+# Run baseline tests (captures screenshots to tests/screenshots/)
+npm run test
+
+# Update baseline screenshots after intentional UI changes
+npm run test:update
+```
+
+Test fixtures (4 cases): garbage string, cyber fraud, domestic violence, property dispute
+
 ## Project Structure
 ```
 src/
