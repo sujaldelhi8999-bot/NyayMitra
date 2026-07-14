@@ -1,0 +1,15 @@
+{
+  "name": "Cyber Fraud Test",
+  "caseType": "Cyber Fraud / UPI Scam",
+  "fullName": "Rajesh Kumar",
+  "contact": "rajesh.kumar@email.com",
+  "stateOrUT": "Maharashtra",
+  "story": "I received a WhatsApp message from an unknown number offering a work-from-home data entry job. The person claimed to be from a reputable company and asked me to pay a registration fee of ₹5000 via UPI to secure the position. I paid ₹5000 to UPI ID fakejob@upi through PhonePe. After the payment, the person blocked me on WhatsApp and stopped responding. I have screenshots of the WhatsApp conversation, the UPI transaction screenshot showing the payment to fakejob@upi, and the bank SMS confirming the debit of ₹5000. The phone number used was +91-9876543210. This happened on January 15, 2024.",
+  "incidentDate": "2024-01-15",
+  "amountLost": "5000",
+  "oppositeParty": "fakejob@upi, +91-9876543210",
+  "proofs": ["WhatsApp chat screenshot", "UPI transaction screenshot", "Bank SMS", "Phone number"],
+  "relief": ["Refund", "Police complaint", "Cybercrime complaint", "Bank complaint"],
+  "customProofs": [],
+  "customReliefs": []
+}

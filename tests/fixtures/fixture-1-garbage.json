@@ -1,0 +1,15 @@
+{
+  "name": "Garbage String Test",
+  "caseType": "Cyber Fraud / UPI Scam",
+  "fullName": "Test User",
+  "contact": "test@example.com",
+  "stateOrUT": "Delhi",
+  "story": "!@#$%^&*()_+{}|:\"<>?~`!@#$%^&*()_+{}|:\"<>?~`!@#$%^&*()_+{}|:\"<>?~`!@#$%^&*()_+{}|:\"<>?~`",
+  "incidentDate": "2024-01-15",
+  "amountLost": "5000",
+  "oppositeParty": "fakejob@upi",
+  "proofs": ["WhatsApp chat screenshot", "UPI transaction screenshot"],
+  "relief": ["Refund", "Police complaint"],
+  "customProofs": [],
+  "customReliefs": []
+}

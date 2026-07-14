@@ -1,0 +1,15 @@
+{
+  "name": "Domestic Violence Test",
+  "caseType": "Domestic Violence / Family Safety Concern",
+  "fullName": "Priya Sharma",
+  "contact": "priya.sharma@email.com",
+  "stateOrUT": "Delhi",
+  "story": "My husband has been physically and emotionally abusive for the past 2 years. On January 10, 2024, he threatened to kill me and threw a glass bottle at me which hit the wall near my head. I have medical records from the hospital visit on January 11 showing bruises on my arm and face. I have threatening WhatsApp messages from him sent on January 9 and 10. My neighbor witnessed the incident on January 10. I am in immediate danger and need urgent legal protection. I have filed a police complaint at the local police station but they have not taken action yet. I need a restraining order and police protection.",
+  "incidentDate": "2024-01-10",
+  "amountLost": "0",
+  "oppositeParty": "Rajesh Sharma (husband), +91-9876543210",
+  "proofs": ["Medical record", "Threat messages", "Photos", "Witness details"],
+  "relief": ["Urgent legal aid", "Safety support", "Document organization"],
+  "customProofs": ["Hospital discharge summary", "Police complaint acknowledgement"],
+  "customReliefs": ["Restraining order", "Police protection"]
+}
