@@ -95,11 +95,24 @@ function IntakeContent() {
   const [customProofInput, setCustomProofInput] = useState("");
   const [customReliefInput, setCustomReliefInput] = useState("");
   const [draftLanguage, setDraftLanguage] = useState<Language>(language);
+
+  // Phase 1: Lifted AI state
+  const [aiState, setAiState] = useState<{
+    analysis: CaseData["aiAnalysis"];
+    followupQuestions: string[];
+    advisorChats: AdvisorChat[];
+    lastAnalyzedAt: string | undefined;
+  }>({
+    analysis: undefined,
+    followupQuestions: [],
+    advisorChats: [],
+    lastAnalyzedAt: undefined,
+  });
   const todayISO = new Date().toISOString().split("T")[0];
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
   const currentCaseConfig = getCaseConfig(formData.caseType);
-  const suggestedProofs = formData.aiAnalysis?.classification?.suggestedProofs ?? [];
-  const suggestedReliefs = formData.aiAnalysis?.classification?.suggestedReliefs ?? [];
+  const suggestedProofs = aiState.analysis?.classification?.suggestedProofs ?? [];
+  const suggestedReliefs = aiState.analysis?.classification?.suggestedReliefs ?? [];
   const proofKeys = ["proofWhatsApp", "proofUPI", "proofBankSMS", "proofPhone", "proofEmail", "proofPolice"] as const;
   const reliefKeys = ["reliefRefund", "reliefPolice", "reliefCyber", "reliefBank", "reliefLegalAid"] as const;
   const defaultProofOpts = proofKeys.map((k) => t(k));
@@ -138,6 +151,17 @@ useEffect(() => {
       setEditableDraft(nextCase.complaintDraft || "");
       setSubmittedCase(nextCase);
       setIsEditingSavedCase(true);
+      // Restore lifted AI state
+      if (nextCase.aiAnalysis) {
+        setAiState((prev) => ({
+          ...prev,
+          analysis: nextCase.aiAnalysis,
+          lastAnalyzedAt: nextCase.aiAnalysis?.lastAnalyzedAt,
+        }));
+      }
+      if (nextCase.advisorChats?.length) {
+        setAiState((prev) => ({ ...prev, advisorChats: nextCase.advisorChats }));
+      }
     } catch {}
   }, [searchParams]);
 
@@ -199,6 +223,12 @@ useEffect(() => {
     setCustomProofInput("");
     setCustomReliefInput("");
     setAiMessage("");
+    setAiState({
+      analysis: undefined,
+      followupQuestions: [],
+      advisorChats: [],
+      lastAnalyzedAt: undefined,
+    });
   }
 
   function addCustomProof() {
@@ -383,7 +413,7 @@ useEffect(() => {
     setAiMessage(message);
   }
 
-  async function handleAskAdvisor() {
+async function handleAskAdvisor() {
     if (!submittedCase || !advisorQuestion.trim()) return;
     setAdvisorLoading(true);
     setAdvisorMessage(t("aiThinkingNyayMitra"));
@@ -392,6 +422,7 @@ useEffect(() => {
     const answer = failed ? fallbackAdvisor(submittedCase) : result;
     const chat: AdvisorChat = { ...answer, id: `CHAT-${Date.now()}`, question: advisorQuestion, createdAt: new Date().toISOString() };
     setSubmittedCase((prev) => prev ? { ...prev, advisorChats: [...(prev.advisorChats || []), chat] } : null);
+    setAiState((prev) => ({ ...prev, advisorChats: [...(prev.advisorChats || []), chat] }));
     setAdvisorQuestion("");
     setAdvisorMessage(failed ? `${result.error} ${t("aiRuleBasedFallback")}` : t("aiGuidanceGenerated"));
     setAdvisorLoading(false);
@@ -409,16 +440,25 @@ useEffect(() => {
     }
     const safeClassification = { ...result, outputMode: safetyOutputMode(formData, result) };
     setCaseData((current) => ({ ...current, aiAnalysis: { ...(current.aiAnalysis || {}), classification: safeClassification, lastAnalyzedAt: new Date().toISOString() } }));
+    setAiState((prev) => ({
+      ...prev,
+      analysis: { ...(prev.analysis || {}), classification: safeClassification, lastAnalyzedAt: new Date().toISOString() },
+      lastAnalyzedAt: new Date().toISOString(),
+    }));
     setAiMessage(t("aiClassificationReady"));
   }
 
   function useSuggestedCaseType() {
-    const classification = formData.aiAnalysis?.classification;
+    const classification = aiState.analysis?.classification;
     if (!classification) return;
     setCaseData((current) => ({ ...current, caseType: classification.caseType, outputMode: safetyOutputMode(current, classification), proofs: Array.from(new Set([...current.proofs, ...classification.suggestedProofs])), relief: Array.from(new Set([...current.relief, ...classification.suggestedReliefs])) }));
   }
 
   function mergeAiAnalysis(next: Partial<NonNullable<CaseData["aiAnalysis"]>>) {
+    setAiState((prev) => {
+      const merged = { ...(prev.analysis || {}), ...next, lastAnalyzedAt: new Date().toISOString() };
+      return { ...prev, analysis: merged, lastAnalyzedAt: new Date().toISOString() };
+    });
     setSubmittedCase((prev) => {
       if (!prev) return null;
       const merged = { ...(prev.aiAnalysis || {}), ...next, lastAnalyzedAt: new Date().toISOString() };
@@ -439,7 +479,13 @@ useEffect(() => {
       return;
     }
     const safeClassification = classification && !classificationError ? { ...(classification as AiClassification), outputMode: safetyOutputMode(submittedCase, classification as AiClassification) } : undefined;
-    mergeAiAnalysis({ classification: safeClassification, extraction: extraction && !extractionError ? extraction as AiExtraction : undefined });
+    setAiState((prev) => ({
+      ...prev,
+      analysis: { ...(prev.analysis || {}), classification: safeClassification, extraction: extraction && !extractionError ? extraction as AiExtraction : undefined, lastAnalyzedAt: new Date().toISOString() },
+      lastAnalyzedAt: new Date().toISOString(),
+    }));
+    // Mirror to submittedCase for backward compatibility
+    setSubmittedCase((prev) => prev ? { ...prev, aiAnalysis: { ...(prev.aiAnalysis || {}), classification: safeClassification, extraction: extraction && !extractionError ? extraction as AiExtraction : undefined, lastAnalyzedAt: new Date().toISOString() } } : null);
     setAiMessage(t("aiAnalysisCompleted"));
   }
 
@@ -455,7 +501,14 @@ useEffect(() => {
     }
     const questions = Array.from(new Set([...extraFollowUpQuestions, ...result.questions]));
     setExtraFollowUpQuestions(questions);
-    mergeAiAnalysis({ followupQuestions: questions });
+    setAiState((prev) => ({
+      ...prev,
+      followupQuestions: questions,
+      analysis: { ...(prev.analysis || {}), followupQuestions: questions, lastAnalyzedAt: new Date().toISOString() },
+      lastAnalyzedAt: new Date().toISOString(),
+    }));
+    // Mirror to submittedCase
+    setSubmittedCase((prev) => prev ? { ...prev, aiAnalysis: { ...(prev.aiAnalysis || {}), followupQuestions: questions, lastAnalyzedAt: new Date().toISOString() } } : null);
     setAiMessage(t("aiAnalysisCompleted"));
   }
 
@@ -471,6 +524,11 @@ useEffect(() => {
     }
     setEditableDraft(result.draftText);
     setSubmittedCase((prev) => prev ? { ...prev, complaintDraft: result.draftText, aiAnalysis: { ...(prev.aiAnalysis || {}), generatedDraft: result.draftText, lastAnalyzedAt: new Date().toISOString() } } : null);
+    setAiState((prev) => ({
+      ...prev,
+      analysis: { ...(prev.analysis || {}), generatedDraft: result.draftText, lastAnalyzedAt: new Date().toISOString() },
+      lastAnalyzedAt: new Date().toISOString(),
+    }));
     setAiMessage(t("aiDraftGenerated"));
   }
 
@@ -484,7 +542,13 @@ useEffect(() => {
       showAiError(result);
       return;
     }
-    mergeAiAnalysis({ review: result });
+    setAiState((prev) => ({
+      ...prev,
+      analysis: { ...(prev.analysis || {}), review: result, lastAnalyzedAt: new Date().toISOString() },
+      lastAnalyzedAt: new Date().toISOString(),
+    }));
+    // Mirror to submittedCase
+    setSubmittedCase((prev) => prev ? { ...prev, aiAnalysis: { ...(prev.aiAnalysis || {}), review: result, lastAnalyzedAt: new Date().toISOString() } } : null);
     setAiMessage(t("aiAnalysisCompleted"));
   }
 
@@ -611,6 +675,12 @@ useEffect(() => {
     setDraftFound(false);
     setIsEditingSavedCase(false);
     setProgressMessage(t("msgFreshCase"));
+    setAiState({
+      analysis: undefined,
+      followupQuestions: [],
+      advisorChats: [],
+      lastAnalyzedAt: undefined,
+    });
   }
 
   function detectCaseTypeMismatch(caseData: CaseData) {
