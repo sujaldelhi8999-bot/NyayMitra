@@ -109,7 +109,7 @@ export default function DashboardPage() {
           <h1 className="mt-5 text-4xl font-black tracking-tight sm:text-6xl">{t("appName")} {t("dashboard")}</h1>
           <p className="mt-3 max-w-3xl text-lg text-slate-100">{t("dashManage")}</p>
           <p className="mt-3 rounded-lg bg-white/10 p-4 text-sm font-semibold text-slate-100">{t("dashStartFreshNote")}</p>
-          <p className="mt-4 rounded-lg bg-slate-950/70 p-4 text-sm font-semibold">{t("disclaimer")}</p>
+          <p className="mt-4 rounded-lg bg-slate-950/70 p-4 text-sm font-semibold text-slate-200">NyayMitra is a legal self-help tool, not a lawyer. Verify with legal aid/lawyer.</p>
         </header>
 
         {cases.length === 0 ? (

@@ -313,7 +313,7 @@ if (!caseData) {
               </select>
               {statusMessage && <p className="mt-3 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900">{statusMessage}</p>}
             </div>
-            <p className="mt-5 rounded-lg bg-slate-950 p-4 text-sm font-semibold text-white">{t("disclaimer")}</p>
+            <p className="mt-5 rounded-lg bg-slate-950 p-4 text-sm font-semibold text-white">NyayMitra is a legal self-help tool, not a lawyer. Verify with legal aid/lawyer.</p>
             <div className="mt-4 rounded-lg border border-teal-100 bg-teal-50 p-5">
               <h2 className="font-black text-teal-900">{t("kitSafetyNoteTitle")}</h2>
               <p className="mt-2 text-sm font-semibold leading-6 text-slate-700">{t("kitSafetyNoteDesc")}</p>

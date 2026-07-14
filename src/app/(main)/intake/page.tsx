@@ -1347,11 +1347,7 @@ async function handleAskAdvisor() {
                   : "This case can be prepared with evidence, timeline, and a draft for review. For serious matters, contact legal aid or a lawyer."}
               </p>
 
-              <p className="mt-4 rounded-lg bg-slate-900 p-4 text-sm text-slate-300">
-                NyayMitra does not provide legal advice and does not
-                guarantee any result. It helps with draft preparation, evidence
-                organization, and legal-aid routing. NyayMitra is a legal self-help preparation tool, not a lawyer. Please verify with legal aid/lawyer before filing.
-              </p>
+              <p className="mt-4 rounded-lg bg-slate-900 p-4 text-sm text-slate-300">NyayMitra is a legal self-help tool, not a lawyer. Verify with legal aid/lawyer before filing.</p>
             </div>
 
             <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
