@@ -11,12 +11,14 @@ import type { CaseData, AiClassification, AiExtraction, AiReview, AdvisorChat, U
 import { generateComplaintDraft } from "@/lib/draftTemplates";
 import { calculateCaseQualityScore } from "@/lib/qualityScore";
 import { PortalCard } from "@/components/portal-card";
+import { SourceTag } from "@/components/source-tag";
 import {
   getMissingProofSuggestions,
   getVerifiedSourceNotes,
   hasLawHallucinationRisk,
   getNextStepsChecklist,
   generateFollowUpQuestions,
+  getMergedFollowUpQuestions,
   formatFileSize,
   calculateRiskLevel,
 } from "@/lib/caseUtils";
@@ -95,11 +97,24 @@ function IntakeContent() {
   const [customProofInput, setCustomProofInput] = useState("");
   const [customReliefInput, setCustomReliefInput] = useState("");
   const [draftLanguage, setDraftLanguage] = useState<Language>(language);
+
+  // Phase 1: Lifted AI state
+  const [aiState, setAiState] = useState<{
+    analysis: CaseData["aiAnalysis"];
+    followupQuestions: string[];
+    advisorChats: AdvisorChat[];
+    lastAnalyzedAt: string | undefined;
+  }>({
+    analysis: undefined,
+    followupQuestions: [],
+    advisorChats: [],
+    lastAnalyzedAt: undefined,
+  });
   const todayISO = new Date().toISOString().split("T")[0];
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
   const currentCaseConfig = getCaseConfig(formData.caseType);
-  const suggestedProofs = formData.aiAnalysis?.classification?.suggestedProofs ?? [];
-  const suggestedReliefs = formData.aiAnalysis?.classification?.suggestedReliefs ?? [];
+  const suggestedProofs = aiState.analysis?.classification?.suggestedProofs ?? [];
+  const suggestedReliefs = aiState.analysis?.classification?.suggestedReliefs ?? [];
   const proofKeys = ["proofWhatsApp", "proofUPI", "proofBankSMS", "proofPhone", "proofEmail", "proofPolice"] as const;
   const reliefKeys = ["reliefRefund", "reliefPolice", "reliefCyber", "reliefBank", "reliefLegalAid"] as const;
   const defaultProofOpts = proofKeys.map((k) => t(k));
@@ -138,6 +153,17 @@ useEffect(() => {
       setEditableDraft(nextCase.complaintDraft || "");
       setSubmittedCase(nextCase);
       setIsEditingSavedCase(true);
+      // Restore lifted AI state
+      if (nextCase.aiAnalysis) {
+        setAiState((prev) => ({
+          ...prev,
+          analysis: nextCase.aiAnalysis,
+          lastAnalyzedAt: nextCase.aiAnalysis?.lastAnalyzedAt,
+        }));
+      }
+      if (nextCase.advisorChats?.length) {
+        setAiState((prev) => ({ ...prev, advisorChats: nextCase.advisorChats }));
+      }
     } catch {}
   }, [searchParams]);
 
@@ -199,6 +225,12 @@ useEffect(() => {
     setCustomProofInput("");
     setCustomReliefInput("");
     setAiMessage("");
+    setAiState({
+      analysis: undefined,
+      followupQuestions: [],
+      advisorChats: [],
+      lastAnalyzedAt: undefined,
+    });
   }
 
   function addCustomProof() {
@@ -264,13 +296,13 @@ useEffect(() => {
     return t("warnAmountMismatch").replace("{fieldAmount}", String(caseData.amountLost)).replace("{storyAmount}", String(differentAmount));
   }
 
-  function analyzeDraftQuality(draftText: string) {
+function analyzeDraftQuality(draftText: string) {
     const lowerDraft = draftText.toLowerCase();
     const hasSubject = lowerDraft.includes("subject:");
     const hasIncidentDate = Boolean(submittedCase?.incidentDate && draftText.includes(submittedCase.incidentDate));
-    const hasAmount = Boolean(submittedCase?.amountLost && draftText.includes(submittedCase.amountLost));
-    const hasEvidence = lowerDraft.includes("evidence") || lowerDraft.includes("annexure");
-    const hasRelief = lowerDraft.includes("relief requested") || lowerDraft.includes("relief");
+    const hasAmount = Boolean(submittedCase?.amountLost && Number(submittedCase.amountLost) > 0 && draftText.includes(submittedCase.amountLost));
+    const hasEvidence = (lowerDraft.includes("evidence") || lowerDraft.includes("annexure")) && (submittedCase?.proofs.length || 0) > 0;
+    const hasRelief = (lowerDraft.includes("relief requested") || lowerDraft.includes("relief")) && (submittedCase?.relief.length || 0) > 0;
     const hasDeclaration = lowerDraft.includes("declaration");
     const suggestions: string[] = [];
     let score = 0;
@@ -383,7 +415,7 @@ useEffect(() => {
     setAiMessage(message);
   }
 
-  async function handleAskAdvisor() {
+async function handleAskAdvisor() {
     if (!submittedCase || !advisorQuestion.trim()) return;
     setAdvisorLoading(true);
     setAdvisorMessage(t("aiThinkingNyayMitra"));
@@ -392,6 +424,7 @@ useEffect(() => {
     const answer = failed ? fallbackAdvisor(submittedCase) : result;
     const chat: AdvisorChat = { ...answer, id: `CHAT-${Date.now()}`, question: advisorQuestion, createdAt: new Date().toISOString() };
     setSubmittedCase((prev) => prev ? { ...prev, advisorChats: [...(prev.advisorChats || []), chat] } : null);
+    setAiState((prev) => ({ ...prev, advisorChats: [...(prev.advisorChats || []), chat] }));
     setAdvisorQuestion("");
     setAdvisorMessage(failed ? `${result.error} ${t("aiRuleBasedFallback")}` : t("aiGuidanceGenerated"));
     setAdvisorLoading(false);
@@ -409,16 +442,25 @@ useEffect(() => {
     }
     const safeClassification = { ...result, outputMode: safetyOutputMode(formData, result) };
     setCaseData((current) => ({ ...current, aiAnalysis: { ...(current.aiAnalysis || {}), classification: safeClassification, lastAnalyzedAt: new Date().toISOString() } }));
+    setAiState((prev) => ({
+      ...prev,
+      analysis: { ...(prev.analysis || {}), classification: safeClassification, lastAnalyzedAt: new Date().toISOString() },
+      lastAnalyzedAt: new Date().toISOString(),
+    }));
     setAiMessage(t("aiClassificationReady"));
   }
 
   function useSuggestedCaseType() {
-    const classification = formData.aiAnalysis?.classification;
+    const classification = aiState.analysis?.classification;
     if (!classification) return;
     setCaseData((current) => ({ ...current, caseType: classification.caseType, outputMode: safetyOutputMode(current, classification), proofs: Array.from(new Set([...current.proofs, ...classification.suggestedProofs])), relief: Array.from(new Set([...current.relief, ...classification.suggestedReliefs])) }));
   }
 
   function mergeAiAnalysis(next: Partial<NonNullable<CaseData["aiAnalysis"]>>) {
+    setAiState((prev) => {
+      const merged = { ...(prev.analysis || {}), ...next, lastAnalyzedAt: new Date().toISOString() };
+      return { ...prev, analysis: merged, lastAnalyzedAt: new Date().toISOString() };
+    });
     setSubmittedCase((prev) => {
       if (!prev) return null;
       const merged = { ...(prev.aiAnalysis || {}), ...next, lastAnalyzedAt: new Date().toISOString() };
@@ -439,7 +481,22 @@ useEffect(() => {
       return;
     }
     const safeClassification = classification && !classificationError ? { ...(classification as AiClassification), outputMode: safetyOutputMode(submittedCase, classification as AiClassification) } : undefined;
-    mergeAiAnalysis({ classification: safeClassification, extraction: extraction && !extractionError ? extraction as AiExtraction : undefined });
+    setAiState((prev) => ({
+      ...prev,
+      analysis: { ...(prev.analysis || {}), classification: safeClassification, extraction: extraction && !extractionError ? extraction as AiExtraction : undefined, lastAnalyzedAt: new Date().toISOString() },
+      lastAnalyzedAt: new Date().toISOString(),
+    }));
+    // Mirror to submittedCase for backward compatibility
+    setSubmittedCase((prev) => prev ? { ...prev, aiAnalysis: { ...(prev.aiAnalysis || {}), classification: safeClassification, extraction: extraction && !extractionError ? extraction as AiExtraction : undefined, lastAnalyzedAt: new Date().toISOString() } } : null);
+    
+    // Auto-populate: merge AI followups into lifted state
+    if (extraction && !extractionError && (extraction as AiExtraction).missingDetails?.length) {
+      setAiState((prev) => ({
+        ...prev,
+        followupQuestions: Array.from(new Set([...(prev.followupQuestions || []), ...(extraction as AiExtraction).missingDetails])),
+      }));
+    }
+    
     setAiMessage(t("aiAnalysisCompleted"));
   }
 
@@ -455,7 +512,14 @@ useEffect(() => {
     }
     const questions = Array.from(new Set([...extraFollowUpQuestions, ...result.questions]));
     setExtraFollowUpQuestions(questions);
-    mergeAiAnalysis({ followupQuestions: questions });
+    setAiState((prev) => ({
+      ...prev,
+      followupQuestions: questions,
+      analysis: { ...(prev.analysis || {}), followupQuestions: questions, lastAnalyzedAt: new Date().toISOString() },
+      lastAnalyzedAt: new Date().toISOString(),
+    }));
+    // Mirror to submittedCase
+    setSubmittedCase((prev) => prev ? { ...prev, aiAnalysis: { ...(prev.aiAnalysis || {}), followupQuestions: questions, lastAnalyzedAt: new Date().toISOString() } } : null);
     setAiMessage(t("aiAnalysisCompleted"));
   }
 
@@ -471,6 +535,11 @@ useEffect(() => {
     }
     setEditableDraft(result.draftText);
     setSubmittedCase((prev) => prev ? { ...prev, complaintDraft: result.draftText, aiAnalysis: { ...(prev.aiAnalysis || {}), generatedDraft: result.draftText, lastAnalyzedAt: new Date().toISOString() } } : null);
+    setAiState((prev) => ({
+      ...prev,
+      analysis: { ...(prev.analysis || {}), generatedDraft: result.draftText, lastAnalyzedAt: new Date().toISOString() },
+      lastAnalyzedAt: new Date().toISOString(),
+    }));
     setAiMessage(t("aiDraftGenerated"));
   }
 
@@ -484,7 +553,13 @@ useEffect(() => {
       showAiError(result);
       return;
     }
-    mergeAiAnalysis({ review: result });
+    setAiState((prev) => ({
+      ...prev,
+      analysis: { ...(prev.analysis || {}), review: result, lastAnalyzedAt: new Date().toISOString() },
+      lastAnalyzedAt: new Date().toISOString(),
+    }));
+    // Mirror to submittedCase
+    setSubmittedCase((prev) => prev ? { ...prev, aiAnalysis: { ...(prev.aiAnalysis || {}), review: result, lastAnalyzedAt: new Date().toISOString() } } : null);
     setAiMessage(t("aiAnalysisCompleted"));
   }
 
@@ -611,6 +686,12 @@ useEffect(() => {
     setDraftFound(false);
     setIsEditingSavedCase(false);
     setProgressMessage(t("msgFreshCase"));
+    setAiState({
+      analysis: undefined,
+      followupQuestions: [],
+      advisorChats: [],
+      lastAnalyzedAt: undefined,
+    });
   }
 
   function detectCaseTypeMismatch(caseData: CaseData) {
@@ -712,6 +793,19 @@ useEffect(() => {
               {wizardStep === 0 && <><Input label={t("fullName")} name="fullName" value={formData.fullName} onChange={handleInputChange} /><Input label={t("contact")} name="contact" value={formData.contact} onChange={handleInputChange} /><Input label={t("stateOrUT")} name="stateOrUT" value={formData.stateOrUT || ""} onChange={handleInputChange} /><div className="md:col-span-2"><CaseTypeSelector selected={formData.caseType} search={caseTypeSearch} onSearch={setCaseTypeSearch} onSelect={selectCaseType} /></div></>}
               {wizardStep === 1 && <><Input label={t("incidentDate")} type="date" name="incidentDate" value={formData.incidentDate} onChange={handleInputChange} max={todayISO} /><Input label={t("amountLost")} type="number" name="amountLost" value={formData.amountLost} onChange={handleInputChange} /></>}
               {wizardStep === 2 && <label className="block md:col-span-2"><span className="mb-2 block font-semibold">{t("story")}</span><textarea name="story" value={formData.story} onChange={handleInputChange} rows={6} className="w-full rounded-lg border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" /></label>}
+              {wizardStep === 2 && formData.story.trim().length >= 30 && (
+                <div className="mt-4 md:col-span-2 sticky top-4 z-10">
+                  <button
+                    type="button"
+                    onClick={handleAiAnalyzeStory}
+                    className="w-full md:w-auto rounded-lg bg-teal-500 px-4 py-3 font-bold text-slate-950 shadow-lg transition hover:bg-teal-400"
+                    disabled={aiLoading === "analyze"}
+                  >
+                    {aiLoading === "analyze" ? t("aiAnalyzingCase") : t("aiAnalyze")}
+                  </button>
+                  {aiMessage && <p className={`mt-2 text-sm font-bold ${aiMessage.startsWith("AI could not") || aiMessage.startsWith("OpenRouter") || aiMessage.includes("error") || aiMessage.includes("Error") ? "text-red-600" : "text-teal-700"}`} aria-live="polite">{aiMessage}</p>}
+                </div>
+              )}
               {wizardStep === 3 && <Input label={t("oppositeParty")} name="oppositeParty" value={formData.oppositeParty} onChange={handleInputChange} />}
               {wizardStep === 4 && <div className="md:col-span-2"><h3 className="mb-3 font-black">{t("proofAvailable")}</h3><div className="grid gap-3 md:grid-cols-2">{proofOptions.map((proof) => <label key={proof} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3"><input type="checkbox" value={proof} checked={formData.proofs.includes(proof)} onChange={(e) => handleCheckboxChange(e, "proofs")} />{proof}</label>)}</div><CustomItemsEditor type="proof" enabled={formData.proofs.includes(OTHER_PROOF_OPTION)} value={customProofInput} items={formData.customProofs || []} onChange={setCustomProofInput} onAdd={addCustomProof} onRemove={removeCustomProof} /></div>}
               {wizardStep === 5 && <div className="md:col-span-2"><h3 className="mb-3 font-black">{t("reliefWanted")}</h3><div className="grid gap-3 md:grid-cols-2">{reliefOptions.map((item) => <label key={item} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3"><input type="checkbox" value={item} checked={formData.relief.includes(item)} onChange={(e) => handleCheckboxChange(e, "relief")} />{item}</label>)}</div><CustomItemsEditor type="relief" enabled={formData.relief.includes(OTHER_RELIEF_OPTION)} value={customReliefInput} items={formData.customReliefs || []} onChange={setCustomReliefInput} onAdd={addCustomRelief} onRemove={removeCustomRelief} /></div>}
@@ -813,6 +907,21 @@ useEffect(() => {
                 placeholder={t("storyPlaceholder")}
               />
             </div>
+
+            {/* AI Analyze button - sticky after story */}
+            {formData.story.trim().length >= 30 && (
+              <div className="mt-4 sticky top-4 z-10">
+                <button
+                  type="button"
+                  onClick={handleAiAnalyzeStory}
+                  className="w-full md:w-auto rounded-lg bg-teal-500 px-4 py-3 font-bold text-slate-950 shadow-lg transition hover:bg-teal-400"
+                  disabled={aiLoading === "analyze"}
+                >
+                  {aiLoading === "analyze" ? t("aiAnalyzingCase") : t("aiAnalyze")}
+                </button>
+                {aiMessage && <p className={`mt-2 text-sm font-bold ${aiMessage.startsWith("AI could not") || aiMessage.startsWith("OpenRouter") || aiMessage.includes("error") || aiMessage.includes("Error") ? "text-red-600" : "text-teal-700"}`} aria-live="polite">{aiMessage}</p>}
+              </div>
+            )}
 
           {formData.caseType === "Other / Not Sure" && (
             <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-5 text-slate-950">
@@ -963,13 +1072,11 @@ useEffect(() => {
               <p className="text-sm font-semibold text-teal-300">Optional AI layer</p>
               <h2 className="mt-2 text-2xl font-bold">AI Assist</h2>
               <p className="mt-2 text-sm leading-6 text-slate-300">Let NyayMitra analyze your story and improve your preparation kit. Rule-based mode still works if AI is unavailable.</p>
-              <div className="mt-5 grid gap-3 md:grid-cols-4">
-                <button type="button" onClick={handleAiAnalyzeStory} className="rounded-lg bg-teal-500 px-4 py-3 font-bold text-slate-950">{aiLoading === "analyze" ? t("aiAnalyzingCase") : t("aiAnalyze")}</button>
+              <div className="mt-5 grid gap-3 md:grid-cols-3">
                 <button type="button" onClick={handleAiFollowups} className="rounded-lg bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "followup" ? t("aiAnalyzingCase") : t("aiFollowups")}</button>
                 <button type="button" onClick={handleAiImproveDraft} className="rounded-lg bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "draft" ? t("aiAnalyzingCase") : t("aiImproveDraft")}</button>
                 <button type="button" onClick={handleAiReview} className="rounded-lg bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "review" ? t("aiAnalyzingCase") : t("aiReview")}</button>
               </div>
-              {aiMessage && <p className={`mt-4 rounded-lg p-3 text-sm font-bold ${aiMessage.startsWith("AI could not") || aiMessage.startsWith("OpenRouter") || aiMessage.includes("error") || aiMessage.includes("Error") ? "bg-red-100 text-red-800" : "bg-teal-100 text-teal-900"}`} aria-live="polite">{aiMessage}</p>}
               {submittedCase.aiAnalysis && (
                 <div className="mt-5 space-y-4">
                   {(submittedCase.aiAnalysis.classification || submittedCase.aiAnalysis.extraction) && (
@@ -1047,9 +1154,12 @@ useEffect(() => {
               <p className="text-sm font-semibold text-teal-300">Rule-based preparation assistant</p>
               <h2 className="mt-2 text-2xl font-bold">{t("followUps")}</h2>
               <div className="mt-5 space-y-4">
-                {generateFollowUpQuestions(submittedCase).map((question) => (
+                {getMergedFollowUpQuestions(submittedCase).map(({ question, source }) => (
                   <label key={question} className="block rounded-lg border border-white/10 bg-white/5 p-4">
-                    <span className="font-semibold text-slate-100">{question}</span>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-semibold text-slate-100">{question}</span>
+                      <SourceTag source={source} />
+                    </div>
                     <textarea
                       value={followUpAnswers[question] || ""}
                       onChange={(event) => setFollowUpAnswers((current) => ({ ...current, [question]: event.target.value }))}
@@ -1140,11 +1250,14 @@ useEffect(() => {
                       const custom = (submittedCase.customProofs || []).includes(proof);
                       const available = submittedCase.proofs.includes(proof);
                       const uploadedFile = submittedCase.uploadedFiles.find((file) => file.evidenceCategory === proof);
+                      // Determine if proof is from AI suggestion or rule-based
+                      const isAiSuggested = submittedCase.aiAnalysis?.classification?.suggestedProofs?.includes(proof) || false;
+                      const source = isAiSuggested ? 'ai' : 'rule';
 
                       return (
                         <tr key={proof} className="border-b">
                           <td className="p-3 font-black">{uploadedFile ? `A${submittedCase.uploadedFiles.findIndex((file) => file.id === uploadedFile.id) + 1}` : "-"}</td>
-                          <td className="p-3 font-semibold">{proof}</td>
+                          <td className="p-3 font-semibold flex items-center gap-2">{proof} <SourceTag source={source} /></td>
                           <td className="p-3">
                             {custom || available ? "Yes" : t("kitLabelMissing")}
                           </td>
@@ -1213,8 +1326,9 @@ useEffect(() => {
                   {displayedMissingProofs.map((item) => (
                     <div
                       key={item}
-                      className="rounded-lg border border-orange-300 bg-orange-50 p-4"
+                      className="rounded-lg border border-orange-300 bg-orange-50 p-4 flex items-center gap-2"
                     >
+                      <SourceTag source="rule" />
                       <b>{t("labelMissingProofs")}</b> {item}. Try to collect this before final
                       PDF.
                     </div>
@@ -1237,11 +1351,7 @@ useEffect(() => {
                   : "This case can be prepared with evidence, timeline, and a draft for review. For serious matters, contact legal aid or a lawyer."}
               </p>
 
-              <p className="mt-4 rounded-lg bg-slate-900 p-4 text-sm text-slate-300">
-                NyayMitra does not provide legal advice and does not
-                guarantee any result. It helps with draft preparation, evidence
-                organization, and legal-aid routing. NyayMitra is a legal self-help preparation tool, not a lawyer. Please verify with legal aid/lawyer before filing.
-              </p>
+              <p className="mt-4 rounded-lg bg-slate-900 p-4 text-sm text-slate-300">NyayMitra is a legal self-help tool, not a lawyer. Verify with legal aid/lawyer before filing.</p>
             </div>
 
             <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
@@ -1333,7 +1443,10 @@ function AiBox({ title, items }: { title: string; items: string[] }) {
 function AdvisorChatCard({ chat }: { chat: AdvisorChat }) {
   return (
     <div className="rounded-lg border border-slate-200 bg-slate-50 p-5">
-      <p className="font-black text-slate-950">Q: {chat.question}</p>
+      <div className="flex items-center gap-2 mb-2">
+        <p className="font-black text-slate-950">Q: {chat.question}</p>
+        <SourceTag source="ai" />
+      </div>
       <p className="mt-3 leading-7 text-slate-700">{chat.answer}</p>
       {chat.lawyerReviewRecommended && <p className="mt-3 rounded-lg bg-red-100 p-3 text-sm font-black text-red-800">Legal-aid/lawyer review strongly recommended.</p>}
       <div className="mt-4 grid gap-3 md:grid-cols-2">

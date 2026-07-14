@@ -44,8 +44,8 @@ function Footer({ language }: { language: Language }) {
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
 
   return (
-    <footer className="border-t border-slate-200 bg-white px-5 py-8 text-center text-sm font-semibold text-slate-500">
-      {t("footerDisclaimer")}
+    <footer className="border-t border-slate-200 bg-white px-5 py-6 text-center text-sm font-semibold text-slate-500">
+      NyayMitra is a legal self-help tool, not a lawyer. Verify with legal aid/lawyer.
     </footer>
   );
 }

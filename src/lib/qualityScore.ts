@@ -20,41 +20,63 @@ function hasTooManyRandomSymbols(story: string) {
   return symbolMatches.length / story.length > 0.15;
 }
 
+function hasValidOppositeParty(oppositeParty: string, caseType: string) {
+  if (!oppositeParty.trim()) return false;
+  const lower = oppositeParty.toLowerCase();
+  const hasUpi = /@/.test(oppositeParty);
+  const hasPhone = /\d{10}/.test(oppositeParty);
+  const hasEmail = /@.*\./.test(oppositeParty);
+  const hasName = /[a-z]{2,}/i.test(oppositeParty);
+  return hasUpi || hasPhone || hasEmail || hasName;
+}
+
+function storyMentionsAmount(story: string, amount: string) {
+  if (!amount || Number(amount) <= 0) return false;
+  const amountNum = Number(amount);
+  const matches = Array.from(story.matchAll(/(?:₹|rs\.?|inr)?\s*([0-9][0-9,]*(?:\.\d+)?)/gi));
+  const storyAmounts = matches.map((match) => Number(match[1].replace(/,/g, ""))).filter((a) => a > 0);
+  return storyAmounts.some((a) => a === amountNum);
+}
+
 export function calculateCaseQualityScore(data: CaseData) {
   let score = 0;
   const suggestions: string[] = [];
   const caseType = data.caseType;
   getCaseConfig(caseType);
 
-  if (caseType === "Property / Land Dispute") {
-    if (data.story.trim().length >= 80) score += 20;
-    else suggestions.push("Add clear relationship/history of the property.");
-  } else if (caseType === "Consumer Complaint") {
-    if (data.story.trim().length >= 80) score += 20;
-    else suggestions.push("Add clearer order, seller/platform, defect/service issue, complaint history, and refund/replacement details.");
-  } else if (caseType === "RTI / Government Service Delay" || caseType === "Government Document / Certificate Issue") {
-    if (data.story.trim().length >= 80) score += 20;
-    else suggestions.push("Add department name, application/reference number, date of application, delay period, acknowledgement, and action needed.");
-  } else if (data.story.trim().length >= 80 && countUsefulStoryKeywords(data.story, caseType) >= 3) {
+  const storyLength = data.story.trim().length;
+  const keywordCount = countUsefulStoryKeywords(data.story, caseType);
+  const storyHasGarbage = hasTooManyRandomSymbols(data.story);
+  const storyValid = storyLength >= 80 && keywordCount >= 3 && !storyHasGarbage;
+
+  if (storyValid) {
     score += 20;
   } else {
-    suggestions.push("Add a clearer story with useful details like WhatsApp, UPI, payment, transaction, bank, fraud, blocked, or refund.");
-  }
-
-  if (hasTooManyRandomSymbols(data.story)) {
-    score -= 10;
-    suggestions.push("Reduce random symbols and write the story in clear sentences.");
+    if (storyLength < 80) {
+      if (caseType === "Property / Land Dispute") suggestions.push("Add clear relationship/history of the property (at least 80 characters).");
+      else if (caseType === "Consumer Complaint") suggestions.push("Add clearer order, seller/platform, defect/service issue, complaint history, and refund/replacement details (at least 80 characters).");
+      else if (caseType === "RTI / Government Service Delay" || caseType === "Government Document / Certificate Issue") suggestions.push("Add department name, application/reference number, date of application, delay period, acknowledgement, and action needed (at least 80 characters).");
+      else suggestions.push("Add a clearer story with useful details like WhatsApp, UPI, payment, transaction, bank, fraud, blocked, or refund (at least 80 characters).");
+    }
+    if (keywordCount < 3) {
+      suggestions.push(`Story needs more case-relevant keywords (found ${keywordCount}, need at least 3).`);
+    }
+    if (storyHasGarbage) {
+      score -= 10;
+      suggestions.push("Reduce random symbols and write the story in clear sentences.");
+    }
   }
 
   if (data.incidentDate) score += 10;
   else suggestions.push("Add the incident date.");
 
-  if (Number(data.amountLost) > 0) score += 10;
-  else suggestions.push("Add the amount lost.");
+  if (Number(data.amountLost) > 0 && storyMentionsAmount(data.story, data.amountLost)) score += 10;
+  else if (Number(data.amountLost) <= 0) suggestions.push("Add the amount lost.");
+  else suggestions.push("Amount in story doesn't match amount field — verify consistency.");
 
-  if (data.oppositeParty.trim()) score += 15;
+  if (hasValidOppositeParty(data.oppositeParty, caseType)) score += 15;
   else {
-    if (caseType === "Property / Land Dispute") suggestions.push("Add opposite party details.");
+    if (caseType === "Property / Land Dispute") suggestions.push("Add opposite party details (name, phone, or contact info).");
     else if (caseType === "Consumer Complaint") suggestions.push("Add seller/platform/service provider details.");
     else if (caseType === "RTI / Government Service Delay" || caseType === "Government Document / Certificate Issue") suggestions.push("Add department/public authority details.");
     else suggestions.push("Add opposite party details such as UPI ID, phone number, name, or account details.");
