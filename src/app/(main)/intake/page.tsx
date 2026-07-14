@@ -294,13 +294,13 @@ useEffect(() => {
     return t("warnAmountMismatch").replace("{fieldAmount}", String(caseData.amountLost)).replace("{storyAmount}", String(differentAmount));
   }
 
-  function analyzeDraftQuality(draftText: string) {
+function analyzeDraftQuality(draftText: string) {
     const lowerDraft = draftText.toLowerCase();
     const hasSubject = lowerDraft.includes("subject:");
     const hasIncidentDate = Boolean(submittedCase?.incidentDate && draftText.includes(submittedCase.incidentDate));
-    const hasAmount = Boolean(submittedCase?.amountLost && draftText.includes(submittedCase.amountLost));
-    const hasEvidence = lowerDraft.includes("evidence") || lowerDraft.includes("annexure");
-    const hasRelief = lowerDraft.includes("relief requested") || lowerDraft.includes("relief");
+    const hasAmount = Boolean(submittedCase?.amountLost && Number(submittedCase.amountLost) > 0 && draftText.includes(submittedCase.amountLost));
+    const hasEvidence = (lowerDraft.includes("evidence") || lowerDraft.includes("annexure")) && (submittedCase?.proofs.length || 0) > 0;
+    const hasRelief = (lowerDraft.includes("relief requested") || lowerDraft.includes("relief")) && (submittedCase?.relief.length || 0) > 0;
     const hasDeclaration = lowerDraft.includes("declaration");
     const suggestions: string[] = [];
     let score = 0;
