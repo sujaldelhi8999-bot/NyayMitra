@@ -66,7 +66,7 @@
 - **TypeScript** (strict) + `src/types/` for shared types
 - **Tailwind CSS v4**
 - **jsPDF** for PDF generation
-- **OpenRouter** (configurable via `OPENROUTER_MODEL`, defaults to Google Gemini 2.0 Flash) via serverless API route
+- **OpenRouter** (configurable via `OPENROUTER_MODEL`) via serverless API route
 - **ESLint 9** (Next.js config)
 
 ## Getting Started
@@ -80,7 +80,7 @@ Create `.env.local` with (if AI features needed):
 
 ```bash
 OPENROUTER_API_KEY=your_openrouter_api_key_here
-OPENROUTER_MODEL=google/gemini-2.0-flash-001
+OPENROUTER_MODEL=your_preferred_model
 ```
 
 > Do not create a public `NEXT_PUBLIC_OPENROUTER_API_KEY`. The API route keeps the key server-side.
@@ -181,7 +181,7 @@ src/
 ## Deployment
 Set these environment variables in your deployment platform (Vercel, Netlify, etc.):
 - `OPENROUTER_API_KEY`
-- `OPENROUTER_MODEL` (optional, defaults to `google/gemini-2.0-flash-001`)
+- `OPENROUTER_MODEL` (optional)
 
 **Never** create a `NEXT_PUBLIC_OPENROUTER_API_KEY`.
 
