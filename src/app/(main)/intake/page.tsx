@@ -11,12 +11,14 @@ import type { CaseData, AiClassification, AiExtraction, AiReview, AdvisorChat, U
 import { generateComplaintDraft } from "@/lib/draftTemplates";
 import { calculateCaseQualityScore } from "@/lib/qualityScore";
 import { PortalCard } from "@/components/portal-card";
+import { SourceTag } from "@/components/source-tag";
 import {
   getMissingProofSuggestions,
   getVerifiedSourceNotes,
   hasLawHallucinationRisk,
   getNextStepsChecklist,
   generateFollowUpQuestions,
+  getMergedFollowUpQuestions,
   formatFileSize,
   calculateRiskLevel,
 } from "@/lib/caseUtils";
@@ -1117,9 +1119,12 @@ async function handleAskAdvisor() {
               <p className="text-sm font-semibold text-teal-300">Rule-based preparation assistant</p>
               <h2 className="mt-2 text-2xl font-bold">{t("followUps")}</h2>
               <div className="mt-5 space-y-4">
-                {generateFollowUpQuestions(submittedCase).map((question) => (
+                {getMergedFollowUpQuestions(submittedCase).map(({ question, source }) => (
                   <label key={question} className="block rounded-lg border border-white/10 bg-white/5 p-4">
-                    <span className="font-semibold text-slate-100">{question}</span>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-semibold text-slate-100">{question}</span>
+                      <SourceTag source={source} />
+                    </div>
                     <textarea
                       value={followUpAnswers[question] || ""}
                       onChange={(event) => setFollowUpAnswers((current) => ({ ...current, [question]: event.target.value }))}

@@ -282,49 +282,56 @@ export function getNextStepsChecklist(data: CaseData) {
   ];
 }
 
-export function generateFollowUpQuestions(data: CaseData) {
+export function getMergedFollowUpQuestions(data: CaseData): Array<{ question: string; source: 'rule' | 'ai' }> {
+  const ruleQuestions = getRuleBasedFollowUpQuestions(data);
+  const aiQuestions = data.aiAnalysis?.followupQuestions || [];
+  
+  // Deduplicate: questions present in both
+  const commonQuestions = ruleQuestions.filter(q => aiQuestions.includes(q));
+  const uniqueRuleQuestions = ruleQuestions.filter(q => !aiQuestions.includes(q));
+  const uniqueAiQuestions = aiQuestions.filter(q => !ruleQuestions.includes(q));
+  
+  return [
+    ...uniqueRuleQuestions.map(q => ({ question: q, source: 'rule' as const })),
+    ...commonQuestions.map(q => ({ question: q, source: 'rule' as const })),
+    ...uniqueAiQuestions.map(q => ({ question: q, source: 'ai' as const })),
+  ];
+}
+
+export function getRuleBasedFollowUpQuestions(data: CaseData): string[] {
   if (data.caseType === "Property / Land Dispute") {
-    return Array.from(
-      new Set([
-        "What is the property location and basic property identifier, if known?",
-        "What is your relationship to the original owner?",
-        "Do you have sale deed/title papers or old land records?",
-        "Do you have revenue/mutation/tax records?",
-        "Is there any ongoing or old court case? If yes, do you know case number/court name?",
-        "Is there any urgent sale, transfer, eviction, or possession issue?",
-        "What exact help do you want from legal aid/lawyer?",
-        ...(data.aiAnalysis?.followupQuestions || []),
-      ])
-    );
+    return [
+      "What is the property location and basic property identifier, if known?",
+      "What is your relationship to the original owner?",
+      "Do you have sale deed/title papers or old land records?",
+      "Do you have revenue/mutation/tax records?",
+      "Is there any ongoing or old court case? If yes, do you know case number/court name?",
+      "Is there any urgent sale, transfer, eviction, or possession issue?",
+      "What exact help do you want from legal aid/lawyer?",
+    ];
   }
 
   if (data.caseType === "Consumer Complaint") {
-    return Array.from(
-      new Set([
-        "What is the order ID or invoice number?",
-        "Who is the seller/platform/service provider?",
-        "What was the date of purchase and delivery/service?",
-        "What exactly was defective, damaged, delayed, or not provided?",
-        "Have you requested refund, replacement, or written response already?",
-        "Do you have complaint emails, chats, support tickets, invoice, photos, or delivery proof?",
-        ...(data.aiAnalysis?.followupQuestions || []),
-      ])
-    );
+    return [
+      "What is the order ID or invoice number?",
+      "Who is the seller/platform/service provider?",
+      "What was the date of purchase and delivery/service?",
+      "What exactly was defective, damaged, delayed, or not provided?",
+      "Have you requested refund, replacement, or written response already?",
+      "Do you have complaint emails, chats, support tickets, invoice, photos, or delivery proof?",
+    ];
   }
 
   if (data.caseType === "RTI / Government Service Delay" || data.caseType === "Government Document / Certificate Issue") {
-    return Array.from(
-      new Set([
-        "What is the department or public authority name?",
-        "What is the application/reference/receipt number?",
-        "What was the date of application?",
-        "How long has the matter been delayed?",
-        "Do you have acknowledgement, receipt, or application copy?",
-        "What previous follow-ups or reminders have you sent?",
-        "What information, certificate, service, or action do you need now?",
-        ...(data.aiAnalysis?.followupQuestions || []),
-      ])
-    );
+    return [
+      "What is the department or public authority name?",
+      "What is the application/reference/receipt number?",
+      "What was the date of application?",
+      "How long has the matter been delayed?",
+      "Do you have acknowledgement, receipt, or application copy?",
+      "What previous follow-ups or reminders have you sent?",
+      "What information, certificate, service, or action do you need now?",
+    ];
   }
 
   const questions: string[] = [];
@@ -357,7 +364,11 @@ export function generateFollowUpQuestions(data: CaseData) {
 
   questions.push("What exact relief do you want: refund, complaint registration, bank action, or legal aid guidance?");
 
-  return Array.from(new Set([...questions, ...(data.aiAnalysis?.followupQuestions || [])]));
+  return Array.from(new Set(questions));
+}
+
+export function generateFollowUpQuestions(data: CaseData): string[] {
+  return getMergedFollowUpQuestions(data).map(({ question }) => question);
 }
 
 export function getLegalRoutes(data: CaseData) {
