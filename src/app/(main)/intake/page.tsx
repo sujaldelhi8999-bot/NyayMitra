@@ -1250,11 +1250,14 @@ async function handleAskAdvisor() {
                       const custom = (submittedCase.customProofs || []).includes(proof);
                       const available = submittedCase.proofs.includes(proof);
                       const uploadedFile = submittedCase.uploadedFiles.find((file) => file.evidenceCategory === proof);
+                      // Determine if proof is from AI suggestion or rule-based
+                      const isAiSuggested = submittedCase.aiAnalysis?.classification?.suggestedProofs?.includes(proof) || false;
+                      const source = isAiSuggested ? 'ai' : 'rule';
 
                       return (
                         <tr key={proof} className="border-b">
                           <td className="p-3 font-black">{uploadedFile ? `A${submittedCase.uploadedFiles.findIndex((file) => file.id === uploadedFile.id) + 1}` : "-"}</td>
-                          <td className="p-3 font-semibold">{proof}</td>
+                          <td className="p-3 font-semibold flex items-center gap-2">{proof} <SourceTag source={source} /></td>
                           <td className="p-3">
                             {custom || available ? "Yes" : t("kitLabelMissing")}
                           </td>
@@ -1323,8 +1326,9 @@ async function handleAskAdvisor() {
                   {displayedMissingProofs.map((item) => (
                     <div
                       key={item}
-                      className="rounded-lg border border-orange-300 bg-orange-50 p-4"
+                      className="rounded-lg border border-orange-300 bg-orange-50 p-4 flex items-center gap-2"
                     >
+                      <SourceTag source="rule" />
                       <b>{t("labelMissingProofs")}</b> {item}. Try to collect this before final
                       PDF.
                     </div>
@@ -1439,7 +1443,10 @@ function AiBox({ title, items }: { title: string; items: string[] }) {
 function AdvisorChatCard({ chat }: { chat: AdvisorChat }) {
   return (
     <div className="rounded-lg border border-slate-200 bg-slate-50 p-5">
-      <p className="font-black text-slate-950">Q: {chat.question}</p>
+      <div className="flex items-center gap-2 mb-2">
+        <p className="font-black text-slate-950">Q: {chat.question}</p>
+        <SourceTag source="ai" />
+      </div>
       <p className="mt-3 leading-7 text-slate-700">{chat.answer}</p>
       {chat.lawyerReviewRecommended && <p className="mt-3 rounded-lg bg-red-100 p-3 text-sm font-black text-red-800">Legal-aid/lawyer review strongly recommended.</p>}
       <div className="mt-4 grid gap-3 md:grid-cols-2">
