@@ -4,6 +4,7 @@ import { useState } from "react";
 import { verifiedLegalKnowledge } from "@/data/legalKnowledgeBase";
 import { officialPortals } from "@/data/officialPortals";
 import { translate, useLanguage } from "@/lib/i18n";
+import { TouchSelect } from "@/components/touch-select";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,9 @@ export default function KnowledgeBasePage() {
   const [portalFilter, setPortalFilter] = useState("All");
   const filteredPortals = portalFilter === "All" ? officialPortals : officialPortals.filter((p) => p.caseTypes.includes("all") ? false : p.caseTypes.includes(portalFilter));
 
+  const caseTypeOptions = caseTypes.map((ct) => ({ value: ct, label: ct }));
+  const portalCaseTypeOptions = portalCaseTypes.map((ct) => ({ value: ct, label: ct }));
+
   return (
     <div className="min-h-screen bg-slate-950 px-5 py-8 text-white sm:px-8">
       <div className="mx-auto max-w-7xl">
@@ -30,18 +34,24 @@ export default function KnowledgeBasePage() {
 
         <section className="mt-8 rounded-lg bg-white p-5 text-slate-950 shadow-2xl">
           <div className="flex flex-wrap gap-3">
-            <button type="button" onClick={() => setTab("legal")} className={`rounded-lg px-5 py-3 font-black ${tab === "legal" ? "bg-slate-950 text-white" : "bg-slate-100 text-slate-700"}`}>{t("tabLegalKnowledge")}</button>
-            <button type="button" onClick={() => setTab("portals")} className={`rounded-lg px-5 py-3 font-black ${tab === "portals" ? "bg-teal-600 text-white" : "bg-slate-100 text-slate-700"}`}>{t("tabOfficialPortals")}</button>
+            <button type="button" onClick={() => setTab("legal")} className={`rounded-lg px-6 py-4 font-black min-h-[48px] ${tab === "legal" ? "bg-slate-950 text-white" : "bg-slate-100 text-slate-700"}`}>{t("tabLegalKnowledge")}</button>
+            <button type="button" onClick={() => setTab("portals")} className={`rounded-lg px-6 py-4 font-black min-h-[48px] ${tab === "portals" ? "bg-teal-600 text-white" : "bg-slate-100 text-slate-700"}`}>{t("tabOfficialPortals")}</button>
           </div>
-          {tab === "legal" && <><label className="mt-5 block font-black text-teal-700">{t("filterByCaseType")}</label><select value={filter} onChange={(event) => setFilter(event.target.value)} className="mt-2 w-full rounded-lg border border-slate-200 p-3 font-bold outline-none focus:border-teal-500 md:max-w-md">
-            {caseTypes.map((caseType) => <option key={caseType}>{caseType}</option>)}
-          </select></>}
-          {tab === "portals" && <><label className="mt-5 block font-black text-teal-700">{t("filterByCaseType")}</label><select value={portalFilter} onChange={(event) => setPortalFilter(event.target.value)} className="mt-2 w-full rounded-lg border border-slate-200 p-3 font-bold outline-none focus:border-teal-500 md:max-w-md">
-            {portalCaseTypes.map((caseType) => <option key={caseType}>{caseType}</option>)}
-          </select></>}
+          {tab === "legal" && (
+            <div>
+              <label className="mt-5 block font-black text-teal-700">{t("filterByCaseType")}</label>
+              <TouchSelect value={filter} onChange={setFilter} options={caseTypeOptions} placeholder={t("filterByCaseType")} className="mt-2 w-full md:max-w-md" />
+            </div>
+          )}
+          {tab === "portals" && (
+            <div>
+              <label className="mt-5 block font-black text-teal-700">{t("filterByCaseType")}</label>
+              <TouchSelect value={portalFilter} onChange={setPortalFilter} options={portalCaseTypeOptions} placeholder={t("filterByCaseType")} className="mt-2 w-full md:max-w-md" />
+            </div>
+          )}
         </section>
 
-        {tab === "legal" ? <section className="mt-8 grid gap-5 md:grid-cols-2">
+        {tab === "legal" ? <section className="mt-8 grid gap-5 grid-cols-1 sm:grid-cols-2">
           {entries.map((entry) => (
             <article key={entry.id} className="rounded-lg bg-white p-6 text-slate-950 shadow-2xl">
               <div className="flex flex-wrap gap-2"><span className="rounded-lg bg-teal-100 px-3 py-1 text-xs font-black text-teal-800">{entry.category}</span><span className="rounded-lg bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">{entry.caseType}</span></div>
@@ -51,7 +61,7 @@ export default function KnowledgeBasePage() {
               <div className="mt-4 text-sm font-semibold text-slate-600"><p>Source: {entry.sourceName}</p><p>Last checked: {entry.lastChecked}</p><a className="text-teal-700" href={entry.sourceUrl} target="_blank" rel="noreferrer">{entry.sourceUrl}</a></div>
             </article>
           ))}
-        </section> : <section className="mt-8 grid gap-5 md:grid-cols-2">
+        </section> : <section className="mt-8 grid gap-5 grid-cols-1 sm:grid-cols-2">
           {filteredPortals.map((portal) => (
             <article key={portal.id} className="rounded-lg bg-white p-6 text-slate-950 shadow-2xl">
               <div className="flex flex-wrap gap-2"><span className="rounded-lg bg-teal-100 px-3 py-1 text-xs font-black text-teal-800">{t("badgeOfficial")}</span>{portal.emergencyOnly && <span className="rounded-lg bg-orange-100 px-3 py-1 text-xs font-black text-orange-800">{t("badgeEmergency")}</span>}{portal.stateSpecific && <span className="rounded-lg bg-yellow-100 px-3 py-1 text-xs font-black text-yellow-800">{t("badgeStateSpecific")}</span>}<span className="rounded-lg bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">{portal.category}</span></div>
