@@ -76,6 +76,18 @@ function handleParseError(raw: string, context: string) {
   }, { status: HTTP_STATUS.BAD_GATEWAY });
 }
 
+function sanitizeAiJson(content: string): string {
+  let cleaned = content;
+  cleaned = cleaned.replace(/<\|start\|>|<\|end\|>|<\|constrain\|>(?:json)?|<\|const\w*/g, "");
+  cleaned = cleaned.replace(/```json\s*/gi, "").replace(/```\s*/g, "");
+  cleaned = cleaned.replace(/^\s*[\s\S]*?(\{)/, "$1");
+  const lastBrace = cleaned.lastIndexOf("}");
+  if (lastBrace !== -1) cleaned = cleaned.slice(0, lastBrace + 1);
+  cleaned = cleaned.trim();
+  cleaned = cleaned.replace(/,(\s*[}\]])/g, "$1");
+  return cleaned;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json() as Record<string, unknown>;
@@ -125,7 +137,7 @@ export async function POST(request: Request) {
     }
 
     try {
-      return NextResponse.json({ success: true, data: JSON.parse(content) });
+      return NextResponse.json({ success: true, data: JSON.parse(sanitizeAiJson(content)) });
     } catch {
       return handleParseError(content, "AI returned invalid JSON. Rule-based mode is still available.");
     }
