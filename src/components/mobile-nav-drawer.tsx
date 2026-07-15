@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { useLanguage, type Language, translate } from "@/lib/i18n";
+import { type Language, translate } from "@/lib/i18n";
 import { trapFocus } from "@/lib/focusTrap";
 
 interface MobileNavDrawerProps {
@@ -26,6 +26,10 @@ export function MobileNavDrawer({ isOpen, onClose, language, onChangeLanguage }:
   const previousActiveElement = useRef<HTMLElement | null>(null);
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
 
+  const handleTrapFocus = (e: KeyboardEvent) => {
+    if (drawerRef.current) trapFocus(drawerRef.current, e);
+  };
+
   useEffect(() => {
     if (isOpen) {
       previousActiveElement.current = document.activeElement as HTMLElement;
@@ -43,10 +47,6 @@ export function MobileNavDrawer({ isOpen, onClose, language, onChangeLanguage }:
       };
     }
   }, [isOpen, onClose]);
-
-  const handleTrapFocus = (e: KeyboardEvent) => {
-    if (drawerRef.current) trapFocus(drawerRef.current, e);
-  };
 
   if (!isOpen) return null;
 

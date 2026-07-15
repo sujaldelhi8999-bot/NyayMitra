@@ -32,8 +32,8 @@ function developmentDebug(debug: unknown) {
 
 function validateRequest(body: Record<string, unknown>) {
   const mode = body?.mode as Mode;
-  const caseData = body?.caseData;
-  const question = body?.question;
+  const caseData = body?.caseData as Record<string, unknown> | undefined;
+  const question = body?.question as string | undefined;
 
   if (!modes.includes(mode)) {
     return { error: NextResponse.json({ success: false, error: "Invalid AI mode." }, { status: HTTP_STATUS.BAD_REQUEST }) };
@@ -78,7 +78,7 @@ function handleParseError(raw: string, context: string) {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = await request.json() as Record<string, unknown>;
     const validated = validateRequest(body);
     if ("error" in validated) return validated.error;
 

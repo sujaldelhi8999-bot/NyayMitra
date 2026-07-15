@@ -20,9 +20,8 @@ function hasTooManyRandomSymbols(story: string) {
   return symbolMatches.length / story.length > 0.15;
 }
 
-function hasValidOppositeParty(oppositeParty: string, caseType: string) {
+function hasValidOppositeParty(oppositeParty: string) {
   if (!oppositeParty.trim()) return false;
-  const lower = oppositeParty.toLowerCase();
   const hasUpi = /@/.test(oppositeParty);
   const hasPhone = /\d{10}/.test(oppositeParty);
   const hasEmail = /@.*\./.test(oppositeParty);
@@ -79,7 +78,7 @@ function scoreAmount(data: CaseData, suggestions: string[]) {
 }
 
 function scoreOppositeParty(data: CaseData, caseType: string, suggestions: string[]) {
-  if (hasValidOppositeParty(data.oppositeParty, caseType)) return QUALITY.PARTY_SCORE;
+  if (hasValidOppositeParty(data.oppositeParty)) return QUALITY.PARTY_SCORE;
   if (caseType === "Property / Land Dispute") suggestions.push("Add opposite party details (name, phone, or contact info).");
   else if (caseType === "Consumer Complaint") suggestions.push("Add seller/platform/service provider details.");
   else if (caseType === "RTI / Government Service Delay" || caseType === "Government Document / Certificate Issue") suggestions.push("Add department/public authority details.");

@@ -21,14 +21,12 @@ function MobileCardRow<T>({
   row,
   rowIndex,
   columns,
-  keyExtractor,
   isExpanded,
   onToggle,
 }: {
   row: T;
   rowIndex: number;
   columns: Column<T>[];
-  keyExtractor: (row: T, index: number) => string;
   isExpanded: boolean;
   onToggle: () => void;
 }) {
@@ -155,7 +153,6 @@ export function CardTable<T>({
               row={row}
               rowIndex={rowIndex}
               columns={columns}
-              keyExtractor={keyExtractor}
               isExpanded={isExpanded(key)}
               onToggle={() => toggleRow(key)}
             />

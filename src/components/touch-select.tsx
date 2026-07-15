@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useId, useCallback } from "react";
-import type { Language } from "@/lib/i18n";
+
 
 interface TouchSelectOption {
   value: string;
