@@ -156,7 +156,14 @@ export async function POST(request: Request) {
     const responseText = await openRouterResponse.text();
 
     if (!openRouterResponse.ok) {
-      return handleApiError(responseText, openRouterResponse.status, "OpenRouter request failed");
+      const status = openRouterResponse.status;
+      const errorMessages: Record<number, string> = {
+        402: "AI credit limit reached. Add credits at openrouter.ai/keys.",
+        429: "Too many AI requests. Please wait and try again.",
+        502: "AI model is temporarily unavailable. Try again in a moment.",
+        503: "AI service is temporarily unavailable. Try again in a moment.",
+      };
+      return handleApiError(responseText, status, errorMessages[status] || "OpenRouter request failed");
     }
 
     let openRouterJson;
