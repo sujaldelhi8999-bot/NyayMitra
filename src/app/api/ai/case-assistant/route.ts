@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { buildKnowledgeContext } from "@/lib/legalKnowledge";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
-import { HTTP_STATUS } from "@/lib/constants";
+import { HTTP_STATUS, TIMEOUT } from "@/lib/constants";
 
 const modes = ["classify", "extract", "followup", "draft", "review", "advisor"] as const;
 type Mode = (typeof modes)[number];
@@ -99,23 +99,36 @@ export async function POST(request: Request) {
     const officialPortalContext = buildOfficialActionSuggestions(caseData);
     const propertySafetyContext = buildSafetyContext(caseData);
 
-    const openRouterResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": "http://localhost:3000",
-        "X-Title": "NyayMitra",
-      },
-      body: JSON.stringify({
-        model: process.env.OPENROUTER_MODEL || "google/gemini-2.0-flash-001",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: `${schemas[mode]}\n\nYou may only refer to legal/procedure information from this verifiedKnowledgeContext. For portal/website/reporting-route questions, use only officialPortalContext and do not invent websites. If something is not present, say human/legal-aid verification is required. If no verified source applies, return verifiedSourcesUsed: []. FIR/e-FIR availability depends on State/UT and case type. NyayMitra can suggest official portals, but final acceptance depends on the concerned authority. Treat customProofs as user-provided documents only; do not assume they are valid or legally sufficient. Say: "These documents should be reviewed by legal aid/lawyer before relying on them." CustomReliefs are user-requested outcomes and should be framed as possible outcomes for review, not guarantees. ${propertySafetyContext}\n\nverifiedKnowledgeContext:\n${JSON.stringify(verifiedKnowledgeContext)}\n\nofficialPortalContext:\n${JSON.stringify(officialPortalContext)}\n\nMode: ${mode}\nQuestion: ${question || ""}\nCase data:\n${JSON.stringify(caseData)}` },
-        ],
-        response_format: { type: "json_object" },
-      }),
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), TIMEOUT.AI_REQUEST);
+    let openRouterResponse: Response;
+    try {
+      openRouterResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "http://localhost:3000",
+          "X-Title": "NyayMitra",
+        },
+        body: JSON.stringify({
+          model: process.env.OPENROUTER_MODEL || "google/gemini-2.0-flash-001",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: `${schemas[mode]}\n\nYou may only refer to legal/procedure information from this verifiedKnowledgeContext. For portal/website/reporting-route questions, use only officialPortalContext and do not invent websites. If something is not present, say human/legal-aid verification is required. If no verified source applies, return verifiedSourcesUsed: []. FIR/e-FIR availability depends on State/UT and case type. NyayMitra can suggest official portals, but final acceptance depends on the concerned authority. Treat customProofs as user-provided documents only; do not assume they are valid or legally sufficient. Say: "These documents should be reviewed by legal aid/lawyer before relying on them." CustomReliefs are user-requested outcomes and should be framed as possible outcomes for review, not guarantees. ${propertySafetyContext}\n\nverifiedKnowledgeContext:\n${JSON.stringify(verifiedKnowledgeContext)}\n\nofficialPortalContext:\n${JSON.stringify(officialPortalContext)}\n\nMode: ${mode}\nQuestion: ${question || ""}\nCase data:\n${JSON.stringify(caseData)}` },
+          ],
+          response_format: { type: "json_object" },
+        }),
+        signal: controller.signal,
+      });
+    } catch (e) {
+      clearTimeout(timeout);
+      if (e instanceof DOMException && e.name === "AbortError") {
+        return handleParseError("", "AI request timed out. Please try again.");
+      }
+      throw e;
+    }
+    clearTimeout(timeout);
 
     const responseText = await openRouterResponse.text();
 
