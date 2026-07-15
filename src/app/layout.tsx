@@ -31,6 +31,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-slate-50 text-slate-950 flex flex-col">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var l=localStorage.getItem("nyaymitra_language");if(l&&document.cookie.indexOf("nyaymitra_language=")===-1){document.cookie="nyaymitra_language="+encodeURIComponent(l)+";path=/;max-age=31536000;SameSite=Lax";}}catch(e){}})();`,
+          }}
+        />
         <LanguageProviderWrapper>{children}</LanguageProviderWrapper>
       </body>
     </html>

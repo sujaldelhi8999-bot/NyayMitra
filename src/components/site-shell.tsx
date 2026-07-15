@@ -43,7 +43,7 @@ function MobileNavDrawer({
               <span className="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-teal-400 to-cyan-600 text-lg font-black text-white shadow-lg">
                 N
               </span>
-              <span className="text-xl font-black text-slate-950">{t("appName")}</span>
+              <span className="text-xl font-black text-slate-950" suppressHydrationWarning>{t("appName")}</span>
             </span>
             <button
               type="button"
@@ -98,7 +98,7 @@ function Navbar({ language, onChangeLanguage }: { language: Language; onChangeLa
           <span className="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-teal-400 to-cyan-600 text-lg font-black text-white shadow-lg shadow-teal-900/20">
             N
           </span>
-          <span className="text-xl font-black tracking-tight text-slate-950">
+          <span className="text-xl font-black tracking-tight text-slate-950" suppressHydrationWarning>
             {t("appName")}
           </span>
         </Link>
