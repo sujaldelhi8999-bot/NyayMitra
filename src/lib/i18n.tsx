@@ -1524,6 +1524,11 @@ export const translations = {
 function getInitialLanguage(): Language {
   if (typeof window === "undefined") return "en";
   try {
+    const cookieMatch = document.cookie.match(/(?:^|;\s*)nyaymitra_language=([^;]*)/);
+    if (cookieMatch) {
+      const cookieLang = decodeURIComponent(cookieMatch[1]);
+      if (cookieLang === "hi" || cookieLang === "hinglish" || cookieLang === "en") return cookieLang;
+    }
     const saved = localStorage.getItem("nyaymitra_language");
     return saved === "hi" || saved === "hinglish" || saved === "en" ? saved : "en";
   } catch {
@@ -1544,13 +1549,14 @@ type LanguageContextType = {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>(() => getInitialLanguage());
+export function LanguageProvider({ children, initialLanguage }: { children: ReactNode; initialLanguage?: Language }) {
+  const [language, setLanguageState] = useState<Language>(() => initialLanguage ?? getInitialLanguage());
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
     try {
       localStorage.setItem("nyaymitra_language", lang);
+      document.cookie = `nyaymitra_language=${encodeURIComponent(lang)};path=/;max-age=31536000;SameSite=Lax`;
     } catch {}
   };
 
