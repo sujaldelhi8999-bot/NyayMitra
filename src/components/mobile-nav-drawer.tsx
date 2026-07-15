@@ -123,7 +123,7 @@ export function MobileNavDrawer({ isOpen, onClose, language, onChangeLanguage }:
               aria-label={t("selectLanguage")}
             >
               <option value="en">English</option>
-              <option value="hi">हिन्दी</option>
+              <option value="hi">हिंदी</option>
               <option value="hinglish">Hinglish</option>
             </select>
           </div>
