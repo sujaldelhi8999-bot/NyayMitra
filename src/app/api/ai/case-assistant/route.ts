@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { buildKnowledgeContext } from "@/lib/legalKnowledge";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
+import { HTTP_STATUS, TIMEOUT } from "@/lib/constants";
 
 const modes = ["classify", "extract", "followup", "draft", "review", "advisor"] as const;
 type Mode = (typeof modes)[number];
@@ -37,19 +38,19 @@ export async function POST(request: Request) {
     const question = body?.question;
 
     if (!modes.includes(mode)) {
-      return NextResponse.json({ success: false, error: "Invalid AI mode." }, { status: 400 });
+      return NextResponse.json({ success: false, error: "Invalid AI mode." }, { status: HTTP_STATUS.BAD_REQUEST });
     }
 
     if (!caseData) {
-      return NextResponse.json({ success: false, error: "caseData is required." }, { status: 400 });
+      return NextResponse.json({ success: false, error: "caseData is required." }, { status: HTTP_STATUS.BAD_REQUEST });
     }
 
     if (mode === "advisor" && typeof question !== "string") {
-      return NextResponse.json({ success: false, error: "question is required." }, { status: 400 });
+      return NextResponse.json({ success: false, error: "question is required." }, { status: HTTP_STATUS.BAD_REQUEST });
     }
 
     if (!process.env.OPENROUTER_API_KEY) {
-      return NextResponse.json({ success: false, error: "AI is not configured. Add OPENROUTER_API_KEY in .env.local and restart the dev server." }, { status: 503 });
+      return NextResponse.json({ success: false, error: "AI is not configured. Add OPENROUTER_API_KEY in .env.local and restart the dev server." }, { status: HTTP_STATUS.SERVICE_UNAVAILABLE });
     }
 
     const verifiedKnowledgeContext = buildKnowledgeContext(caseData);
@@ -86,7 +87,7 @@ export async function POST(request: Request) {
           status: openRouterResponse.status,
           message: responseText.slice(0, 500),
         }),
-      }, { status: 502 });
+      }, { status: HTTP_STATUS.BAD_GATEWAY });
     }
 
     let openRouterJson;
@@ -97,7 +98,7 @@ export async function POST(request: Request) {
         success: false,
         error: "OpenRouter returned invalid response JSON",
         debug: developmentDebug({ rawPreview: responseText.slice(0, 500) }),
-      }, { status: 502 });
+      }, { status: HTTP_STATUS.BAD_GATEWAY });
     }
 
     const content = openRouterJson?.choices?.[0]?.message?.content;
@@ -107,7 +108,7 @@ export async function POST(request: Request) {
         success: false,
         error: "AI response did not contain message content.",
         debug: developmentDebug({ rawPreview: JSON.stringify(openRouterJson).slice(0, 500) }),
-      }, { status: 502 });
+      }, { status: HTTP_STATUS.BAD_GATEWAY });
     }
 
     try {
@@ -117,9 +118,9 @@ export async function POST(request: Request) {
         success: false,
         error: "AI returned invalid JSON. Rule-based mode is still available.",
         debug: developmentDebug({ rawPreview: content.slice(0, 500) }),
-      }, { status: 502 });
+      }, { status: HTTP_STATUS.BAD_GATEWAY });
     }
   } catch {
-    return NextResponse.json({ success: false, error: "AI could not respond right now." }, { status: 500 });
+    return NextResponse.json({ success: false, error: "AI could not respond right now." }, { status: HTTP_STATUS.INTERNAL_ERROR });
   }
 }
