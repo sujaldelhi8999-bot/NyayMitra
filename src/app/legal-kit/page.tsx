@@ -22,6 +22,8 @@ import {
 } from "@/lib/caseUtils";
 import { PortalCard } from "@/components/portal-card";
 import { OTHER_RELIEF_OPTION } from "@/lib/constants";
+import { TouchSelect } from "@/components/touch-select";
+import { CardTable } from "@/components/card-table";
 
 const visitChecklist = [
   "Carry original ID proof",
@@ -41,6 +43,16 @@ export default function LegalKitPage() {
   const [statusMessage, setStatusMessage] = useState("");
   const [language, setLanguage] = useState<Language>("en");
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
+
+  const statusOptions = caseStatuses.map((status) => ({
+    value: status,
+    label: caseStatusLabel(status, language),
+  }));
+
+  const exportOptions = [
+    { value: "json", label: t("exportJson") },
+    { value: "pdf", label: t("downloadPdf") },
+  ];
 
   useEffect(() => {
     let cancelled = false;
@@ -284,15 +296,13 @@ if (!caseData) {
       <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex items-center justify-between">
           <Link href="/dashboard" className="rounded-lg border border-white/20 px-5 py-3 text-center font-bold text-white hover:bg-white/10">{t("backDashboard")}</Link>
-          <select
-            aria-label="Export case"
-            onChange={(e) => { if (e.target.value === "json") exportCaseJson(); else if (e.target.value === "pdf") downloadPdf(); e.target.value = ""; }}
+          <TouchSelect
+            value=""
+            placeholder={`${t("exportJson")} / ${t("downloadPdf")}`}
+            options={exportOptions}
+            onChange={(value) => { if (value === "json") exportCaseJson(); else if (value === "pdf") downloadPdf(); }}
             className="rounded-lg bg-amber-400 px-5 py-3 font-black text-slate-950 shadow-lg hover:bg-amber-300"
-          >
-            <option value="">{t("exportJson")} / {t("downloadPdf")}</option>
-            <option value="json">{t("exportJson")}</option>
-            <option value="pdf">{t("downloadPdf")}</option>
-          </select>
+          />
         </div>
 
         <article className="rounded-lg bg-white p-6 shadow-2xl sm:p-10">
@@ -308,9 +318,7 @@ if (!caseData) {
             </div>
             <div className="mt-5 rounded-lg bg-slate-50 p-5">
               <label className="block text-sm font-black uppercase tracking-[0.18em] text-teal-700">{t("kitUpdateStatus")}</label>
-              <select value={normalizeCaseStatus(caseData.status)} onChange={(event) => updateStatus(normalizeCaseStatus(event.target.value))} className="mt-2 w-full rounded-lg border border-slate-200 bg-white p-3 font-bold outline-none focus:border-teal-500 md:max-w-sm">
-                {caseStatuses.map((status) => <option key={status} value={status}>{caseStatusLabel(status, language)}</option>)}
-              </select>
+              <TouchSelect value={normalizeCaseStatus(caseData.status)} onChange={(value) => updateStatus(normalizeCaseStatus(value))} options={statusOptions} className="mt-2 w-full md:max-w-sm" />
               {statusMessage && <p className="mt-3 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900">{statusMessage}</p>}
             </div>
             <p className="mt-5 rounded-lg bg-slate-950 p-4 text-sm font-semibold text-white">NyayMitra is a legal self-help tool, not a lawyer. Verify with legal aid/lawyer.</p>
@@ -341,13 +349,45 @@ if (!caseData) {
           </KitSection>
 
           <KitSection title={outputMode === "limited-guidance-kit" ? "Evidence Organizer" : outputMode === "urgent-legal-aid-route" ? "Document Checklist" : "Evidence Index"}>
-            <div className="overflow-x-auto"><table className="w-full min-w-[880px] text-left text-sm"><thead className="bg-slate-950 text-white"><tr><th className="p-3">Annexure No.</th><th className="p-3">Evidence</th><th className="p-3">Status</th><th className="p-3">Uploaded File Name</th><th className="p-3">What it helps prove</th><th className="p-3">Action</th></tr></thead><tbody>{evidenceRows(caseData).map((row) => <tr key={row.evidence} className="border-b"><td className="p-3 font-black">{row.annexure}</td><td className="p-3">{row.evidence}</td><td className="p-3">{row.status}</td><td className="p-3">{row.fileName}</td><td className="p-3">{row.proves}</td><td className="p-3">{row.action}</td></tr>)}</tbody></table></div>
+            <CardTable
+              columns={[
+                { key: "annexure", header: "Annexure No.", render: (row) => <span className="font-black">{row.annexure}</span> },
+                { key: "evidence", header: "Evidence", render: (row) => row.evidence },
+                { key: "status", header: "Status", render: (row) => row.status },
+                { key: "fileName", header: "Uploaded File Name", render: (row) => row.fileName },
+                { key: "proves", header: "What it helps prove", render: (row) => row.proves },
+                { key: "action", header: "Action", render: (row) => row.action },
+              ]}
+              data={evidenceRows(caseData)}
+              keyExtractor={(row) => row.evidence}
+              emptyMessage={t("kitNoEvidenceToBeAdded")}
+            />
           </KitSection>
           <KitSection title={t("kitCustomProofs")}><List items={(caseData.customProofs || []).length ? caseData.customProofs || [] : [t("kitNoCustomProofs")]} />{(caseData.customProofs || []).length > 0 && <p className="mt-4 rounded-lg bg-teal-50 p-4 text-sm font-bold text-teal-900">{t("kitCustomProofsNote")}</p>}</KitSection>
           <KitSection title={t("kitCustomRelief")}><List items={(caseData.customReliefs || []).length ? caseData.customReliefs || [] : [t("kitNoCustomRelief")]} /></KitSection>
 
           <KitSection title={t("kitUploadedAnnexures")}>
-            {caseData.uploadedFiles.length ? <div className="overflow-x-auto"><table className="w-full min-w-[760px] text-left text-sm"><thead className="bg-teal-950 text-white"><tr><th className="p-3">{t("kitLabelAnnexureNo")}</th><th className="p-3">{t("kitLabelFileName")}</th><th className="p-3">{t("labelProofFiles")}</th><th className="p-3">{t("kitLabelFileType")}</th><th className="p-3">{t("kitLabelFileSize")}</th><th className="p-3">{t("kitLabelUploadedAt")}</th></tr></thead><tbody>{caseData.uploadedFiles.map((file, index) => <tr key={file.id} className="border-b"><td className="p-3 font-black">A{index + 1}</td><td className="p-3 font-semibold">{file.fileName}</td><td className="p-3">{file.evidenceCategory}</td><td className="p-3">{file.fileType}</td><td className="p-3">{formatFileSize(file.fileSize)}</td><td className="p-3">{new Date(file.uploadedAt).toLocaleString()}</td></tr>)}</tbody></table></div> : <p className="rounded-lg bg-slate-50 p-5 font-semibold">{t("kitNoUploadedAnnexures")}</p>}
+            <CardTable
+              columns={[
+                { key: "annexure", header: t("kitLabelAnnexureNo"), render: (row) => <span className="font-black">{row.annexure}</span> },
+                { key: "fileName", header: t("kitLabelFileName"), render: (row) => <span className="font-semibold">{row.fileName}</span> },
+                { key: "category", header: t("labelProofFiles"), render: (row) => row.category },
+                { key: "type", header: t("kitLabelFileType"), render: (row) => row.type },
+                { key: "size", header: t("kitLabelFileSize"), render: (row) => row.size },
+                { key: "uploadedAt", header: t("kitLabelUploadedAt"), render: (row) => row.uploadedAt },
+              ]}
+              data={caseData.uploadedFiles.map((file, index) => ({
+                annexure: `A${index + 1}`,
+                fileName: file.fileName,
+                category: file.evidenceCategory,
+                type: file.fileType,
+                size: formatFileSize(file.fileSize),
+                uploadedAt: new Date(file.uploadedAt).toLocaleString(),
+                id: file.id,
+              }))}
+              keyExtractor={(row) => row.id}
+              emptyMessage={t("kitNoUploadedAnnexureFiles")}
+            />
           </KitSection>
           <OfficialActionLinks suggestions={officialActionSuggestions} language={language} />
 
