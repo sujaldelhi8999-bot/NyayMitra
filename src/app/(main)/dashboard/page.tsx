@@ -11,6 +11,7 @@ import type { CaseData } from "@/types/case";
 import { getCaseRiskLevel } from "@/lib/caseUtils";
 import { OTHER_PROOF_OPTION, OTHER_RELIEF_OPTION } from "@/lib/constants";
 import { calculateCaseQualityScore } from "@/lib/qualityScore";
+import { TouchSelect } from "@/components/touch-select";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,21 @@ export default function DashboardPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
+
+  const filterOptions = [
+    { value: "all", label: t("filterAll") },
+    { value: "full-preparation-kit", label: t("filterFull") },
+    { value: "limited-guidance-kit", label: t("filterLimited") },
+    { value: "urgent-legal-aid-route", label: t("filterUrgent") },
+    { value: "high-risk", label: t("filterHighRisk") },
+    { value: "lawyer-review", label: t("filterLawyerReview") },
+    { value: "other", label: t("filterOther") },
+  ];
+
+  const statusOptions = caseStatuses.map((status) => ({
+    value: status,
+    label: caseStatusLabel(status, language),
+  }));
 
   useEffect(() => {
     let cancelled = false;
@@ -116,11 +132,11 @@ export default function DashboardPage() {
           <section className="mt-8 rounded-lg bg-white p-10 text-center text-slate-950 shadow-2xl">
             <h2 className="text-3xl font-black">{t("dashNoCases")}</h2>
             <p className="mt-3 text-slate-600">{t("dashStartPrompt")}</p>
-            <Link href="/intake" className="mt-6 inline-flex rounded-lg bg-teal-600 px-6 py-3 font-black text-white">{t("startCase")}</Link>
+            <Link href="/intake" className="mt-6 inline-flex rounded-lg bg-teal-600 px-6 py-3.5 font-black text-white min-h-[48px]">{t("startCase")}</Link>
           </section>
         ) : (
           <>
-            <section className="mt-8 grid gap-4 md:grid-cols-3 lg:grid-cols-6">
+            <section className="mt-8 grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
               <Stat title={t("statTotalCases")} value={String(cases.length)} />
               <Stat title={t("statDraftReady")} value={String(draftReady)} />
               <Stat title={t("statHighRisk")} value={String(highRisk)} />
@@ -130,8 +146,8 @@ export default function DashboardPage() {
             </section>
 
             <section className="mt-8 grid gap-4 rounded-lg bg-white p-5 text-slate-950 shadow-2xl md:grid-cols-2">
-              <label className="block"><span className="text-sm font-black text-teal-700">{t("labelSearch")}</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("filterSearchPlaceholder")} className="mt-2 w-full rounded-lg border border-slate-200 p-3 outline-none focus:border-teal-500" /></label>
-              <label className="block"><span className="text-sm font-black text-teal-700">{t("labelFilter")}</span><select value={filter} onChange={(event) => setFilter(event.target.value)} className="mt-2 w-full rounded-lg border border-slate-200 p-3 outline-none focus:border-teal-500"><option value="all">{t("filterAll")}</option><option value="full-preparation-kit">{t("filterFull")}</option><option value="limited-guidance-kit">{t("filterLimited")}</option><option value="urgent-legal-aid-route">{t("filterUrgent")}</option><option value="high-risk">{t("filterHighRisk")}</option><option value="lawyer-review">{t("filterLawyerReview")}</option><option value="other">{t("filterOther")}</option></select></label>
+              <label className="block"><span className="text-sm font-black text-teal-700">{t("labelSearch")}</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("filterSearchPlaceholder")} className="mt-2 w-full rounded-lg border border-slate-200 p-3.5 outline-none focus:border-teal-500 min-h-[48px]" /></label>
+              <label className="block"><span className="text-sm font-black text-teal-700">{t("labelFilter")}</span><TouchSelect value={filter} onChange={setFilter} options={filterOptions} className="mt-2" /></label>
             </section>
 
             <section className="mt-8 grid gap-5 lg:grid-cols-2">
@@ -147,7 +163,7 @@ export default function DashboardPage() {
                       <div><p className="text-sm font-black text-teal-700">{caseData.caseId}</p><h2 className="mt-1 text-2xl font-black">{caseData.fullName || t("labelUnnamedCase")}</h2><p className="text-sm font-semibold text-slate-500">{caseData.caseType}</p>{caseData.aiAnalysis?.classification?.caseType && <p className="mt-1 text-sm font-bold text-amber-700">{t("labelAiSuggested")} {caseData.aiAnalysis.classification.caseType}</p>}</div>
                       <div className="flex flex-wrap gap-2"><Badge text={risk} tone={risk === "High Risk" ? "red" : risk === "Medium Risk" ? "amber" : "teal"} /><Badge text={outputModeLabel(outputMode)} tone={outputMode === "urgent-legal-aid-route" ? "red" : outputMode === "limited-guidance-kit" ? "amber" : "teal"} />{lawyerReview && <Badge text={t("statLawyerReview")} tone="red" />}<Badge text={caseStatusLabel(normalizeCaseStatus(caseData.status), language)} tone="slate" /></div>
                     </div>
-                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                    <div className="mt-5 grid gap-3 grid-cols-1 sm:grid-cols-2">
                       <Info label={t("labelIncidentDate")} value={caseData.incidentDate || "Not set"} />
                       <Info label={t("labelStateUT")} value={caseData.stateOrUT || "Not provided"} />
                       <Info label={t("labelAmountLost")} value={`₹${Number(caseData.amountLost || 0).toLocaleString("en-IN")}`} />
@@ -157,12 +173,12 @@ export default function DashboardPage() {
                       <Info label={t("labelProofFiles")} value={`${caseData.proofs.filter((item) => item !== OTHER_PROOF_OPTION).length} standard + ${(caseData.customProofs || []).length} custom, ${caseData.uploadedFiles.length} files`} />
                       <Info label={t("labelCustomReliefs")} value={`${(caseData.customReliefs || []).length} added`} />
                     </div>
-                    <label className="mt-5 block"><span className="text-sm font-black text-teal-700">{t("labelStatusUpdate")}</span><select value={normalizeCaseStatus(caseData.status)} onChange={(event) => updateStatus(caseData, normalizeCaseStatus(event.target.value))} className="mt-2 w-full rounded-lg border border-slate-200 p-3 font-bold outline-none focus:border-teal-500">{caseStatuses.map((status) => <option key={status} value={status}>{caseStatusLabel(status, language)}</option>)}</select></label>
-                    <div className="mt-5 grid gap-3 sm:grid-cols-4">
-                      <button type="button" onClick={() => openLegalKit(caseData)} className="rounded-lg bg-teal-600 px-4 py-3 font-bold text-white">{t("openLegalKit")}</button>
-                      <button type="button" onClick={() => editCase(caseData)} className="rounded-lg bg-slate-950 px-4 py-3 font-bold text-white">{t("editIntake")}</button>
-                      <button type="button" onClick={() => exportCaseJson(caseData)} className="rounded-lg bg-teal-50 px-4 py-3 font-bold text-teal-800">{t("labelExportJson")}</button>
-                      <button type="button" onClick={() => deleteCase(caseData)} className="rounded-lg bg-red-50 px-4 py-3 font-bold text-red-700">{t("deleteCase")}</button>
+                    <label className="mt-5 block"><span className="text-sm font-black text-teal-700">{t("labelStatusUpdate")}</span><TouchSelect value={normalizeCaseStatus(caseData.status)} onChange={(value) => updateStatus(caseData, normalizeCaseStatus(value))} options={statusOptions} className="mt-2" /></label>
+                    <div className="mt-5 grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+                      <button type="button" onClick={() => openLegalKit(caseData)} className="rounded-lg bg-teal-600 px-4 py-3.5 font-bold text-white min-h-[48px]">{t("openLegalKit")}</button>
+                      <button type="button" onClick={() => editCase(caseData)} className="rounded-lg bg-slate-950 px-4 py-3.5 font-bold text-white min-h-[48px]">{t("editIntake")}</button>
+                      <button type="button" onClick={() => exportCaseJson(caseData)} className="rounded-lg bg-teal-50 px-4 py-3.5 font-bold text-teal-800 min-h-[48px]">{t("labelExportJson")}</button>
+                      <button type="button" onClick={() => deleteCase(caseData)} className="rounded-lg bg-red-50 px-4 py-3.5 font-bold text-red-700 min-h-[48px]">{t("deleteCase")}</button>
                     </div>
                   </article>
                 );
