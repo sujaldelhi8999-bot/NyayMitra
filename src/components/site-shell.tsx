@@ -87,9 +87,18 @@ function MobileNavDrawer({
   );
 }
 
-function Navbar({ language, onChangeLanguage }: { language: Language; onChangeLanguage: (lang: Language) => void }) {
+function Navbar({
+  language,
+  onChangeLanguage,
+  mobileMenuOpen,
+  onMenuOpen,
+}: {
+  language: Language;
+  onChangeLanguage: (lang: Language) => void;
+  mobileMenuOpen: boolean;
+  onMenuOpen: () => void;
+}) {
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/20 bg-white/85 backdrop-blur-xl">
@@ -120,7 +129,7 @@ function Navbar({ language, onChangeLanguage }: { language: Language; onChangeLa
           <button
             type="button"
             className="md:hidden rounded-lg p-2.5 text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
-            onClick={() => setMobileMenuOpen(true)}
+            onClick={onMenuOpen}
             aria-label="Open menu"
             aria-expanded={mobileMenuOpen}
           >
@@ -130,12 +139,6 @@ function Navbar({ language, onChangeLanguage }: { language: Language; onChangeLa
           </button>
         </div>
       </nav>
-      <MobileNavDrawer
-        isOpen={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        language={language}
-        onChangeLanguage={onChangeLanguage}
-      />
     </header>
   );
 }
@@ -152,10 +155,22 @@ function Footer({ language }: { language: Language }) {
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const { language, setLanguage } = useLanguage();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <>
-      <Navbar language={language} onChangeLanguage={setLanguage} />
+      <Navbar
+        language={language}
+        onChangeLanguage={setLanguage}
+        mobileMenuOpen={mobileMenuOpen}
+        onMenuOpen={() => setMobileMenuOpen(true)}
+      />
+      <MobileNavDrawer
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        language={language}
+        onChangeLanguage={setLanguage}
+      />
       <main>{children}</main>
       <Footer language={language} />
     </>
