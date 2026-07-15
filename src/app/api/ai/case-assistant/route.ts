@@ -88,6 +88,29 @@ function sanitizeAiJson(content: string): string {
   return cleaned;
 }
 
+const RETRYABLE_STATUSES = new Set([429, 502, 503]);
+
+async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 2): Promise<Response> {
+  let lastError: Response | null = null;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    if (attempt > 0) {
+      const retryAfter = lastError?.headers?.get("Retry-After");
+      const delayMs = retryAfter ? Math.min(Number(retryAfter) * 1000, 10000) : Math.pow(2, attempt - 1) * 1000;
+      await new Promise((r) => setTimeout(r, delayMs));
+    }
+    try {
+      const response = await fetch(url, options);
+      if (!RETRYABLE_STATUSES.has(response.status) || attempt === maxRetries) return response;
+      lastError = response;
+    } catch (e) {
+      if (e instanceof DOMException && e.name === "AbortError") throw e;
+      if (attempt === maxRetries) throw e;
+      lastError = null;
+    }
+  }
+  return lastError!;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json() as Record<string, unknown>;
@@ -103,7 +126,7 @@ export async function POST(request: Request) {
     const timeout = setTimeout(() => controller.abort(), TIMEOUT.AI_REQUEST);
     let openRouterResponse: Response;
     try {
-      openRouterResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      openRouterResponse = await fetchWithRetry("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
