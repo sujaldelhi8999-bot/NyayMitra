@@ -1540,7 +1540,7 @@ export function translate(language: Language, key: keyof typeof translations.en)
   return (translations[language] as Record<string, string>)[key] || translations.en[key];
 }
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 type LanguageContextType = {
   language: Language;
@@ -1550,7 +1550,17 @@ type LanguageContextType = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children, initialLanguage }: { children: ReactNode; initialLanguage?: Language }) {
-  const [language, setLanguageState] = useState<Language>(() => initialLanguage ?? getInitialLanguage());
+  const [language, setLanguageState] = useState<Language>(initialLanguage ?? "en");
+
+  useEffect(() => {
+    if (initialLanguage) {
+      try { document.cookie = `nyaymitra_language=${encodeURIComponent(initialLanguage)};path=/;max-age=31536000;SameSite=Lax`; } catch {}
+      return;
+    }
+    const lang = getInitialLanguage();
+    setLanguageState(lang);
+    try { document.cookie = `nyaymitra_language=${encodeURIComponent(lang)};path=/;max-age=31536000;SameSite=Lax`; } catch {}
+  }, [initialLanguage]);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
