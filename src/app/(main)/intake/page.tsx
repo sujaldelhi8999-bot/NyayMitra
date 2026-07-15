@@ -12,6 +12,8 @@ import { generateComplaintDraft } from "@/lib/draftTemplates";
 import { calculateCaseQualityScore } from "@/lib/qualityScore";
 import { PortalCard } from "@/components/portal-card";
 import { SourceTag } from "@/components/source-tag";
+import { TouchSelect } from "@/components/touch-select";
+import { CardTable } from "@/components/card-table";
 import {
   getMissingProofSuggestions,
   getVerifiedSourceNotes,
@@ -97,6 +99,7 @@ function IntakeContent() {
   const [customProofInput, setCustomProofInput] = useState("");
   const [customReliefInput, setCustomReliefInput] = useState("");
   const [draftLanguage, setDraftLanguage] = useState<Language>(language);
+  const [wizardExpanded, setWizardExpanded] = useState<Set<number>>(new Set([0]));
 
   // Phase 1: Lifted AI state
   const [aiState, setAiState] = useState<{
@@ -783,40 +786,105 @@ async function handleAskAdvisor() {
         {mode === "guided" && (
           <div className="mb-8 rounded-lg bg-white p-6 text-slate-950 shadow-2xl">
             <div className="h-3 overflow-hidden rounded-lg bg-slate-100"><div className="h-full bg-teal-500" style={{ width: `${((wizardStep + 1) / wizardSteps.length) * 100}%` }} /></div>
-            <p className="mt-5 text-sm font-black uppercase tracking-[0.2em] text-teal-700">Step {wizardStep + 1} of {wizardSteps.length}: {wizardSteps[wizardStep].title}</p>
-            <h2 className="mt-2 text-3xl font-black">{wizardSteps[wizardStep].title}</h2>
-            <p className="mt-2 font-semibold leading-7 text-slate-600">{wizardSteps[wizardStep].instruction}</p>
-            <button type="button" onClick={readStepAloud} className="mt-4 rounded-lg bg-slate-950 px-5 py-3 font-bold text-white">{t("readAloud")}</button>
-            {voiceMessage && <p className="mt-3 rounded-lg bg-amber-100 p-3 text-sm font-bold text-amber-900" aria-live="polite">{voiceMessage}</p>}
-
-            <div className="mt-6 grid gap-5 md:grid-cols-2">
-              {wizardStep === 0 && <><Input label={t("fullName")} name="fullName" value={formData.fullName} onChange={handleInputChange} /><Input label={t("contact")} name="contact" value={formData.contact} onChange={handleInputChange} /><Input label={t("stateOrUT")} name="stateOrUT" value={formData.stateOrUT || ""} onChange={handleInputChange} /><div className="md:col-span-2"><CaseTypeSelector selected={formData.caseType} search={caseTypeSearch} onSearch={setCaseTypeSearch} onSelect={selectCaseType} /></div></>}
-              {wizardStep === 1 && <><Input label={t("incidentDate")} type="date" name="incidentDate" value={formData.incidentDate} onChange={handleInputChange} max={todayISO} /><Input label={t("amountLost")} type="number" name="amountLost" value={formData.amountLost} onChange={handleInputChange} /></>}
-              {wizardStep === 2 && <label className="block md:col-span-2"><span className="mb-2 block font-semibold">{t("story")}</span><textarea name="story" value={formData.story} onChange={handleInputChange} rows={6} className="w-full rounded-lg border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" /></label>}
-              {wizardStep === 2 && formData.story.trim().length >= 30 && (
-                <div className="mt-4 md:col-span-2 sticky top-4 z-10">
-                  <button
-                    type="button"
-                    onClick={handleAiAnalyzeStory}
-                    className="w-full md:w-auto rounded-lg bg-teal-500 px-4 py-3 font-bold text-slate-950 shadow-lg transition hover:bg-teal-400"
-                    disabled={aiLoading === "analyze"}
-                  >
-                    {aiLoading === "analyze" ? t("aiAnalyzingCase") : t("aiAnalyze")}
-                  </button>
-                  {aiMessage && <p className={`mt-2 text-sm font-bold ${aiMessage.startsWith("AI could not") || aiMessage.startsWith("OpenRouter") || aiMessage.includes("error") || aiMessage.includes("Error") ? "text-red-600" : "text-teal-700"}`} aria-live="polite">{aiMessage}</p>}
-                </div>
-              )}
-              {wizardStep === 3 && <Input label={t("oppositeParty")} name="oppositeParty" value={formData.oppositeParty} onChange={handleInputChange} />}
-              {wizardStep === 4 && <div className="md:col-span-2"><h3 className="mb-3 font-black">{t("proofAvailable")}</h3><div className="grid gap-3 md:grid-cols-2">{proofOptions.map((proof) => <label key={proof} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3"><input type="checkbox" value={proof} checked={formData.proofs.includes(proof)} onChange={(e) => handleCheckboxChange(e, "proofs")} />{proof}</label>)}</div><CustomItemsEditor type="proof" enabled={formData.proofs.includes(OTHER_PROOF_OPTION)} value={customProofInput} items={formData.customProofs || []} onChange={setCustomProofInput} onAdd={addCustomProof} onRemove={removeCustomProof} /></div>}
-              {wizardStep === 5 && <div className="md:col-span-2"><h3 className="mb-3 font-black">{t("reliefWanted")}</h3><div className="grid gap-3 md:grid-cols-2">{reliefOptions.map((item) => <label key={item} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3"><input type="checkbox" value={item} checked={formData.relief.includes(item)} onChange={(e) => handleCheckboxChange(e, "relief")} />{item}</label>)}</div><CustomItemsEditor type="relief" enabled={formData.relief.includes(OTHER_RELIEF_OPTION)} value={customReliefInput} items={formData.customReliefs || []} onChange={setCustomReliefInput} onAdd={addCustomRelief} onRemove={removeCustomRelief} /></div>}
-              {wizardStep === 6 && <div className="md:col-span-2 rounded-lg bg-slate-50 p-5"><p><b>{t("fullName")}:</b> {formData.fullName || "-"}</p><p><b>{t("amountLost")}:</b> ₹{formData.amountLost || "-"}</p><p><b>{t("proofAvailable")}:</b> {formData.proofs.filter((item) => item !== OTHER_PROOF_OPTION).length} standard + {(formData.customProofs || []).length} custom</p><p><b>{t("reliefWanted")}:</b> {[...formData.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(formData.customReliefs || [])].join(", ") || "-"}</p></div>}
+            
+            <div className="mt-6 space-y-3 md:hidden">
+              {wizardSteps.map((step, index) => {
+                const isExpanded = wizardExpanded.has(index);
+                const isCurrent = index === wizardStep;
+                const isCompleted = index < wizardStep;
+                return (
+                  <article key={index} className="rounded-lg border border-slate-200 bg-white overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => setWizardExpanded((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(index)) next.delete(index);
+                        else next.add(index);
+                        return next;
+                      })}
+                      className="w-full flex items-center justify-between gap-4 p-4 text-left focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+                      aria-expanded={isExpanded}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-black ${isCurrent ? "bg-teal-600 text-white" : isCompleted ? "bg-teal-500 text-white" : "bg-slate-200 text-slate-600"}`}>
+                          {isCompleted ? (
+                            <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                          ) : (
+                            index + 1
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className={`font-semibold truncate ${isCurrent ? "text-teal-700" : "text-slate-900"}`}>{step.title}</p>
+                          <p className="text-xs text-slate-500 truncate">{step.instruction}</p>
+                        </div>
+                      </div>
+                      <svg className={`size-5 text-slate-400 transition-transform ${isExpanded ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                    {isExpanded && (
+                      <div className="border-t border-slate-100 bg-slate-50/50 p-4 animate-in slide-in-from-top-2 duration-150">
+                        {index === 0 && <><Input label={t("fullName")} name="fullName" value={formData.fullName} onChange={handleInputChange} className="min-h-[48px]" /><Input label={t("contact")} name="contact" value={formData.contact} onChange={handleInputChange} className="min-h-[48px]" /><Input label={t("stateOrUT")} name="stateOrUT" value={formData.stateOrUT || ""} onChange={handleInputChange} className="min-h-[48px]" /><div><CaseTypeSelector selected={formData.caseType} search={caseTypeSearch} onSearch={setCaseTypeSearch} onSelect={selectCaseType} /></div></>}
+                        {index === 1 && <><Input label={t("incidentDate")} type="date" name="incidentDate" value={formData.incidentDate} onChange={handleInputChange} max={todayISO} className="min-h-[48px]" /><Input label={t("amountLost")} type="number" name="amountLost" value={formData.amountLost} onChange={handleInputChange} className="min-h-[48px]" /></>}
+                        {index === 2 && <label className="block"><span className="mb-2 block font-semibold">{t("story")}</span><textarea name="story" value={formData.story} onChange={handleInputChange} rows={6} className="w-full rounded-lg border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100 min-h-[120px]" /></label>}
+                        {index === 2 && formData.story.trim().length >= 30 && (
+                          <div className="mt-4">
+                            <button
+                              type="button"
+                              onClick={handleAiAnalyzeStory}
+                              className="w-full rounded-lg bg-teal-500 px-4 py-3.5 font-bold text-slate-950 shadow-lg transition hover:bg-teal-400 min-h-[48px]"
+                              disabled={aiLoading === "analyze"}
+                            >
+                              {aiLoading === "analyze" ? t("aiAnalyzingCase") : t("aiAnalyze")}
+                            </button>
+                            {aiMessage && <p className={`mt-2 text-sm font-bold ${aiMessage.startsWith("AI could not") || aiMessage.startsWith("OpenRouter") || aiMessage.includes("error") || aiMessage.includes("Error") ? "text-red-600" : "text-teal-700"}`} aria-live="polite">{aiMessage}</p>}
+                          </div>
+                        )}
+                        {index === 3 && <Input label={t("oppositeParty")} name="oppositeParty" value={formData.oppositeParty} onChange={handleInputChange} className="min-h-[48px]" />}
+                        {index === 4 && <div><h3 className="mb-3 font-black">{t("proofAvailable")}</h3><div className="grid gap-3">{proofOptions.map((proof) => <label key={proof} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3 min-h-[48px]"><input type="checkbox" value={proof} checked={formData.proofs.includes(proof)} onChange={(e) => handleCheckboxChange(e, "proofs")} />{proof}</label>)}</div><CustomItemsEditor type="proof" enabled={formData.proofs.includes(OTHER_PROOF_OPTION)} value={customProofInput} items={formData.customProofs || []} onChange={setCustomProofInput} onAdd={addCustomProof} onRemove={removeCustomProof} /></div>}
+                        {index === 5 && <div><h3 className="mb-3 font-black">{t("reliefWanted")}</h3><div className="grid gap-3">{reliefOptions.map((item) => <label key={item} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3 min-h-[48px]"><input type="checkbox" value={item} checked={formData.relief.includes(item)} onChange={(e) => handleCheckboxChange(e, "relief")} />{item}</label>)}</div><CustomItemsEditor type="relief" enabled={formData.relief.includes(OTHER_RELIEF_OPTION)} value={customReliefInput} items={formData.customReliefs || []} onChange={setCustomReliefInput} onAdd={addCustomRelief} onRemove={removeCustomRelief} /></div>}
+                        {index === 6 && <div className="rounded-lg bg-slate-50 p-5"><p><b>{t("fullName")}:</b> {formData.fullName || "-"}</p><p><b>{t("amountLost")}:</b> ₹{formData.amountLost || "-"}</p><p><b>{t("proofAvailable")}:</b> {formData.proofs.filter((item) => item !== OTHER_PROOF_OPTION).length} standard + {(formData.customProofs || []).length} custom</p><p><b>{t("reliefWanted")}:</b> {[...formData.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(formData.customReliefs || [])].join(", ") || "-"}</p></div>}
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
             </div>
 
-            <div className="mt-6 flex flex-wrap gap-3">
-              <button type="button" onClick={() => setWizardStep((step) => Math.max(0, step - 1))} className="rounded-lg bg-slate-100 px-5 py-3 font-bold text-slate-700">{t("previous")}</button>
-              <button type="button" onClick={() => setWizardStep((step) => Math.min(wizardSteps.length - 1, step + 1))} className="rounded-lg bg-slate-950 px-5 py-3 font-bold text-white">{t("next")}</button>
-              <button type="button" onClick={saveProgress} className="rounded-lg bg-teal-100 px-5 py-3 font-bold text-teal-900">{t("saveProgress")}</button>
-              {wizardStep === wizardSteps.length - 1 && <button type="button" onClick={handleGenerate} className="rounded-lg bg-teal-600 px-5 py-3 font-black text-white">{t("generateSummary")}</button>}
+            <div className="hidden md:block">
+              <p className="mt-5 text-sm font-black uppercase tracking-[0.2em] text-teal-700">Step {wizardStep + 1} of {wizardSteps.length}: {wizardSteps[wizardStep].title}</p>
+              <h2 className="mt-2 text-3xl font-black">{wizardSteps[wizardStep].title}</h2>
+              <p className="mt-2 font-semibold leading-7 text-slate-600">{wizardSteps[wizardStep].instruction}</p>
+              <button type="button" onClick={readStepAloud} className="mt-4 rounded-lg bg-slate-950 px-5 py-3 font-bold text-white">{t("readAloud")}</button>
+              {voiceMessage && <p className="mt-3 rounded-lg bg-amber-100 p-3 text-sm font-bold text-amber-900" aria-live="polite">{voiceMessage}</p>}
+
+              <div className="mt-6 grid gap-5 md:grid-cols-2">
+                {wizardStep === 0 && <><Input label={t("fullName")} name="fullName" value={formData.fullName} onChange={handleInputChange} className="min-h-[48px]" /><Input label={t("contact")} name="contact" value={formData.contact} onChange={handleInputChange} className="min-h-[48px]" /><Input label={t("stateOrUT")} name="stateOrUT" value={formData.stateOrUT || ""} onChange={handleInputChange} className="min-h-[48px]" /><div className="md:col-span-2"><CaseTypeSelector selected={formData.caseType} search={caseTypeSearch} onSearch={setCaseTypeSearch} onSelect={selectCaseType} /></div></>}
+                {wizardStep === 1 && <><Input label={t("incidentDate")} type="date" name="incidentDate" value={formData.incidentDate} onChange={handleInputChange} max={todayISO} className="min-h-[48px]" /><Input label={t("amountLost")} type="number" name="amountLost" value={formData.amountLost} onChange={handleInputChange} className="min-h-[48px]" /></>}
+                {wizardStep === 2 && <label className="block md:col-span-2"><span className="mb-2 block font-semibold">{t("story")}</span><textarea name="story" value={formData.story} onChange={handleInputChange} rows={6} className="w-full rounded-lg border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100 min-h-[120px]" /></label>}
+                {wizardStep === 2 && formData.story.trim().length >= 30 && (
+                  <div className="mt-4 md:col-span-2 sticky top-4 z-10">
+                    <button
+                      type="button"
+                      onClick={handleAiAnalyzeStory}
+                      className="w-full md:w-auto rounded-lg bg-teal-500 px-4 py-3.5 font-bold text-slate-950 shadow-lg transition hover:bg-teal-400 min-h-[48px]"
+                      disabled={aiLoading === "analyze"}
+                    >
+                      {aiLoading === "analyze" ? t("aiAnalyzingCase") : t("aiAnalyze")}
+                    </button>
+                    {aiMessage && <p className={`mt-2 text-sm font-bold ${aiMessage.startsWith("AI could not") || aiMessage.startsWith("OpenRouter") || aiMessage.includes("error") || aiMessage.includes("Error") ? "text-red-600" : "text-teal-700"}`} aria-live="polite">{aiMessage}</p>}
+                  </div>
+                )}
+                {wizardStep === 3 && <Input label={t("oppositeParty")} name="oppositeParty" value={formData.oppositeParty} onChange={handleInputChange} className="min-h-[48px]" />}
+                {wizardStep === 4 && <div className="md:col-span-2"><h3 className="mb-3 font-black">{t("proofAvailable")}</h3><div className="grid gap-3 md:grid-cols-2">{proofOptions.map((proof) => <label key={proof} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3 min-h-[48px]"><input type="checkbox" value={proof} checked={formData.proofs.includes(proof)} onChange={(e) => handleCheckboxChange(e, "proofs")} />{proof}</label>)}</div><CustomItemsEditor type="proof" enabled={formData.proofs.includes(OTHER_PROOF_OPTION)} value={customProofInput} items={formData.customProofs || []} onChange={setCustomProofInput} onAdd={addCustomProof} onRemove={removeCustomProof} /></div>}
+                {wizardStep === 5 && <div className="md:col-span-2"><h3 className="mb-3 font-black">{t("reliefWanted")}</h3><div className="grid gap-3 md:grid-cols-2">{reliefOptions.map((item) => <label key={item} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3 min-h-[48px]"><input type="checkbox" value={item} checked={formData.relief.includes(item)} onChange={(e) => handleCheckboxChange(e, "relief")} />{item}</label>)}</div><CustomItemsEditor type="relief" enabled={formData.relief.includes(OTHER_RELIEF_OPTION)} value={customReliefInput} items={formData.customReliefs || []} onChange={setCustomReliefInput} onAdd={addCustomRelief} onRemove={removeCustomRelief} /></div>}
+                {wizardStep === 6 && <div className="md:col-span-2 rounded-lg bg-slate-50 p-5"><p><b>{t("fullName")}:</b> {formData.fullName || "-"}</p><p><b>{t("amountLost")}:</b> ₹{formData.amountLost || "-"}</p><p><b>{t("proofAvailable")}:</b> {formData.proofs.filter((item) => item !== OTHER_PROOF_OPTION).length} standard + {(formData.customProofs || []).length} custom</p><p><b>{t("reliefWanted")}:</b> {[...formData.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(formData.customReliefs || [])].join(", ") || "-"}</p></div>}
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-3">
+                <button type="button" onClick={() => setWizardStep((step) => Math.max(0, step - 1))} className="rounded-lg bg-slate-100 px-5 py-3.5 font-bold text-slate-700 min-h-[48px]">{t("previous")}</button>
+                <button type="button" onClick={() => setWizardStep((step) => Math.min(wizardSteps.length - 1, step + 1))} className="rounded-lg bg-slate-950 px-5 py-3.5 font-bold text-white min-h-[48px]">{t("next")}</button>
+                <button type="button" onClick={saveProgress} className="rounded-lg bg-teal-100 px-5 py-3.5 font-bold text-teal-900 min-h-[48px]">{t("saveProgress")}</button>
+                {wizardStep === wizardSteps.length - 1 && <button type="button" onClick={handleGenerate} className="rounded-lg bg-teal-600 px-5 py-3.5 font-black text-white min-h-[48px]">{t("generateSummary")}</button>}
+              </div>
             </div>
           </div>
         )}
@@ -896,25 +964,25 @@ async function handleAskAdvisor() {
             </div>
           </div>
 
-          <div className="mt-5">
+<div className="mt-5">
             <label className="mb-2 block font-semibold">{t("story")}</label>
               <textarea
               name="story"
               value={formData.story}
               onChange={handleInputChange}
               rows={5}
-              className="w-full rounded-lg border p-3 outline-none focus:border-teal-500"
+              className="w-full rounded-lg border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100 min-h-[120px]"
                 placeholder={t("storyPlaceholder")}
               />
             </div>
 
             {/* AI Analyze button - sticky after story */}
             {formData.story.trim().length >= 30 && (
-              <div className="mt-4 sticky top-4 z-10">
+              <div className="mt-4 sticky top-[calc(60px+env(safe-area-inset-top))] z-10">
                 <button
                   type="button"
                   onClick={handleAiAnalyzeStory}
-                  className="w-full md:w-auto rounded-lg bg-teal-500 px-4 py-3 font-bold text-slate-950 shadow-lg transition hover:bg-teal-400"
+                  className="w-full md:w-auto rounded-lg bg-teal-500 px-4 py-3.5 font-bold text-slate-950 shadow-lg transition hover:bg-teal-400 min-h-[48px]"
                   disabled={aiLoading === "analyze"}
                 >
                   {aiLoading === "analyze" ? t("aiAnalyzingCase") : t("aiAnalyze")}
@@ -927,17 +995,17 @@ async function handleAskAdvisor() {
             <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-5 text-slate-950">
               <p className="text-sm font-black uppercase tracking-[0.18em] text-amber-700">{t("otherNotSureFlow")}</p>
               <h2 className="mt-2 text-2xl font-black">{t("explainLegalProblem")}</h2>
-              <div className="mt-5 grid gap-4 md:grid-cols-2">
-                <label className="block md:col-span-2"><span className="font-bold">{t("whatHappened")}</span><textarea value={formData.story} onChange={(event) => setCaseData((current) => ({ ...current, story: event.target.value }))} rows={4} className="mt-2 w-full rounded-lg border border-amber-200 bg-white p-3 outline-none focus:border-amber-500" /></label>
-                <Input label={t("whoIsInvolved")} name="oppositeParty" value={formData.oppositeParty} onChange={handleInputChange} />
-                <Input label={t("whenDidItHappen")} type="date" name="incidentDate" value={formData.incidentDate} onChange={handleInputChange} />
-                <label className="block md:col-span-2"><span className="font-bold">{t("urgentDangerOrDeadline")}</span><textarea onChange={(event) => setCaseData((current) => ({ ...current, story: `${current.story}\nUrgency/deadline: ${event.target.value}` }))} rows={2} className="mt-2 w-full rounded-lg border border-amber-200 bg-white p-3 outline-none focus:border-amber-500" /></label>
-                <label className="block md:col-span-2"><span className="font-bold">{t("whatDocumentsOrProof")}</span><textarea onChange={(event) => setCaseData((current) => ({ ...current, story: `${current.story}\nDocuments/proof: ${event.target.value}` }))} rows={2} className="mt-2 w-full rounded-lg border border-amber-200 bg-white p-3 outline-none focus:border-amber-500" /></label>
-                <label className="block"><span className="font-bold">{t("whatOutcomeDoYouWant")}</span><textarea onChange={(event) => setCaseData((current) => ({ ...current, story: `${current.story}\nOutcome wanted: ${event.target.value}` }))} rows={2} className="mt-2 w-full rounded-lg border border-amber-200 bg-white p-3 outline-none focus:border-amber-500" /></label>
-                <label className="block"><span className="font-bold">{t("hasAnythingBeenFiled")}</span><textarea onChange={(event) => setCaseData((current) => ({ ...current, story: `${current.story}\nAlready filed: ${event.target.value}` }))} rows={2} className="mt-2 w-full rounded-lg border border-amber-200 bg-white p-3 outline-none focus:border-amber-500" /></label>
+              <div className="mt-5 grid gap-4">
+                <label className="block"><span className="font-bold">{t("whatHappened")}</span><textarea value={formData.story} onChange={(event) => setCaseData((current) => ({ ...current, story: event.target.value }))} rows={4} className="mt-2 w-full rounded-lg border border-amber-200 bg-white p-3 outline-none focus:border-amber-500 min-h-[120px]" /></label>
+                <Input label={t("whoIsInvolved")} name="oppositeParty" value={formData.oppositeParty} onChange={handleInputChange} className="min-h-[48px]" />
+                <Input label={t("whenDidItHappen")} type="date" name="incidentDate" value={formData.incidentDate} onChange={handleInputChange} className="min-h-[48px]" />
+                <label className="block"><span className="font-bold">{t("urgentDangerOrDeadline")}</span><textarea onChange={(event) => setCaseData((current) => ({ ...current, story: `${current.story}\nUrgency/deadline: ${event.target.value}` }))} rows={2} className="mt-2 w-full rounded-lg border border-amber-200 bg-white p-3 outline-none focus:border-amber-500 min-h-[80px]" /></label>
+                <label className="block"><span className="font-bold">{t("whatDocumentsOrProof")}</span><textarea onChange={(event) => setCaseData((current) => ({ ...current, story: `${current.story}\nDocuments/proof: ${event.target.value}` }))} rows={2} className="mt-2 w-full rounded-lg border border-amber-200 bg-white p-3 outline-none focus:border-amber-500 min-h-[80px]" /></label>
+                <label className="block"><span className="font-bold">{t("whatOutcomeDoYouWant")}</span><textarea onChange={(event) => setCaseData((current) => ({ ...current, story: `${current.story}\nOutcome wanted: ${event.target.value}` }))} rows={2} className="mt-2 w-full rounded-lg border border-amber-200 bg-white p-3 outline-none focus:border-amber-500 min-h-[80px]" /></label>
+                <label className="block"><span className="font-bold">{t("hasAnythingBeenFiled")}</span><textarea onChange={(event) => setCaseData((current) => ({ ...current, story: `${current.story}\nAlready filed: ${event.target.value}` }))} rows={2} className="mt-2 w-full rounded-lg border border-amber-200 bg-white p-3 outline-none focus:border-amber-500 min-h-[80px]" /></label>
               </div>
-              <button type="button" onClick={handleOtherClassification} className="mt-5 rounded-lg bg-amber-500 px-6 py-3 font-black text-slate-950 hover:bg-amber-400">{otherClassifying ? t("aiAnalyzingCase") : t("aiUnderstanding")}</button>
-              {formData.aiAnalysis?.classification && <div className="mt-5 rounded-lg bg-white p-4"><h3 className="text-xl font-black">{t("aiClassificationReady")}</h3><div className="mt-3 grid gap-3 md:grid-cols-2"><p><b>{t("probableCaseType")}</b> {formData.aiAnalysis.classification.caseType}</p><p><b>{t("confidence")}</b> {formData.aiAnalysis.classification.confidence}%</p><p><b>{t("outputMode")}</b> {outputModeLabel(formData.aiAnalysis.classification.outputMode)}</p><p><b>{t("riskLevel")}</b> {formData.aiAnalysis.classification.riskLevel}</p><p className="md:col-span-2"><b>{t("riskReason")}</b> {formData.aiAnalysis.classification.riskReason}</p><p className="md:col-span-2"><b>{t("shortSummary")}</b> {formData.aiAnalysis.classification.shortSummary}</p><p className="md:col-span-2"><b>{t("suggestedProofs")}</b> {formData.aiAnalysis.classification.suggestedProofs?.join(", ") || "Not provided"}</p><p className="md:col-span-2"><b>{t("suggestedReliefs")}</b> {formData.aiAnalysis.classification.suggestedReliefs?.join(", ") || "Not provided"}</p><p className="md:col-span-2"><b>{t("missingDetails")}</b> {formData.aiAnalysis.classification.missingDetails?.join(", ") || "Not provided"}</p><p className="md:col-span-2"><b>{t("nextSteps")}</b> {formData.aiAnalysis.classification.nextSteps?.join(", ") || "Not provided"}</p><p><b>{t("lawyerReviewRecommended")}</b> {formData.aiAnalysis.classification.lawyerReviewRecommended ? "Yes" : "No"}</p></div><div className="mt-4 flex flex-wrap gap-3"><button type="button" onClick={useSuggestedCaseType} className="rounded-lg bg-teal-600 px-5 py-3 font-bold text-white">{t("useAISuggestedCaseType")}</button><button type="button" className="rounded-lg bg-slate-100 px-5 py-3 font-bold text-slate-700">{t("keepAsOtherNotSure")}</button></div></div>}
+              <button type="button" onClick={handleOtherClassification} className="mt-5 rounded-lg bg-amber-500 px-6 py-3.5 font-black text-slate-950 hover:bg-amber-400 min-h-[48px]">{otherClassifying ? t("aiAnalyzingCase") : t("aiUnderstanding")}</button>
+              {formData.aiAnalysis?.classification && <div className="mt-5 rounded-lg bg-white p-4"><h3 className="text-xl font-black">{t("aiClassificationReady")}</h3><div className="mt-3 grid gap-3 md:grid-cols-2"><p><b>{t("probableCaseType")}</b> {formData.aiAnalysis.classification.caseType}</p><p><b>{t("confidence")}</b> {formData.aiAnalysis.classification.confidence}%</p><p><b>{t("outputMode")}</b> {outputModeLabel(formData.aiAnalysis.classification.outputMode)}</p><p><b>{t("riskLevel")}</b> {formData.aiAnalysis.classification.riskLevel}</p><p className="md:col-span-2"><b>{t("riskReason")}</b> {formData.aiAnalysis.classification.riskReason}</p><p className="md:col-span-2"><b>{t("shortSummary")}</b> {formData.aiAnalysis.classification.shortSummary}</p><p className="md:col-span-2"><b>{t("suggestedProofs")}</b> {formData.aiAnalysis.classification.suggestedProofs?.join(", ") || "Not provided"}</p><p className="md:col-span-2"><b>{t("suggestedReliefs")}</b> {formData.aiAnalysis.classification.suggestedReliefs?.join(", ") || "Not provided"}</p><p className="md:col-span-2"><b>{t("missingDetails")}</b> {formData.aiAnalysis.classification.missingDetails?.join(", ") || "Not provided"}</p><p className="md:col-span-2"><b>{t("nextSteps")}</b> {formData.aiAnalysis.classification.nextSteps?.join(", ") || "Not provided"}</p><p><b>{t("lawyerReviewRecommended")}</b> {formData.aiAnalysis.classification.lawyerReviewRecommended ? "Yes" : "No"}</p></div><div className="mt-4 flex flex-wrap gap-3"><button type="button" onClick={useSuggestedCaseType} className="rounded-lg bg-teal-600 px-5 py-3.5 font-bold text-white min-h-[48px]">{t("useAISuggestedCaseType")}</button><button type="button" className="rounded-lg bg-slate-100 px-5 py-3.5 font-bold text-slate-700 min-h-[48px]">{t("keepAsOtherNotSure")}</button></div></div>}
             </div>
           )}
 
@@ -992,34 +1060,28 @@ async function handleAskAdvisor() {
             {fileError && <p className="mt-4 rounded-lg bg-red-100 p-3 text-sm font-bold text-red-800">{fileError}</p>}
 
             {formData.uploadedFiles.length > 0 && (
-              <div className="mt-6 overflow-x-auto rounded-lg bg-white text-slate-950">
-                <table className="w-full min-w-[820px] text-left text-sm">
-                  <thead className="bg-slate-100 text-slate-600">
-                    <tr>
-                      <th className="p-3">{t("annexureNo")}</th>
-                      <th className="p-3">{t("fileName")}</th>
-                      <th className="p-3">{t("category")}</th>
-                      <th className="p-3">{t("type")}</th>
-                      <th className="p-3">{t("size")}</th>
-                      <th className="p-3">{t("uploadedAt")}</th>
-                      <th className="p-3">{t("remove")}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {formData.uploadedFiles.map((file, index) => (
-                      <tr key={file.id} className="border-t">
-                        <td className="p-3 font-black">A{index + 1}</td>
-                        <td className="p-3 font-semibold">{file.fileName}</td>
-                        <td className="p-3">{file.evidenceCategory}</td>
-                        <td className="p-3">{file.fileType}</td>
-                        <td className="p-3">{formatFileSize(file.fileSize)}</td>
-                        <td className="p-3">{new Date(file.uploadedAt).toLocaleString()}</td>
-                        <td className="p-3"><button type="button" onClick={() => handleRemoveEvidenceFile(file.id)} className="rounded-lg bg-red-50 px-3 py-1 font-bold text-red-700">{t("removeBtn")}</button></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <CardTable
+                columns={[
+                  { key: "annexure", header: t("annexureNo"), render: (row) => row.annexure },
+                  { key: "fileName", header: t("fileName"), render: (row) => <span className="font-semibold">{row.fileName}</span> },
+                  { key: "category", header: t("category"), render: (row) => row.category },
+                  { key: "type", header: t("type"), render: (row) => row.type },
+                  { key: "size", header: t("size"), render: (row) => row.size },
+                  { key: "uploadedAt", header: t("uploadedAt"), render: (row) => row.uploadedAt },
+                  { key: "remove", header: t("remove"), render: (row) => <button type="button" onClick={() => handleRemoveEvidenceFile(row.id)} className="rounded-lg bg-red-50 px-3 py-1.5 font-bold text-red-700 min-h-[48px] min-w-[48px]">{t("removeBtn")}</button> },
+                ]}
+                data={formData.uploadedFiles.map((file, index) => ({
+                  annexure: `A${index + 1}`,
+                  fileName: file.fileName,
+                  category: file.evidenceCategory,
+                  type: file.fileType,
+                  size: formatFileSize(file.fileSize),
+                  uploadedAt: new Date(file.uploadedAt).toLocaleString(),
+                  id: file.id,
+                }))}
+                keyExtractor={(row) => row.id}
+                emptyMessage={t("kitNoUploadedAnnexureFiles")}
+              />
             )}
           </div>
 
@@ -1231,53 +1293,34 @@ async function handleAskAdvisor() {
 
             <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
               <h2 className="text-2xl font-bold">{t("evidenceTable")}</h2>
-
-              <div className="mt-5 overflow-x-auto">
-                <table className="w-full min-w-[880px] border-collapse text-left">
-                  <thead>
-                    <tr className="bg-slate-900 text-white">
-                      <th className="p-3">{t("kitLabelAnnexureNo")}</th>
-                      <th className="p-3">{t("kitLabelEvidence")}</th>
-                      <th className="p-3">Available?</th>
-                      <th className="p-3">Uploaded File Name</th>
-                      <th className="p-3">{t("kitLabelProves")}</th>
-                      <th className="p-3">Suggested action</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {[...proofOptions.filter((proof) => proof !== OTHER_PROOF_OPTION), ...(submittedCase.customProofs || [])].map((proof) => {
-                      const custom = (submittedCase.customProofs || []).includes(proof);
-                      const available = submittedCase.proofs.includes(proof);
-                      const uploadedFile = submittedCase.uploadedFiles.find((file) => file.evidenceCategory === proof);
-                      // Determine if proof is from AI suggestion or rule-based
-                      const isAiSuggested = submittedCase.aiAnalysis?.classification?.suggestedProofs?.includes(proof) || false;
-                      const source = isAiSuggested ? 'ai' : 'rule';
-
-                      return (
-                        <tr key={proof} className="border-b">
-                          <td className="p-3 font-black">{uploadedFile ? `A${submittedCase.uploadedFiles.findIndex((file) => file.id === uploadedFile.id) + 1}` : "-"}</td>
-                          <td className="p-3 font-semibold flex items-center gap-2">{proof} <SourceTag source={source} /></td>
-                          <td className="p-3">
-                            {custom || available ? "Yes" : t("kitLabelMissing")}
-                          </td>
-                          <td className="p-3">
-                            {uploadedFile?.fileName || (custom ? "Custom proof added, file not uploaded yet." : available ? "Marked available, file not uploaded yet." : "No file / not marked.")}
-                          </td>
-                          <td className="p-3">{custom ? "User-provided supporting proof. Meaning should be verified during legal-aid/lawyer review." : evidenceMeaning[proof] || "Supports the facts, timeline, identity, communication, authority history, or requested relief. Verify relevance before relying on it."}</td>
-                          <td className="p-3">
-                            {custom
-                              ? "Keep original copy safe and mention it in consultation/draft."
-                              : available
-                              ? "Attach this in the final PDF."
-                              : "Try to collect this before final PDF."}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+              <CardTable
+                columns={[
+                  { key: "annexure", header: t("kitLabelAnnexureNo"), render: (row) => row.annexure },
+                  { key: "evidence", header: t("kitLabelEvidence"), render: (row) => <span className="flex items-center gap-2">{row.evidence} <SourceTag source={row.source} /></span> },
+                  { key: "status", header: "Available?", render: (row) => row.status },
+                  { key: "fileName", header: "Uploaded File Name", render: (row) => row.fileName },
+                  { key: "proves", header: t("kitLabelProves"), render: (row) => row.proves },
+                  { key: "action", header: "Suggested action", render: (row) => row.action },
+                ]}
+                data={[
+                  ...proofOptions.filter((proof) => proof !== OTHER_PROOF_OPTION),
+                  ...(submittedCase.customProofs || []),
+                ].map((proof, index) => {
+                  const custom = (submittedCase.customProofs || []).includes(proof);
+                  const available = submittedCase.proofs.includes(proof);
+                  const uploadedFile = submittedCase.uploadedFiles.find((file) => file.evidenceCategory === proof);
+                  const isAiSuggested = submittedCase.aiAnalysis?.classification?.suggestedProofs?.includes(proof) || false;
+                  const source: "rule" | "ai" = isAiSuggested ? 'ai' : 'rule';
+                  const annexure = uploadedFile ? `A${submittedCase.uploadedFiles.findIndex((file) => file.id === uploadedFile.id) + 1}` : "-";
+                  const status = custom || available ? "Yes" : t("kitLabelMissing");
+                  const fileName = uploadedFile?.fileName || (custom ? "Custom proof added, file not uploaded yet." : available ? "Marked available, file not uploaded yet." : "No file / not marked.");
+                  const proves = custom ? "User-provided supporting proof. Meaning should be verified during legal-aid/lawyer review." : evidenceMeaning[proof] || "Supports the facts, timeline, identity, communication, authority history, or requested relief. Verify relevance before relying on it.";
+                  const action = custom ? "Keep original copy safe and mention it in consultation/draft." : available ? "Attach this in the final PDF." : "Try to collect this before final PDF.";
+                  return { annexure, evidence: proof, status, fileName, proves, action, source };
+                })}
+                keyExtractor={(row) => row.evidence}
+                emptyMessage={t("kitNoEvidenceToBeAdded")}
+              />
             </div>
 
             <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
@@ -1527,11 +1570,11 @@ function CustomItemsEditor({ type, enabled, value, items, onChange, onAdd, onRem
   );
 }
 
-function Input({ label, name, value, onChange, type = "text", max }: { label: string; name: string; value: string; onChange: (event: React.ChangeEvent<HTMLInputElement>) => void; type?: string; max?: string }) {
+function Input({ label, name, value, onChange, type = "text", max, className = "" }: { label: string; name: string; value: string; onChange: (event: React.ChangeEvent<HTMLInputElement>) => void; type?: string; max?: string; className?: string }) {
   return (
     <label className="block">
       <span className="mb-2 block font-semibold">{label}</span>
-      <input name={name} type={type} value={value} onChange={onChange} max={max} className="w-full rounded-lg border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" />
+      <input name={name} type={type} value={value} onChange={onChange} max={max} className={`w-full rounded-lg border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100 min-h-[48px] ${className}`} />
     </label>
   );
 }
