@@ -38,12 +38,8 @@ function storyMentionsAmount(story: string, amount: string) {
   return storyAmounts.some((a) => a === amountNum);
 }
 
-export function calculateCaseQualityScore(data: CaseData) {
+function scoreStorySection(data: CaseData, caseType: string, suggestions: string[]) {
   let score = 0;
-  const suggestions: string[] = [];
-  const caseType = data.caseType;
-  getCaseConfig(caseType);
-
   const storyLength = data.story.trim().length;
   const keywordCount = countUsefulStoryKeywords(data.story, caseType);
   const storyHasGarbage = hasTooManyRandomSymbols(data.story);
@@ -66,22 +62,33 @@ export function calculateCaseQualityScore(data: CaseData) {
       suggestions.push("Reduce random symbols and write the story in clear sentences.");
     }
   }
+  return score;
+}
 
-  if (data.incidentDate) score += QUALITY.DATE_SCORE;
-  else suggestions.push("Add the incident date.");
+function scoreDate(data: CaseData, suggestions: string[]) {
+  if (data.incidentDate) return QUALITY.DATE_SCORE;
+  suggestions.push("Add the incident date.");
+  return 0;
+}
 
-  if (Number(data.amountLost) > 0 && storyMentionsAmount(data.story, data.amountLost)) score += QUALITY.AMOUNT_SCORE;
+function scoreAmount(data: CaseData, suggestions: string[]) {
+  if (Number(data.amountLost) > 0 && storyMentionsAmount(data.story, data.amountLost)) return QUALITY.AMOUNT_SCORE;
   else if (Number(data.amountLost) <= 0) suggestions.push("Add the amount lost.");
   else suggestions.push("Amount in story doesn't match amount field — verify consistency.");
+  return 0;
+}
 
-  if (hasValidOppositeParty(data.oppositeParty, caseType)) score += QUALITY.PARTY_SCORE;
-  else {
-    if (caseType === "Property / Land Dispute") suggestions.push("Add opposite party details (name, phone, or contact info).");
-    else if (caseType === "Consumer Complaint") suggestions.push("Add seller/platform/service provider details.");
-    else if (caseType === "RTI / Government Service Delay" || caseType === "Government Document / Certificate Issue") suggestions.push("Add department/public authority details.");
-    else suggestions.push("Add opposite party details such as UPI ID, phone number, name, or account details.");
-  }
+function scoreOppositeParty(data: CaseData, caseType: string, suggestions: string[]) {
+  if (hasValidOppositeParty(data.oppositeParty, caseType)) return QUALITY.PARTY_SCORE;
+  if (caseType === "Property / Land Dispute") suggestions.push("Add opposite party details (name, phone, or contact info).");
+  else if (caseType === "Consumer Complaint") suggestions.push("Add seller/platform/service provider details.");
+  else if (caseType === "RTI / Government Service Delay" || caseType === "Government Document / Certificate Issue") suggestions.push("Add department/public authority details.");
+  else suggestions.push("Add opposite party details such as UPI ID, phone number, name, or account details.");
+  return 0;
+}
 
+function scoreProofsByCaseType(data: CaseData, caseType: string, suggestions: string[]) {
+  let score = 0;
   const allProofText = [...data.proofs, ...(data.customProofs || []), data.story].join(" ").toLowerCase();
 
   if (caseType === "Property / Land Dispute") {
@@ -119,15 +126,44 @@ export function calculateCaseQualityScore(data: CaseData) {
     if (data.proofs.includes("Bank SMS")) score += QUALITY.SCAM_BANK_SCORE;
     else suggestions.push("Add bank SMS, debit alert, or bank statement entry.");
   }
+  return score;
+}
 
-  if (data.relief.length + (data.customReliefs || []).length >= 2) score += QUALITY.TWO_RELIEFS_SCORE;
-  else suggestions.push("Select at least two relief options if they match your situation.");
+function scoreReliefs(data: CaseData, suggestions: string[]) {
+  if (data.relief.length + (data.customReliefs || []).length >= 2) return QUALITY.TWO_RELIEFS_SCORE;
+  suggestions.push("Select at least two relief options if they match your situation.");
+  return 0;
+}
 
-  if (data.uploadedFiles.length >= 1 || (data.customProofs || []).length >= 1) score += QUALITY.TWO_PROOFS_SCORE;
-  else suggestions.push("Upload at least one proof file so the annexure index is stronger.");
+function scoreUploadedFiles(data: CaseData, suggestions: string[]) {
+  let score = 0;
+  if (data.uploadedFiles.length >= 1 || (data.customProofs || []).length >= 1) {
+    score += QUALITY.TWO_PROOFS_SCORE;
+  } else {
+    suggestions.push("Upload at least one proof file so the annexure index is stronger.");
+  }
+  if (data.uploadedFiles.length >= 3 || (data.customProofs || []).length >= 3) {
+    score += QUALITY.THREE_PROOFS_SCORE;
+  } else {
+    suggestions.push("Upload three or more key proof files if available.");
+  }
+  return score;
+}
 
-  if (data.uploadedFiles.length >= 3 || (data.customProofs || []).length >= 3) score += QUALITY.THREE_PROOFS_SCORE;
-  else suggestions.push("Upload three or more key proof files if available.");
+export function calculateCaseQualityScore(data: CaseData) {
+  const caseType = data.caseType;
+  getCaseConfig(caseType);
+
+  const suggestions: string[] = [];
+  let score = 0;
+
+  score += scoreStorySection(data, caseType, suggestions);
+  score += scoreDate(data, suggestions);
+  score += scoreAmount(data, suggestions);
+  score += scoreOppositeParty(data, caseType, suggestions);
+  score += scoreProofsByCaseType(data, caseType, suggestions);
+  score += scoreReliefs(data, suggestions);
+  score += scoreUploadedFiles(data, suggestions);
 
   score = Math.max(0, Math.min(100, score));
 

@@ -2,12 +2,7 @@ import type { CaseData } from "@/types/case";
 import { resolveOutputMode } from "./caseConfig";
 import { OTHER_PROOF_OPTION, OTHER_RELIEF_OPTION } from "./constants";
 
-export function generateComplaintDraft(data: CaseData) {
-  const today = new Date().toISOString().split("T")[0];
-  const followUps = Object.entries(data.followUpAnswers || {})
-    .filter(([, answer]) => answer.trim())
-    .map(([question, answer]) => `- ${question}\n  ${answer}`)
-    .join("\n");
+function buildProofList(data: CaseData) {
   const standardProofs = data.proofs.filter((proof) => proof !== OTHER_PROOF_OPTION);
   const proofList = standardProofs.length
     ? standardProofs.map((proof, index) => `${index + 1}. ${proof}`).join("\n")
@@ -15,17 +10,34 @@ export function generateComplaintDraft(data: CaseData) {
   const customProofList = data.customProofs?.length
     ? `\n\nCustom proofs:\n${data.customProofs.map((proof, index) => `${index + 1}. ${proof}`).join("\n")}`
     : "";
-  const annexures = data.uploadedFiles.length
-    ? data.uploadedFiles.map((file, index) => `A${index + 1} - ${file.fileName} - ${file.evidenceCategory}`).join("\n")
-    : "No uploaded annexures added yet.";
+  return { proofList, customProofList };
+}
+
+function buildReliefList(data: CaseData) {
   const combinedReliefs = [...data.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(data.customReliefs || [])];
-  const reliefList = combinedReliefs.length
+  return combinedReliefs.length
     ? combinedReliefs.map((relief, index) => `${index + 1}. ${relief}`).join("\n")
     : "1. Relief to be confirmed";
+}
 
-  const outputMode = resolveOutputMode(data.caseType, data.story, data.aiAnalysis?.classification?.caseType, data.aiAnalysis?.classification?.outputMode);
-  if (outputMode === "urgent-legal-aid-route") {
-    return `Legal Aid Consultation Note
+function buildAnnexures(data: CaseData) {
+  return data.uploadedFiles.length
+    ? data.uploadedFiles.map((file, index) => `A${index + 1} - ${file.fileName} - ${file.evidenceCategory}`).join("\n")
+    : "No uploaded annexures added yet.";
+}
+
+function buildFollowUps(data: CaseData) {
+  const entries = Object.entries(data.followUpAnswers || {})
+    .filter(([, answer]) => answer.trim())
+    .map(([question, answer]) => `- ${question}\n  ${answer}`);
+  return entries.length ? entries.join("\n") : "";
+}
+
+function buildUrgentAidDraft(data: CaseData, today: string) {
+  const { proofList, customProofList } = buildProofList(data);
+  const annexures = buildAnnexures(data);
+
+  return `Legal Aid Consultation Note
 
 This is not a final complaint or defence strategy. This matter should be reviewed urgently by legal aid or a licensed advocate.
 
@@ -69,10 +81,14 @@ Safety note:
 Lawyer/legal-aid review is required. NyayMitra can help organize documents but does not provide legal advice, defence strategy, or guarantee any result.
 
 Date: ${today}`;
-  }
+}
 
-  if (outputMode === "limited-guidance-kit") {
-    return `Draft Representation for Review
+function buildLimitedGuidanceDraft(data: CaseData, today: string) {
+  const { proofList, customProofList } = buildProofList(data);
+  const reliefList = buildReliefList(data);
+  const annexures = buildAnnexures(data);
+
+  return `Draft Representation for Review
 
 This is a preparation draft for legal-aid/lawyer or authority review. It is not legal advice and does not guarantee any result.
 
@@ -112,7 +128,13 @@ Review warning:
 Please verify this draft with legal aid/lawyer or official sources before using it.
 
 Date: ${today}`;
-  }
+}
+
+function buildFullComplaintDraft(data: CaseData, today: string) {
+  const { proofList, customProofList } = buildProofList(data);
+  const reliefList = buildReliefList(data);
+  const annexures = buildAnnexures(data);
+  const followUps = buildFollowUps(data);
 
   return `To,
 The Concerned Authority
@@ -156,4 +178,19 @@ The information stated above is true to the best of my knowledge.
 Name: ${data.fullName}
 Contact: ${data.contact}
 Date: ${today}`;
+}
+
+export function generateComplaintDraft(data: CaseData) {
+  const today = new Date().toISOString().split("T")[0];
+  const outputMode = resolveOutputMode(data.caseType, data.story, data.aiAnalysis?.classification?.caseType, data.aiAnalysis?.classification?.outputMode);
+
+  if (outputMode === "urgent-legal-aid-route") {
+    return buildUrgentAidDraft(data, today);
+  }
+
+  if (outputMode === "limited-guidance-kit") {
+    return buildLimitedGuidanceDraft(data, today);
+  }
+
+  return buildFullComplaintDraft(data, today);
 }

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { buildKnowledgeContext } from "@/lib/legalKnowledge";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
-import { HTTP_STATUS, TIMEOUT } from "@/lib/constants";
+import { HTTP_STATUS } from "@/lib/constants";
 
 const modes = ["classify", "extract", "followup", "draft", "review", "advisor"] as const;
 type Mode = (typeof modes)[number];
@@ -30,34 +30,62 @@ function developmentDebug(debug: unknown) {
   return process.env.NODE_ENV === "development" ? debug : undefined;
 }
 
+function validateRequest(body: Record<string, unknown>) {
+  const mode = body?.mode as Mode;
+  const caseData = body?.caseData;
+  const question = body?.question;
+
+  if (!modes.includes(mode)) {
+    return { error: NextResponse.json({ success: false, error: "Invalid AI mode." }, { status: HTTP_STATUS.BAD_REQUEST }) };
+  }
+
+  if (!caseData) {
+    return { error: NextResponse.json({ success: false, error: "caseData is required." }, { status: HTTP_STATUS.BAD_REQUEST }) };
+  }
+
+  if (mode === "advisor" && typeof question !== "string") {
+    return { error: NextResponse.json({ success: false, error: "question is required." }, { status: HTTP_STATUS.BAD_REQUEST }) };
+  }
+
+  if (!process.env.OPENROUTER_API_KEY) {
+    return { error: NextResponse.json({ success: false, error: "AI is not configured. Add OPENROUTER_API_KEY in .env.local and restart the dev server." }, { status: HTTP_STATUS.SERVICE_UNAVAILABLE }) };
+  }
+
+  return { mode, caseData, question };
+}
+
+function buildSafetyContext(caseData: Record<string, unknown>) {
+  return caseData?.caseType === "Property / Land Dispute"
+    ? "Property / Land Dispute is high-risk. Do not provide legal advice. Do not draft a final complaint. Produce document organization and legal-aid/lawyer consultation guidance only. Ask about property location, title papers, revenue records, court case details, notices, and urgent sale/possession issues."
+    : "";
+}
+
+function handleApiError(responseText: string, status: number, context: string) {
+  return NextResponse.json({
+    success: false,
+    error: context,
+    debug: developmentDebug({ status, message: responseText.slice(0, 500) }),
+  }, { status: HTTP_STATUS.BAD_GATEWAY });
+}
+
+function handleParseError(raw: string, context: string) {
+  return NextResponse.json({
+    success: false,
+    error: context,
+    debug: developmentDebug({ rawPreview: raw.slice(0, 500) }),
+  }, { status: HTTP_STATUS.BAD_GATEWAY });
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const mode = body?.mode as Mode;
-    const caseData = body?.caseData;
-    const question = body?.question;
+    const validated = validateRequest(body);
+    if ("error" in validated) return validated.error;
 
-    if (!modes.includes(mode)) {
-      return NextResponse.json({ success: false, error: "Invalid AI mode." }, { status: HTTP_STATUS.BAD_REQUEST });
-    }
-
-    if (!caseData) {
-      return NextResponse.json({ success: false, error: "caseData is required." }, { status: HTTP_STATUS.BAD_REQUEST });
-    }
-
-    if (mode === "advisor" && typeof question !== "string") {
-      return NextResponse.json({ success: false, error: "question is required." }, { status: HTTP_STATUS.BAD_REQUEST });
-    }
-
-    if (!process.env.OPENROUTER_API_KEY) {
-      return NextResponse.json({ success: false, error: "AI is not configured. Add OPENROUTER_API_KEY in .env.local and restart the dev server." }, { status: HTTP_STATUS.SERVICE_UNAVAILABLE });
-    }
-
+    const { mode, caseData, question } = validated;
     const verifiedKnowledgeContext = buildKnowledgeContext(caseData);
     const officialPortalContext = buildOfficialActionSuggestions(caseData);
-    const propertySafetyContext = caseData?.caseType === "Property / Land Dispute"
-      ? "Property / Land Dispute is high-risk. Do not provide legal advice. Do not draft a final complaint. Produce document organization and legal-aid/lawyer consultation guidance only. Ask about property location, title papers, revenue records, court case details, notices, and urgent sale/possession issues."
-      : "";
+    const propertySafetyContext = buildSafetyContext(caseData);
 
     const openRouterResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -80,45 +108,26 @@ export async function POST(request: Request) {
     const responseText = await openRouterResponse.text();
 
     if (!openRouterResponse.ok) {
-      return NextResponse.json({
-        success: false,
-        error: "OpenRouter request failed",
-        debug: developmentDebug({
-          status: openRouterResponse.status,
-          message: responseText.slice(0, 500),
-        }),
-      }, { status: HTTP_STATUS.BAD_GATEWAY });
+      return handleApiError(responseText, openRouterResponse.status, "OpenRouter request failed");
     }
 
     let openRouterJson;
     try {
       openRouterJson = JSON.parse(responseText);
     } catch {
-      return NextResponse.json({
-        success: false,
-        error: "OpenRouter returned invalid response JSON",
-        debug: developmentDebug({ rawPreview: responseText.slice(0, 500) }),
-      }, { status: HTTP_STATUS.BAD_GATEWAY });
+      return handleParseError(responseText, "OpenRouter returned invalid response JSON");
     }
 
     const content = openRouterJson?.choices?.[0]?.message?.content;
 
     if (!content) {
-      return NextResponse.json({
-        success: false,
-        error: "AI response did not contain message content.",
-        debug: developmentDebug({ rawPreview: JSON.stringify(openRouterJson).slice(0, 500) }),
-      }, { status: HTTP_STATUS.BAD_GATEWAY });
+      return handleParseError(JSON.stringify(openRouterJson), "AI response did not contain message content.");
     }
 
     try {
       return NextResponse.json({ success: true, data: JSON.parse(content) });
     } catch {
-      return NextResponse.json({
-        success: false,
-        error: "AI returned invalid JSON. Rule-based mode is still available.",
-        debug: developmentDebug({ rawPreview: content.slice(0, 500) }),
-      }, { status: HTTP_STATUS.BAD_GATEWAY });
+      return handleParseError(content, "AI returned invalid JSON. Rule-based mode is still available.");
     }
   } catch {
     return NextResponse.json({ success: false, error: "AI could not respond right now." }, { status: HTTP_STATUS.INTERNAL_ERROR });

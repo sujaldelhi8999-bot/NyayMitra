@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useId } from "react";
+import { useState, useRef, useEffect, useId, useCallback } from "react";
 import type { Language } from "@/lib/i18n";
 
 interface TouchSelectOption {
@@ -38,48 +38,59 @@ export function TouchSelect({
   const triggerId = `${id}-trigger`;
   const listId = `${id}-list`;
 
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  const closeAndFocusTrigger = useCallback(() => {
+    setIsOpen(false);
+    triggerRef.current?.focus();
+  }, []);
+
+  const selectOption = useCallback((option: TouchSelectOption) => {
+    onChange(option.value);
+    setIsOpen(false);
+    triggerRef.current?.focus();
+  }, [onChange]);
+
+  const handleKeyboardNavigation = useCallback((e: KeyboardEvent) => {
+    const { key } = e;
+    if (key === "Escape") {
+      closeAndFocusTrigger();
+      return;
+    }
+    if (key === "ArrowDown") {
+      e.preventDefault();
+      setHighlightedIndex((prev) => Math.min(prev + 1, options.length - 1));
+      return;
+    }
+    if (key === "ArrowUp") {
+      e.preventDefault();
+      setHighlightedIndex((prev) => Math.max(prev - 1, -1));
+      return;
+    }
+    if (key === "Enter" || key === " ") {
+      if (highlightedIndex >= 0) {
+        e.preventDefault();
+        selectOption(options[highlightedIndex]);
+      }
+      return;
+    }
+    if (key === "Tab") {
+      setIsOpen(false);
+    }
+  }, [closeAndFocusTrigger, highlightedIndex, options, selectOption]);
+
   useEffect(() => {
     if (isOpen) {
-      const handleKeyDown = (e: KeyboardEvent) => {
-        switch (e.key) {
-          case "Escape":
-            setIsOpen(false);
-            triggerRef.current?.focus();
-            break;
-          case "ArrowDown":
-            e.preventDefault();
-            setHighlightedIndex((prev) => Math.min(prev + 1, options.length - 1));
-            break;
-          case "ArrowUp":
-            e.preventDefault();
-            setHighlightedIndex((prev) => Math.max(prev - 1, -1));
-            break;
-          case "Enter":
-          case " ":
-            if (highlightedIndex >= 0) {
-              e.preventDefault();
-              onChange(options[highlightedIndex].value);
-              setIsOpen(false);
-              triggerRef.current?.focus();
-            }
-            break;
-          case "Tab":
-            setIsOpen(false);
-            break;
-        }
-      };
-      document.addEventListener("keydown", handleKeyDown);
-      return () => document.removeEventListener("keydown", handleKeyDown);
+      document.addEventListener("keydown", handleKeyboardNavigation);
+      return () => document.removeEventListener("keydown", handleKeyboardNavigation);
     }
-  }, [isOpen, highlightedIndex, options, onChange]);
+  }, [isOpen, handleKeyboardNavigation]);
 
   useEffect(() => {
     if (isOpen && highlightedIndex >= 0 && optionRefs.current[highlightedIndex]) {
       optionRefs.current[highlightedIndex]?.scrollIntoView({ block: "nearest" });
     }
   }, [highlightedIndex, isOpen]);
-
-  const selectedOption = options.find((opt) => opt.value === value);
 
   return (
     <div className={`relative ${className}`}>
@@ -139,7 +150,7 @@ export function TouchSelect({
                 ref={(el) => { optionRefs.current[index] = el; }}
                 role="option"
                 aria-selected={option.value === value}
-                onClick={() => { onChange(option.value); setIsOpen(false); }}
+                onClick={() => selectOption(option)}
                 onMouseEnter={() => setHighlightedIndex(index)}
                 className={`
                   px-4 py-3.5 text-base font-medium min-h-[48px]
