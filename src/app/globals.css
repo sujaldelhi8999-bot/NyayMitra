@@ -61,6 +61,28 @@ body {
     -webkit-tap-highlight-color: transparent;
     tap-highlight-color: transparent;
   }
+
+  .no-horizontal-scroll {
+    overflow-x: hidden;
+  }
+
+  .keyboard-avoidance {
+    transition: transform 0.3s ease-out;
+  }
+
+  @media (max-width: 768px) {
+    .keyboard-open .keyboard-avoidance {
+      transform: translateY(-280px);
+    }
+  }
+
+  .sticky-safe-top {
+    top: env(safe-area-inset-top);
+  }
+
+  .sticky-safe-bottom {
+    bottom: env(safe-area-inset-bottom);
+  }
 }
 
 @layer base {
@@ -78,6 +100,16 @@ body {
   @media (max-width: 639px) {
     html {
       font-size: 16px;
+    }
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-teal-500 ring-offset-2;
+  }
+
+  @media (max-width: 768px) {
+    .main-content {
+      padding-bottom: env(safe-area-inset-bottom);
     }
   }
 }
