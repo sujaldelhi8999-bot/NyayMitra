@@ -17,6 +17,80 @@ interface CardTableProps<T> {
   className?: string;
 }
 
+function MobileCardRow<T>({
+  row,
+  rowIndex,
+  columns,
+  keyExtractor,
+  isExpanded,
+  onToggle,
+}: {
+  row: T;
+  rowIndex: number;
+  columns: Column<T>[];
+  keyExtractor: (row: T, index: number) => string;
+  isExpanded: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <article className="rounded-lg border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center justify-between gap-4 p-4 text-left focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded-lg"
+        aria-expanded={isExpanded}
+      >
+        <div className="flex-1 min-w-0">
+          {columns.slice(0, 3).map((col, i) => (
+            <div key={`${col.key}-preview`} className={i > 0 ? "mt-1" : ""}>
+              <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{col.header}</span>
+              <span className="text-sm font-semibold text-slate-900 truncate block">{col.render(row, rowIndex)}</span>
+            </div>
+          ))}
+          {columns.length > 3 && (
+            <span className="mt-2 inline-flex items-center gap-1 text-xs text-slate-500">
+              <svg className="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+              {columns.length - 3} more fields
+            </span>
+          )}
+        </div>
+        <svg
+          className={`size-5 text-slate-400 transition-transform flex-shrink-0 ${isExpanded ? "rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {isExpanded && (
+        <div className="border-t border-slate-100 bg-slate-50/50 rounded-b-lg p-4 space-y-3 animate-in slide-in-from-top-2 duration-150">
+          {columns.slice(3).map((col) => (
+            <div key={col.key} className="flex flex-col gap-1">
+              <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{col.header}</span>
+              <span className="text-sm font-semibold text-slate-900">{col.render(row, rowIndex)}</span>
+            </div>
+          ))}
+          {columns.length <= 3 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {columns.slice(0, 3).map((col) => (
+                <div key={col.key} className="flex flex-col gap-1 flex-1 min-w-[140px]">
+                  <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{col.header}</span>
+                  <span className="text-sm font-semibold text-slate-900">{col.render(row, rowIndex)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </article>
+  );
+}
+
 export function CardTable<T>({
   columns,
   data,
@@ -75,66 +149,16 @@ export function CardTable<T>({
       <div className="md:hidden space-y-3">
         {data.map((row, rowIndex) => {
           const key = keyExtractor(row, rowIndex);
-          const expanded = isExpanded(key);
           return (
-            <article
+            <MobileCardRow
               key={key}
-              className="rounded-lg border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md"
-            >
-              <button
-                type="button"
-                onClick={() => toggleRow(key)}
-                className="w-full flex items-center justify-between gap-4 p-4 text-left focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded-lg"
-                aria-expanded={expanded}
-              >
-                <div className="flex-1 min-w-0">
-                  {columns.slice(0, 3).map((col, i) => (
-                    <div key={`${col.key}-preview`} className={i > 0 ? "mt-1" : ""}>
-                      <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{col.header}</span>
-                      <span className="text-sm font-semibold text-slate-900 truncate block">{col.render(row, rowIndex)}</span>
-                    </div>
-                  ))}
-                  {columns.length > 3 && (
-                    <span className="mt-2 inline-flex items-center gap-1 text-xs text-slate-500">
-                      <svg className="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                      {columns.length - 3} more fields
-                    </span>
-                  )}
-                </div>
-                <svg
-                  className={`size-5 text-slate-400 transition-transform flex-shrink-0 ${expanded ? "rotate-180" : ""}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              {expanded && (
-                <div className="border-t border-slate-100 bg-slate-50/50 rounded-b-lg p-4 space-y-3 animate-in slide-in-from-top-2 duration-150">
-                  {columns.slice(3).map((col) => (
-                    <div key={col.key} className="flex flex-col gap-1">
-                      <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{col.header}</span>
-                      <span className="text-sm font-semibold text-slate-900">{col.render(row, rowIndex)}</span>
-                    </div>
-                  ))}
-                  {columns.length <= 3 && (
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {columns.slice(0, 3).map((col) => (
-                        <div key={col.key} className="flex flex-col gap-1 flex-1 min-w-[140px]">
-                          <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{col.header}</span>
-                          <span className="text-sm font-semibold text-slate-900">{col.render(row, rowIndex)}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </article>
+              row={row}
+              rowIndex={rowIndex}
+              columns={columns}
+              keyExtractor={keyExtractor}
+              isExpanded={isExpanded(key)}
+              onToggle={() => toggleRow(key)}
+            />
           );
         })}
       </div>

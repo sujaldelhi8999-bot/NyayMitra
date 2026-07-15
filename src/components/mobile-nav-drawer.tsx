@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useLanguage, type Language, translate } from "@/lib/i18n";
+import { trapFocus } from "@/lib/focusTrap";
 
 interface MobileNavDrawerProps {
   isOpen: boolean;
@@ -32,7 +33,7 @@ export function MobileNavDrawer({ isOpen, onClose, language, onChangeLanguage }:
       drawerRef.current?.focus();
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Escape") onClose();
-        if (e.key === "Tab") trapFocus(e);
+        if (e.key === "Tab") handleTrapFocus(e);
       };
       document.addEventListener("keydown", handleKeyDown);
       return () => {
@@ -43,20 +44,8 @@ export function MobileNavDrawer({ isOpen, onClose, language, onChangeLanguage }:
     }
   }, [isOpen, onClose]);
 
-  const trapFocus = (e: KeyboardEvent) => {
-    if (!drawerRef.current) return;
-    const focusableElements = drawerRef.current.querySelectorAll<HTMLElement>(
-      'a[href], button, select, textarea, input, [tabindex]:not([tabindex="-1"])'
-    );
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
-    if (e.shiftKey && document.activeElement === firstElement) {
-      e.preventDefault();
-      lastElement.focus();
-    } else if (!e.shiftKey && document.activeElement === lastElement) {
-      e.preventDefault();
-      firstElement.focus();
-    }
+  const handleTrapFocus = (e: KeyboardEvent) => {
+    if (drawerRef.current) trapFocus(drawerRef.current, e);
   };
 
   if (!isOpen) return null;
