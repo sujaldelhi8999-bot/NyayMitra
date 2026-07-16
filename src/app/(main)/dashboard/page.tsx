@@ -126,6 +126,9 @@ export default function DashboardPage() {
           <p className="mt-3 max-w-3xl text-lg text-slate-100">{t("dashManage")}</p>
           <p className="mt-3 rounded-lg bg-white/10 p-4 text-sm font-semibold text-slate-100">{t("dashStartFreshNote")}</p>
           <p className="mt-4 rounded-lg bg-slate-950/70 p-4 text-sm font-semibold text-slate-200">NyayMitra is a legal self-help tool, not a lawyer. Verify with legal aid/lawyer.</p>
+          <Link href="/drafts" className="mt-4 inline-flex rounded-lg bg-white/15 px-5 py-3 text-sm font-black hover:bg-white/25">
+            {t("navDrafts")} →
+          </Link>
         </header>
 
         {cases.length === 0 ? (
