@@ -1535,6 +1535,16 @@ export const translations = {
     lawyerReviewRecommended: "Lawyer Review Recommended:",
     useAISuggestedCaseType: "Use AI Suggested Case Type",
     keepAsOtherNotSure: "Keep as Other / Not Sure",
+    saveDraft: "Draft Dashboard Mein Save Karein",
+    draftsPageTitle: "Mere Drafts",
+    draftsManage: "Apne save kiye gaye case drafts manage karein aur jahan chhoda tha wahan se taiyari jaari rakhein",
+    draftPreview: "Draft Preview",
+    noDrafts: "Abhi tak koi draft save nahi hua",
+    noDraftsPrompt: "Apna pehla draft banane ke liye ek naya case shuru karein",
+    startNewCase: "Naya Case Shuru Karein",
+    statTotalDrafts: "Total Drafts",
+    statDraftInProgress: "In Progress",
+    navDrafts: "Drafts",
   },
 } as const;
 
