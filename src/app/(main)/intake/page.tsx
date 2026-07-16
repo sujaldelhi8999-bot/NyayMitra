@@ -19,7 +19,6 @@ import {
   getVerifiedSourceNotes,
   hasLawHallucinationRisk,
   getNextStepsChecklist,
-  generateFollowUpQuestions,
   getMergedFollowUpQuestions,
   formatFileSize,
   calculateRiskLevel,
