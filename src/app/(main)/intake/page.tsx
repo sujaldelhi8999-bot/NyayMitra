@@ -1358,13 +1358,22 @@ async function handleAskAdvisor() {
                 {getNextStepsChecklist(submittedCase).map((step) => <li key={step}>✅ {step}</li>)}
               </ul>
 
-              <button
-                type="button"
-                onClick={handleGeneratePdf}
-                className="mt-6 w-full rounded-lg bg-teal-600 px-6 py-4 font-bold text-white shadow-lg transition hover:bg-teal-700"
-              >
-                {t("generatePdf")}
-              </button>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={handleSaveDraft}
+                  className="rounded-lg border-2 border-teal-600 bg-transparent px-6 py-4 font-bold text-teal-300 shadow-lg transition hover:bg-teal-600 hover:text-white"
+                >
+                  {t("saveDraft")}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleGeneratePdf}
+                  className="rounded-lg bg-teal-600 px-6 py-4 font-bold text-white shadow-lg transition hover:bg-teal-700"
+                >
+                  {t("generatePdf")}
+                </button>
+              </div>
             </div>
           </section>
         )}
