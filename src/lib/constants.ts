@@ -15,7 +15,6 @@ export const HTTP_STATUS = {
 
 export const TIMEOUT = {
   AI_REQUEST: 30000,
-  ANIMATION: 4000,
 } as const;
 
 export const QUALITY = {
