@@ -153,7 +153,6 @@ useEffect(() => {
       setCaseData(nextCase);
       setFollowUpAnswers(nextCase.followUpAnswers || {});
       setEditableDraft(nextCase.complaintDraft || "");
-      setSubmittedCase(nextCase);
       setIsEditingSavedCase(true);
       // Restore lifted AI state
       if (nextCase.aiAnalysis) {
