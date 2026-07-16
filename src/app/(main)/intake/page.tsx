@@ -1541,3 +1541,18 @@ function Input({ label, name, value, onChange, type = "text", max, className = "
     </label>
   );
 }
+
+function SectionGroup({ title, eyebrow, children, variant = "white" }: {
+  title: string; eyebrow?: string; children: React.ReactNode;
+  variant?: "white" | "dark" | "gradient";
+}) {
+  const bg = variant === "dark" ? "bg-slate-900" : variant === "gradient" ? "bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950" : "bg-white";
+  const text = variant === "white" ? "text-slate-900" : "text-white";
+  return (
+    <div className={`rounded-lg ${bg} p-6 shadow-2xl ${text}`}>
+      {eyebrow && <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-300">{eyebrow}</p>}
+      {title && <h2 className="mt-2 text-2xl font-black">{title}</h2>}
+      {children}
+    </div>
+  );
+}
