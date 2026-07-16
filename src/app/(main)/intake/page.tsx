@@ -7,12 +7,11 @@ import { getOutputModeForCase, caseConfigs, getCaseConfig, highRiskCaseTypes, ou
 import { normalizeCaseStatus } from "@/lib/caseStatus";
 import { type Language, translate, useLanguage } from "@/lib/i18n";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
-import type { CaseData, AiClassification, AiExtraction, AiReview, AdvisorChat, UploadedFile } from "@/types/case";
+import type { CaseData, AiClassification, AiReview, AdvisorChat, UploadedFile } from "@/types/case";
 import { generateComplaintDraft } from "@/lib/draftTemplates";
 import { calculateCaseQualityScore } from "@/lib/qualityScore";
 import { PortalCard } from "@/components/portal-card";
 import { SourceTag } from "@/components/source-tag";
-import { TouchSelect } from "@/components/touch-select";
 import { CardTable } from "@/components/card-table";
 import {
   getMissingProofSuggestions,
@@ -455,18 +454,6 @@ async function handleAskAdvisor() {
     const classification = aiState.analysis?.classification;
     if (!classification) return;
     setCaseData((current) => ({ ...current, caseType: classification.caseType, outputMode: safetyOutputMode(current, classification), proofs: Array.from(new Set([...current.proofs, ...classification.suggestedProofs])), relief: Array.from(new Set([...current.relief, ...classification.suggestedReliefs])) }));
-  }
-
-  function mergeAiAnalysis(next: Partial<NonNullable<CaseData["aiAnalysis"]>>) {
-    setAiState((prev) => {
-      const merged = { ...(prev.analysis || {}), ...next, lastAnalyzedAt: new Date().toISOString() };
-      return { ...prev, analysis: merged, lastAnalyzedAt: new Date().toISOString() };
-    });
-    setSubmittedCase((prev) => {
-      if (!prev) return null;
-      const merged = { ...(prev.aiAnalysis || {}), ...next, lastAnalyzedAt: new Date().toISOString() };
-      return { ...prev, aiAnalysis: merged };
-    });
   }
 
   async function handleAiFollowups() {
@@ -1227,7 +1214,7 @@ async function handleAskAdvisor() {
                   data={[
                     ...proofOptions.filter((proof) => proof !== OTHER_PROOF_OPTION),
                     ...(submittedCase.customProofs || []),
-                  ].map((proof, index) => {
+                  ].map((proof) => {
                     const custom = (submittedCase.customProofs || []).includes(proof);
                     const available = submittedCase.proofs.includes(proof);
                     const uploadedFile = submittedCase.uploadedFiles.find((file) => file.evidenceCategory === proof);
@@ -1536,17 +1523,3 @@ function Input({ label, name, value, onChange, type = "text", max, className = "
   );
 }
 
-function SectionGroup({ title, eyebrow, children, variant = "white" }: {
-  title: string; eyebrow?: string; children: React.ReactNode;
-  variant?: "white" | "dark" | "gradient";
-}) {
-  const bg = variant === "dark" ? "bg-slate-900" : variant === "gradient" ? "bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950" : "bg-white";
-  const text = variant === "white" ? "text-slate-900" : "text-white";
-  return (
-    <div className={`rounded-lg ${bg} p-6 shadow-2xl ${text}`}>
-      {eyebrow && <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-300">{eyebrow}</p>}
-      {title && <h2 className="mt-2 text-2xl font-black">{title}</h2>}
-      {children}
-    </div>
-  );
-}

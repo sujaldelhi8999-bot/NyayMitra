@@ -9,7 +9,6 @@ import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
 import { translate, useLanguage } from "@/lib/i18n";
 import type { CaseData } from "@/types/case";
 import { getCaseRiskLevel } from "@/lib/caseUtils";
-import { OTHER_PROOF_OPTION, OTHER_RELIEF_OPTION } from "@/lib/constants";
 import { calculateCaseQualityScore } from "@/lib/qualityScore";
 import { TouchSelect } from "@/components/touch-select";
 
@@ -105,11 +104,9 @@ export default function DraftsPage() {
 
   if (!loaded) return null;
 
-  const totalAmount = cases.reduce((sum, item) => sum + (Number(item.amountLost) || 0), 0);
   const draftReady = cases.filter((item) => normalizeCaseStatus(item.status) === "draft-ready").length;
   const highRisk = cases.filter((item) => getCaseRiskLevel(item) === "High Risk").length;
   const inProgress = cases.filter((item) => { const s = normalizeCaseStatus(item.status); return s === "intake-started" || s === "review-needed"; }).length;
-  const lawyerReviewCount = cases.filter((item) => needsLawyerReview(item)).length;
   const filteredCases = cases.filter((item) => {
     const outputMode = getOutputModeForCase(item);
     const risk = getCaseRiskLevel(item);
