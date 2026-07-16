@@ -1080,10 +1080,70 @@ async function handleAskAdvisor() {
         </div>}
 
         {submittedCase && (
-          <section id="preview-section" className="mt-10 space-y-6">
-            <CaseQualityCard result={calculateCaseQualityScore(submittedCase)} />
-            <OfficialActionLinks caseData={submittedCase} />
+          <section id="preview-section" className="mt-10 space-y-8">
 
+            {/* GROUP 1: Summary Header */}
+            <CaseQualityCard result={calculateCaseQualityScore(submittedCase)} />
+
+            <div className="rounded-lg border border-teal-400/30 bg-white/10 p-6 shadow-2xl">
+              <p className="mb-2 text-sm font-semibold text-teal-300">
+                {t("preview")}
+              </p>
+              <h2 className="text-3xl font-bold">{t("caseSnapshot")}</h2>
+              <p className="mt-4 text-slate-200">
+                {Number(submittedCase.amountLost) > 0 ? <>Based on the information provided, this appears to be a <b>{submittedCase.caseType}</b> preparation matter where <b>{submittedCase.fullName}</b> reports a value/loss of <b>₹{submittedCase.amountLost}</b> on <b>{submittedCase.incidentDate}</b>. </> : <>Based on the information provided, this appears to be a <b>{submittedCase.caseType}</b> matter where <b>{submittedCase.fullName}</b> wants help organizing documents and preparing for legal-aid/lawyer review. </>}Opposite party details:{" "}
+                <b>{submittedCase.oppositeParty || "Not provided"}</b>. The user wants help with:{" "}
+                <b>
+                  {[...submittedCase.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(submittedCase.customReliefs || [])].length > 0
+                    ? [...submittedCase.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(submittedCase.customReliefs || [])].join(", ")
+                    : "Not selected"}
+                </b>
+                .
+              </p>
+              <div className="mt-5 rounded-lg bg-slate-900 p-4 text-sm text-slate-300">
+                <b>{t("kitLabelUserStory")}:</b> {submittedCase.story}
+              </div>
+            </div>
+
+            {/* Warnings */}
+            {getLocalizedAmountMismatch(submittedCase) && (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-900 shadow-2xl">
+                <h2 className="text-xl font-black">{t("labelAmountMismatch")}</h2>
+                <p className="mt-2 font-semibold leading-7">{getLocalizedAmountMismatch(submittedCase)}</p>
+              </div>
+            )}
+            {storyWarning && (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-6 text-amber-900 shadow-2xl">
+                <h2 className="text-xl font-black">{t("labelStoryQuality")}</h2>
+                <p className="mt-2 font-semibold leading-7">{storyWarning}</p>
+              </div>
+            )}
+            {caseTypeMismatch && (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-900 shadow-2xl">
+                <h2 className="text-xl font-black">{t("labelCaseTypeMismatch")}</h2>
+                <p className="mt-2 font-semibold leading-7">{caseTypeMismatch}</p>
+                {submittedCase.caseType === "Cyber Fraud / UPI Scam" && <div className="mt-4 flex flex-wrap gap-3"><button type="button" onClick={() => { const next = { ...submittedCase, caseType: "Property / Land Dispute", proofs: [], relief: [], customProofs: [], customReliefs: [], uploadedFiles: [], aiAnalysis: undefined, complaintDraft: "" }; setSubmittedCase(next); setCaseData(next); setEditableDraft(""); }} className="rounded-lg bg-red-600 px-5 py-3 font-bold text-white">Switch to Property / Land Dispute</button></div>}
+              </div>
+            )}
+
+            {/* GROUP 2: Risk & Routing */}
+            <div className="grid gap-6 lg:grid-cols-2">
+              <div className="rounded-lg border border-teal-400/30 bg-white/10 p-6 shadow-2xl">
+                <h2 className="text-2xl font-bold">{t("riskRouter")}</h2>
+                <p className="mt-3 text-xl font-bold text-teal-300">
+                  {getCaseRiskLabel(submittedCase)}
+                </p>
+                <p className="mt-3 text-slate-200">
+                  {submittedOutputMode === "urgent-legal-aid-route"
+                    ? "Urgent legal-aid/lawyer review is recommended. NyayMitra will prepare a consultation note and document organizer only."
+                    : "This case can be prepared with evidence, timeline, and a draft for review. For serious matters, contact legal aid or a lawyer."}
+                </p>
+                <p className="mt-4 rounded-lg bg-slate-900 p-4 text-sm text-slate-300">NyayMitra is a legal self-help tool, not a lawyer. Verify with legal aid/lawyer before filing.</p>
+              </div>
+              <OfficialActionLinks caseData={submittedCase} />
+            </div>
+
+            {/* GROUP 3: AI Layer */}
             <div className="rounded-lg border border-teal-400/30 bg-slate-900 p-6 shadow-2xl">
               <p className="text-sm font-semibold text-teal-300">Optional AI layer</p>
               <h2 className="mt-2 text-2xl font-bold">AI Assist</h2>
@@ -1121,162 +1181,72 @@ async function handleAskAdvisor() {
               {(submittedCase.advisorChats || []).length > 0 && <div className="mt-5 space-y-4">{submittedCase.advisorChats?.map((chat) => <AdvisorChatCard key={chat.id} chat={chat} />)}</div>}
             </div>
 
-            {getLocalizedAmountMismatch(submittedCase) && (
-              <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-900 shadow-2xl">
-                <h2 className="text-xl font-black">{t("labelAmountMismatch")}</h2>
-                <p className="mt-2 font-semibold leading-7">{getLocalizedAmountMismatch(submittedCase)}</p>
-              </div>
-            )}
-
-            {storyWarning && (
-              <div className="rounded-lg border border-amber-200 bg-amber-50 p-6 text-amber-900 shadow-2xl">
-                <h2 className="text-xl font-black">{t("labelStoryQuality")}</h2>
-                <p className="mt-2 font-semibold leading-7">{storyWarning}</p>
-              </div>
-            )}
-
-            {caseTypeMismatch && (
-              <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-900 shadow-2xl">
-                <h2 className="text-xl font-black">{t("labelCaseTypeMismatch")}</h2>
-                <p className="mt-2 font-semibold leading-7">{caseTypeMismatch}</p>
-                {submittedCase.caseType === "Cyber Fraud / UPI Scam" && <div className="mt-4 flex flex-wrap gap-3"><button type="button" onClick={() => { const next = { ...submittedCase, caseType: "Property / Land Dispute", proofs: [], relief: [], customProofs: [], customReliefs: [], uploadedFiles: [], aiAnalysis: undefined, complaintDraft: "" }; setSubmittedCase(next); setCaseData(next); setEditableDraft(""); }} className="rounded-lg bg-red-600 px-5 py-3 font-bold text-white">Switch to Property / Land Dispute</button></div>}
-              </div>
-            )}
-
-            <div className="rounded-lg border border-teal-400/30 bg-white/10 p-6 shadow-2xl">
-              <p className="mb-2 text-sm font-semibold text-teal-300">
-                {t("preview")}
-              </p>
-
-              <h2 className="text-3xl font-bold">{t("caseSnapshot")}</h2>
-
-              <p className="mt-4 text-slate-200">
-                {Number(submittedCase.amountLost) > 0 ? <>Based on the information provided, this appears to be a <b>{submittedCase.caseType}</b> preparation matter where <b>{submittedCase.fullName}</b> reports a value/loss of <b>₹{submittedCase.amountLost}</b> on <b>{submittedCase.incidentDate}</b>. </> : <>Based on the information provided, this appears to be a <b>{submittedCase.caseType}</b> matter where <b>{submittedCase.fullName}</b> wants help organizing documents and preparing for legal-aid/lawyer review. </>}Opposite party details:{" "}
-                <b>{submittedCase.oppositeParty || "Not provided"}</b>. The user wants help with:{" "}
-                <b>
-                  {[...submittedCase.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(submittedCase.customReliefs || [])].length > 0
-                    ? [...submittedCase.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(submittedCase.customReliefs || [])].join(", ")
-                    : "Not selected"}
-                </b>
-                .
-              </p>
-
-              <div className="mt-5 rounded-lg bg-slate-900 p-4 text-sm text-slate-300">
-                <b>{t("kitLabelUserStory")}:</b> {submittedCase.story}
-              </div>
-            </div>
-
-            <div className="rounded-lg border border-teal-400/30 bg-slate-900 p-6 shadow-2xl">
-              <p className="text-sm font-semibold text-teal-300">Rule-based preparation assistant</p>
-              <h2 className="mt-2 text-2xl font-bold">{t("followUps")}</h2>
-              <div className="mt-5 space-y-4">
-                {getMergedFollowUpQuestions(submittedCase).map(({ question, source }) => (
-                  <label key={question} className="block rounded-lg border border-white/10 bg-white/5 p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-semibold text-slate-100">{question}</span>
-                      <SourceTag source={source} />
-                    </div>
-                    <textarea
-                      value={followUpAnswers[question] || ""}
-                      onChange={(event) => setFollowUpAnswers((current) => ({ ...current, [question]: event.target.value }))}
-                      rows={3}
-                      className="mt-3 w-full rounded-lg border border-white/10 bg-white p-3 text-slate-950 outline-none focus:border-teal-400"
-                      placeholder="Type your answer here..."
-                    />
-                  </label>
-                ))}
-              </div>
-              <button type="button" onClick={handleUpdatePreviewWithAnswers} className="mt-5 w-full rounded-lg bg-teal-500 px-6 py-4 font-bold text-slate-950 shadow-lg transition hover:bg-teal-400">
-                {t("btnUpdatePreview")}
-              </button>
-              {updateMessage && <p className="mt-3 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900">{updateMessage}</p>}
-            </div>
-
-            {submittedCase.followUpAnswers && Object.values(submittedCase.followUpAnswers).some(Boolean) && (
+            {/* GROUP 4: Preparation */}
+            <div className="grid gap-6 lg:grid-cols-2">
               <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
-                <h2 className="text-2xl font-bold">Follow-up Answers Added</h2>
-                <div className="mt-4 space-y-3">
-                  {Object.entries(submittedCase.followUpAnswers).filter(([, answer]) => answer.trim()).map(([question, answer]) => (
-                    <div key={question} className="rounded-lg bg-slate-50 p-4">
-                      <p className="font-black text-teal-700">{question}</p>
-                      <p className="mt-2 text-slate-700">{answer}</p>
-                    </div>
-                  ))}
+                <h2 className="text-2xl font-bold">{t("timeline")}</h2>
+                <div className="mt-5 grid gap-4 md:grid-cols-5">
+                  <div className="rounded-lg bg-slate-100 p-4">
+                    <p className="font-bold">1. Incident</p>
+                    <p className="text-sm">{submittedCase.incidentDate}</p>
+                  </div>
+                  <div className="rounded-lg bg-slate-100 p-4">
+                    <p className="font-bold">2. Loss</p>
+                    <p className="text-sm">₹{submittedCase.amountLost}</p>
+                  </div>
+                  <div className="rounded-lg bg-slate-100 p-4">
+                    <p className="font-bold">3. Evidence</p>
+                    <p className="text-sm">
+                      {submittedCase.proofs.filter((item) => item !== OTHER_PROOF_OPTION).length} standard + {(submittedCase.customProofs || []).length} custom proof item(s)
+                    </p>
+                  </div>
+                  <div className="rounded-lg bg-slate-100 p-4">
+                    <p className="font-bold">4. Complaint</p>
+                    <p className="text-sm">
+                      {submittedCase.proofs.includes("Police/cyber complaint acknowledgement") ? "Already initiated" : "Not filed yet"}
+                    </p>
+                  </div>
+                  <div className="rounded-lg bg-teal-100 p-4">
+                    <p className="font-bold">5. Next Step</p>
+                    <p className="text-sm">{submittedOutputMode === "urgent-legal-aid-route" ? "Prepare consultation note" : "Prepare draft for review"}</p>
+                  </div>
                 </div>
               </div>
-            )}
 
-            <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
-              <h2 className="text-2xl font-bold">{t("timeline")}</h2>
-
-              <div className="mt-5 grid gap-4 md:grid-cols-5">
-                <div className="rounded-lg bg-slate-100 p-4">
-                  <p className="font-bold">1. Incident</p>
-                  <p className="text-sm">{submittedCase.incidentDate}</p>
-                </div>
-
-                <div className="rounded-lg bg-slate-100 p-4">
-                  <p className="font-bold">2. Loss</p>
-                  <p className="text-sm">₹{submittedCase.amountLost}</p>
-                </div>
-
-                <div className="rounded-lg bg-slate-100 p-4">
-                  <p className="font-bold">3. Evidence</p>
-                  <p className="text-sm">
-                    {submittedCase.proofs.filter((item) => item !== OTHER_PROOF_OPTION).length} standard + {(submittedCase.customProofs || []).length} custom proof item(s)
-                  </p>
-                </div>
-
-                <div className="rounded-lg bg-slate-100 p-4">
-                  <p className="font-bold">4. Complaint</p>
-                  <p className="text-sm">
-                    {submittedCase.proofs.includes(
-                      "Police/cyber complaint acknowledgement"
-                    )
-                      ? "Already initiated"
-                      : "Not filed yet"}
-                  </p>
-                </div>
-
-                <div className="rounded-lg bg-teal-100 p-4">
-                  <p className="font-bold">5. Next Step</p>
-                  <p className="text-sm">{submittedOutputMode === "urgent-legal-aid-route" ? "Prepare consultation note" : "Prepare draft for review"}</p>
-                </div>
+              <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
+                <h2 className="text-2xl font-bold">{t("evidenceTable")}</h2>
+                <CardTable
+                  columns={[
+                    { key: "annexure", header: t("kitLabelAnnexureNo"), render: (row) => row.annexure },
+                    { key: "evidence", header: t("kitLabelEvidence"), render: (row) => <span className="flex items-center gap-2">{row.evidence} <SourceTag source={row.source} /></span> },
+                    { key: "status", header: "Available?", render: (row) => row.status },
+                    { key: "fileName", header: "Uploaded File Name", render: (row) => row.fileName },
+                    { key: "proves", header: t("kitLabelProves"), render: (row) => row.proves },
+                    { key: "action", header: "Suggested action", render: (row) => row.action },
+                  ]}
+                  data={[
+                    ...proofOptions.filter((proof) => proof !== OTHER_PROOF_OPTION),
+                    ...(submittedCase.customProofs || []),
+                  ].map((proof, index) => {
+                    const custom = (submittedCase.customProofs || []).includes(proof);
+                    const available = submittedCase.proofs.includes(proof);
+                    const uploadedFile = submittedCase.uploadedFiles.find((file) => file.evidenceCategory === proof);
+                    const isAiSuggested = submittedCase.aiAnalysis?.classification?.suggestedProofs?.includes(proof) || false;
+                    const source: "rule" | "ai" = isAiSuggested ? 'ai' : 'rule';
+                    const annexure = uploadedFile ? `A${submittedCase.uploadedFiles.findIndex((file) => file.id === uploadedFile.id) + 1}` : "-";
+                    const status = custom || available ? "Yes" : t("kitLabelMissing");
+                    const fileName = uploadedFile?.fileName || (custom ? "Custom proof added, file not uploaded yet." : available ? "Marked available, file not uploaded yet." : "No file / not marked.");
+                    const proves = custom ? "User-provided supporting proof. Meaning should be verified during legal-aid/lawyer review." : evidenceMeaning[proof] || "Supports the facts, timeline, identity, communication, authority history, or requested relief. Verify relevance before relying on it.";
+                    const action = custom ? "Keep original copy safe and mention it in consultation/draft." : available ? "Attach this in the final PDF." : "Try to collect this before final PDF.";
+                    return { annexure, evidence: proof, status, fileName, proves, action, source };
+                  })}
+                  keyExtractor={(row) => row.evidence}
+                  emptyMessage={t("kitNoEvidenceToBeAdded")}
+                />
               </div>
             </div>
 
-            <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
-              <h2 className="text-2xl font-bold">{t("evidenceTable")}</h2>
-              <CardTable
-                columns={[
-                  { key: "annexure", header: t("kitLabelAnnexureNo"), render: (row) => row.annexure },
-                  { key: "evidence", header: t("kitLabelEvidence"), render: (row) => <span className="flex items-center gap-2">{row.evidence} <SourceTag source={row.source} /></span> },
-                  { key: "status", header: "Available?", render: (row) => row.status },
-                  { key: "fileName", header: "Uploaded File Name", render: (row) => row.fileName },
-                  { key: "proves", header: t("kitLabelProves"), render: (row) => row.proves },
-                  { key: "action", header: "Suggested action", render: (row) => row.action },
-                ]}
-                data={[
-                  ...proofOptions.filter((proof) => proof !== OTHER_PROOF_OPTION),
-                  ...(submittedCase.customProofs || []),
-                ].map((proof, index) => {
-                  const custom = (submittedCase.customProofs || []).includes(proof);
-                  const available = submittedCase.proofs.includes(proof);
-                  const uploadedFile = submittedCase.uploadedFiles.find((file) => file.evidenceCategory === proof);
-                  const isAiSuggested = submittedCase.aiAnalysis?.classification?.suggestedProofs?.includes(proof) || false;
-                  const source: "rule" | "ai" = isAiSuggested ? 'ai' : 'rule';
-                  const annexure = uploadedFile ? `A${submittedCase.uploadedFiles.findIndex((file) => file.id === uploadedFile.id) + 1}` : "-";
-                  const status = custom || available ? "Yes" : t("kitLabelMissing");
-                  const fileName = uploadedFile?.fileName || (custom ? "Custom proof added, file not uploaded yet." : available ? "Marked available, file not uploaded yet." : "No file / not marked.");
-                  const proves = custom ? "User-provided supporting proof. Meaning should be verified during legal-aid/lawyer review." : evidenceMeaning[proof] || "Supports the facts, timeline, identity, communication, authority history, or requested relief. Verify relevance before relying on it.";
-                  const action = custom ? "Keep original copy safe and mention it in consultation/draft." : available ? "Attach this in the final PDF." : "Try to collect this before final PDF.";
-                  return { annexure, evidence: proof, status, fileName, proves, action, source };
-                })}
-                keyExtractor={(row) => row.evidence}
-                emptyMessage={t("kitNoEvidenceToBeAdded")}
-              />
-            </div>
-
+            {/* GROUP 5: Draft */}
             <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div>
@@ -1298,7 +1268,6 @@ async function handleAskAdvisor() {
                   <button type="button" onClick={handleCopyDraft} className="rounded-lg bg-slate-950 px-5 py-3 font-bold text-white hover:bg-slate-800">{t("btnCopyDraft")}</button>
                 </div>
               </div>
-
               <textarea
                 value={editableDraft}
                 onChange={(event) => handleDraftChange(event.target.value)}
@@ -1306,58 +1275,82 @@ async function handleAskAdvisor() {
                 className="mt-6 w-full rounded-lg border border-slate-200 bg-slate-50 p-5 font-mono text-sm leading-7 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
                 placeholder={submittedOutputMode === "urgent-legal-aid-route" ? t("msgNoLegalAidDraft") : t("msgNoDraft")}
               />
-
               {editableDraft && <DraftQualityCard result={analyzeDraftQuality(editableDraft)} />}
               {draftMessage && <p className="mt-4 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900">{draftMessage}</p>}
             </div>
 
-            <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
-              <h2 className="text-2xl font-bold">{t("missingProof")}</h2>
+            {/* GROUP 6: Gaps & Next Steps */}
+            <div className="grid gap-6 lg:grid-cols-2">
+              <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
+                <h2 className="text-2xl font-bold">{t("missingProof")}</h2>
+                {displayedMissingProofs.length === 0 ? (
+                  <p className="mt-3 rounded-lg bg-green-100 p-4">
+                    {t("labelNoMissing")}
+                  </p>
+                ) : (
+                  <div className="mt-4 grid gap-3 md:grid-cols-2">
+                    {displayedMissingProofs.map((item) => (
+                      <div
+                        key={item}
+                        className="rounded-lg border border-orange-300 bg-orange-50 p-4 flex items-center gap-2"
+                      >
+                        <SourceTag source="rule" />
+                        <b>{t("labelMissingProofs")}</b> {item}. Try to collect this before final
+                        PDF.
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {(submittedCase.customProofs || []).length > 0 && <p className="mt-4 rounded-lg bg-teal-50 p-4 text-sm font-bold text-teal-900">{t("labelCustomProofsNote")}</p>}
+              </div>
 
-              {displayedMissingProofs.length === 0 ? (
-                <p className="mt-3 rounded-lg bg-green-100 p-4">
-                  {t("labelNoMissing")}
-                </p>
-              ) : (
-                <div className="mt-4 grid gap-3 md:grid-cols-2">
-                  {displayedMissingProofs.map((item) => (
-                    <div
-                      key={item}
-                      className="rounded-lg border border-orange-300 bg-orange-50 p-4 flex items-center gap-2"
-                    >
-                      <SourceTag source="rule" />
-                      <b>{t("labelMissingProofs")}</b> {item}. Try to collect this before final
-                      PDF.
+              <div className="rounded-lg border border-teal-400/30 bg-slate-900 p-6 shadow-2xl">
+                <p className="text-sm font-semibold text-teal-300">Rule-based preparation assistant</p>
+                <h2 className="mt-2 text-2xl font-bold">{t("followUps")}</h2>
+                <div className="mt-5 space-y-4">
+                  {getMergedFollowUpQuestions(submittedCase).map(({ question, source }) => (
+                    <label key={question} className="block rounded-lg border border-white/10 bg-white/5 p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-semibold text-slate-100">{question}</span>
+                        <SourceTag source={source} />
+                      </div>
+                      <textarea
+                        value={followUpAnswers[question] || ""}
+                        onChange={(event) => setFollowUpAnswers((current) => ({ ...current, [question]: event.target.value }))}
+                        rows={3}
+                        className="mt-3 w-full rounded-lg border border-white/10 bg-white p-3 text-slate-950 outline-none focus:border-teal-400"
+                        placeholder="Type your answer here..."
+                      />
+                    </label>
+                  ))}
+                </div>
+                <button type="button" onClick={handleUpdatePreviewWithAnswers} className="mt-5 w-full rounded-lg bg-teal-500 px-6 py-4 font-bold text-slate-950 shadow-lg transition hover:bg-teal-400">
+                  {t("btnUpdatePreview")}
+                </button>
+                {updateMessage && <p className="mt-3 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900">{updateMessage}</p>}
+              </div>
+            </div>
+
+            {submittedCase.followUpAnswers && Object.values(submittedCase.followUpAnswers).some(Boolean) && (
+              <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
+                <h2 className="text-2xl font-bold">Follow-up Answers Added</h2>
+                <div className="mt-4 space-y-3">
+                  {Object.entries(submittedCase.followUpAnswers).filter(([, answer]) => answer.trim()).map(([question, answer]) => (
+                    <div key={question} className="rounded-lg bg-slate-50 p-4">
+                      <p className="font-black text-teal-700">{question}</p>
+                      <p className="mt-2 text-slate-700">{answer}</p>
                     </div>
                   ))}
                 </div>
-              )}
-              {(submittedCase.customProofs || []).length > 0 && <p className="mt-4 rounded-lg bg-teal-50 p-4 text-sm font-bold text-teal-900">{t("labelCustomProofsNote")}</p>}
-            </div>
+              </div>
+            )}
 
-            <div className="rounded-lg border border-teal-400/30 bg-white/10 p-6 shadow-2xl">
-              <h2 className="text-2xl font-bold">{t("riskRouter")}</h2>
-
-              <p className="mt-3 text-xl font-bold text-teal-300">
-                {getCaseRiskLabel(submittedCase)}
-              </p>
-
-              <p className="mt-3 text-slate-200">
-                {submittedOutputMode === "urgent-legal-aid-route"
-                  ? "Urgent legal-aid/lawyer review is recommended. NyayMitra will prepare a consultation note and document organizer only."
-                  : "This case can be prepared with evidence, timeline, and a draft for review. For serious matters, contact legal aid or a lawyer."}
-              </p>
-
-              <p className="mt-4 rounded-lg bg-slate-900 p-4 text-sm text-slate-300">NyayMitra is a legal self-help tool, not a lawyer. Verify with legal aid/lawyer before filing.</p>
-            </div>
-
+            {/* GROUP 7: Actions */}
             <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
               <h2 className="text-2xl font-bold">{t("sectionNextSteps")}</h2>
-
               <ul className="mt-4 space-y-2">
                 {getNextStepsChecklist(submittedCase).map((step) => <li key={step}>✅ {step}</li>)}
               </ul>
-
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
                 <button
                   type="button"
@@ -1375,6 +1368,7 @@ async function handleAskAdvisor() {
                 </button>
               </div>
             </div>
+
           </section>
         )}
       </section>
