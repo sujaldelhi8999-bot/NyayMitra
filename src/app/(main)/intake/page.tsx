@@ -612,6 +612,31 @@ async function handleAskAdvisor() {
     router.push("/legal-kit");
   }
 
+  function handleSaveDraft() {
+    if (!submittedCase) return;
+
+    const draft = submittedCase.complaintDraft || editableDraft || generateComplaintDraft({ ...submittedCase, followUpAnswers });
+    const now = new Date().toISOString();
+    const caseWithLatestAnswers = {
+      ...submittedCase,
+      followUpAnswers,
+      complaintDraft: draft,
+      caseId: submittedCase.caseId || `CASE-${Date.now()}`,
+      createdAt: submittedCase.createdAt || now,
+      updatedAt: now,
+      status: normalizeCaseStatus(submittedCase.status),
+      language,
+      outputMode: getOutputModeForCase(submittedCase),
+    };
+    try {
+      const savedCases = JSON.parse(localStorage.getItem("nyaymitra_saved_cases") || "[]") as CaseData[];
+      const withoutDuplicate = savedCases.filter((item) => item.caseId !== caseWithLatestAnswers.caseId);
+      localStorage.setItem("nyaymitra_case_data", JSON.stringify(caseWithLatestAnswers));
+      localStorage.setItem("nyaymitra_saved_cases", JSON.stringify([caseWithLatestAnswers, ...withoutDuplicate]));
+    } catch {}
+    router.push("/drafts");
+  }
+
   function saveProgress() {
     try {
       localStorage.setItem("nyaymitra_intake_draft", JSON.stringify({ ...formData, followUpAnswers, complaintDraft: editableDraft, language }));
