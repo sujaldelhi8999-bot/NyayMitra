@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { aiAskAdvisor, aiClassifyCase, aiExtractFacts, aiGenerateDraft, aiGenerateFollowups, aiReviewCase, type AiClientError } from "@/lib/aiClient";
+import { aiAskAdvisor, aiClassifyCase, aiGenerateDraft, aiGenerateFollowups, aiReviewCase, type AiClientError } from "@/lib/aiClient";
 import { getOutputModeForCase, caseConfigs, getCaseConfig, highRiskCaseTypes, outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
 import { normalizeCaseStatus } from "@/lib/caseStatus";
 import { type Language, translate, useLanguage } from "@/lib/i18n";
@@ -471,38 +471,6 @@ async function handleAskAdvisor() {
     });
   }
 
-  async function handleAiAnalyzeStory() {
-    if (!submittedCase) return;
-    setAiLoading("analyze");
-    setAiMessage(t("aiAnalyzingCase"));
-    const [classification, extraction] = await Promise.all([aiClassifyCase(submittedCase), aiExtractFacts(submittedCase)]);
-    setAiLoading("");
-    const classificationError = isAiError(classification) ? classification : null;
-    const extractionError = isAiError(extraction) ? extraction : null;
-    if (classificationError && extractionError) {
-      showAiError(classificationError);
-      return;
-    }
-    const safeClassification = classification && !classificationError ? { ...(classification as AiClassification), outputMode: safetyOutputMode(submittedCase, classification as AiClassification) } : undefined;
-    setAiState((prev) => ({
-      ...prev,
-      analysis: { ...(prev.analysis || {}), classification: safeClassification, extraction: extraction && !extractionError ? extraction as AiExtraction : undefined, lastAnalyzedAt: new Date().toISOString() },
-      lastAnalyzedAt: new Date().toISOString(),
-    }));
-    // Mirror to submittedCase for backward compatibility
-    setSubmittedCase((prev) => prev ? { ...prev, aiAnalysis: { ...(prev.aiAnalysis || {}), classification: safeClassification, extraction: extraction && !extractionError ? extraction as AiExtraction : undefined, lastAnalyzedAt: new Date().toISOString() } } : null);
-    
-    // Auto-populate: merge AI followups into lifted state
-    if (extraction && !extractionError && (extraction as AiExtraction).missingDetails?.length) {
-      setAiState((prev) => ({
-        ...prev,
-        followupQuestions: Array.from(new Set([...(prev.followupQuestions || []), ...(extraction as AiExtraction).missingDetails])),
-      }));
-    }
-    
-    setAiMessage(t("aiAnalysisCompleted"));
-  }
-
   async function handleAiFollowups() {
     if (!submittedCase) return;
     setAiLoading("followup");
@@ -825,19 +793,7 @@ async function handleAskAdvisor() {
                         {index === 0 && <><Input label={t("fullName")} name="fullName" value={formData.fullName} onChange={handleInputChange} className="min-h-[48px]" /><Input label={t("contact")} name="contact" value={formData.contact} onChange={handleInputChange} className="min-h-[48px]" /><Input label={t("stateOrUT")} name="stateOrUT" value={formData.stateOrUT || ""} onChange={handleInputChange} className="min-h-[48px]" /><div><CaseTypeSelector selected={formData.caseType} search={caseTypeSearch} onSearch={setCaseTypeSearch} onSelect={selectCaseType} /></div></>}
                         {index === 1 && <><Input label={t("incidentDate")} type="date" name="incidentDate" value={formData.incidentDate} onChange={handleInputChange} max={todayISO} className="min-h-[48px]" /><Input label={t("amountLost")} type="number" name="amountLost" value={formData.amountLost} onChange={handleInputChange} className="min-h-[48px]" /></>}
                         {index === 2 && <label className="block"><span className="mb-2 block font-semibold">{t("story")}</span><textarea name="story" value={formData.story} onChange={handleInputChange} rows={6} className="w-full rounded-lg border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100 min-h-[120px]" /></label>}
-                        {index === 2 && formData.story.trim().length >= 30 && (
-                          <div className="mt-4">
-                            <button
-                              type="button"
-                              onClick={handleAiAnalyzeStory}
-                              className="w-full rounded-lg bg-teal-500 px-4 py-3.5 font-bold text-slate-950 shadow-lg transition hover:bg-teal-400 min-h-[48px]"
-                              disabled={aiLoading === "analyze"}
-                            >
-                              {aiLoading === "analyze" ? t("aiAnalyzingCase") : t("aiAnalyze")}
-                            </button>
-                            {aiMessage && <p className={`mt-2 text-sm font-bold ${aiMessage.startsWith("AI could not") || aiMessage.startsWith("OpenRouter") || aiMessage.includes("error") || aiMessage.includes("Error") ? "text-red-600" : "text-teal-700"}`} aria-live="polite">{aiMessage}</p>}
-                          </div>
-                        )}
+
                         {index === 3 && <Input label={t("oppositeParty")} name="oppositeParty" value={formData.oppositeParty} onChange={handleInputChange} className="min-h-[48px]" />}
                         {index === 4 && <div><h3 className="mb-3 font-black">{t("proofAvailable")}</h3><div className="grid gap-3">{proofOptions.map((proof) => <label key={proof} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3 min-h-[48px]"><input type="checkbox" value={proof} checked={formData.proofs.includes(proof)} onChange={(e) => handleCheckboxChange(e, "proofs")} />{proof}</label>)}</div><CustomItemsEditor type="proof" enabled={formData.proofs.includes(OTHER_PROOF_OPTION)} value={customProofInput} items={formData.customProofs || []} onChange={setCustomProofInput} onAdd={addCustomProof} onRemove={removeCustomProof} /></div>}
                         {index === 5 && <div><h3 className="mb-3 font-black">{t("reliefWanted")}</h3><div className="grid gap-3">{reliefOptions.map((item) => <label key={item} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3 min-h-[48px]"><input type="checkbox" value={item} checked={formData.relief.includes(item)} onChange={(e) => handleCheckboxChange(e, "relief")} />{item}</label>)}</div><CustomItemsEditor type="relief" enabled={formData.relief.includes(OTHER_RELIEF_OPTION)} value={customReliefInput} items={formData.customReliefs || []} onChange={setCustomReliefInput} onAdd={addCustomRelief} onRemove={removeCustomRelief} /></div>}
@@ -860,19 +816,7 @@ async function handleAskAdvisor() {
                 {wizardStep === 0 && <><Input label={t("fullName")} name="fullName" value={formData.fullName} onChange={handleInputChange} className="min-h-[48px]" /><Input label={t("contact")} name="contact" value={formData.contact} onChange={handleInputChange} className="min-h-[48px]" /><Input label={t("stateOrUT")} name="stateOrUT" value={formData.stateOrUT || ""} onChange={handleInputChange} className="min-h-[48px]" /><div className="md:col-span-2"><CaseTypeSelector selected={formData.caseType} search={caseTypeSearch} onSearch={setCaseTypeSearch} onSelect={selectCaseType} /></div></>}
                 {wizardStep === 1 && <><Input label={t("incidentDate")} type="date" name="incidentDate" value={formData.incidentDate} onChange={handleInputChange} max={todayISO} className="min-h-[48px]" /><Input label={t("amountLost")} type="number" name="amountLost" value={formData.amountLost} onChange={handleInputChange} className="min-h-[48px]" /></>}
                 {wizardStep === 2 && <label className="block md:col-span-2"><span className="mb-2 block font-semibold">{t("story")}</span><textarea name="story" value={formData.story} onChange={handleInputChange} rows={6} className="w-full rounded-lg border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100 min-h-[120px]" /></label>}
-                {wizardStep === 2 && formData.story.trim().length >= 30 && (
-                  <div className="mt-4 md:col-span-2 sticky top-4 z-10">
-                    <button
-                      type="button"
-                      onClick={handleAiAnalyzeStory}
-                      className="w-full md:w-auto rounded-lg bg-teal-500 px-4 py-3.5 font-bold text-slate-950 shadow-lg transition hover:bg-teal-400 min-h-[48px]"
-                      disabled={aiLoading === "analyze"}
-                    >
-                      {aiLoading === "analyze" ? t("aiAnalyzingCase") : t("aiAnalyze")}
-                    </button>
-                    {aiMessage && <p className={`mt-2 text-sm font-bold ${aiMessage.startsWith("AI could not") || aiMessage.startsWith("OpenRouter") || aiMessage.includes("error") || aiMessage.includes("Error") ? "text-red-600" : "text-teal-700"}`} aria-live="polite">{aiMessage}</p>}
-                  </div>
-                )}
+
                 {wizardStep === 3 && <Input label={t("oppositeParty")} name="oppositeParty" value={formData.oppositeParty} onChange={handleInputChange} className="min-h-[48px]" />}
                 {wizardStep === 4 && <div className="md:col-span-2"><h3 className="mb-3 font-black">{t("proofAvailable")}</h3><div className="grid gap-3 md:grid-cols-2">{proofOptions.map((proof) => <label key={proof} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3 min-h-[48px]"><input type="checkbox" value={proof} checked={formData.proofs.includes(proof)} onChange={(e) => handleCheckboxChange(e, "proofs")} />{proof}</label>)}</div><CustomItemsEditor type="proof" enabled={formData.proofs.includes(OTHER_PROOF_OPTION)} value={customProofInput} items={formData.customProofs || []} onChange={setCustomProofInput} onAdd={addCustomProof} onRemove={removeCustomProof} /></div>}
                 {wizardStep === 5 && <div className="md:col-span-2"><h3 className="mb-3 font-black">{t("reliefWanted")}</h3><div className="grid gap-3 md:grid-cols-2">{reliefOptions.map((item) => <label key={item} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3 min-h-[48px]"><input type="checkbox" value={item} checked={formData.relief.includes(item)} onChange={(e) => handleCheckboxChange(e, "relief")} />{item}</label>)}</div><CustomItemsEditor type="relief" enabled={formData.relief.includes(OTHER_RELIEF_OPTION)} value={customReliefInput} items={formData.customReliefs || []} onChange={setCustomReliefInput} onAdd={addCustomRelief} onRemove={removeCustomRelief} /></div>}
@@ -976,20 +920,7 @@ async function handleAskAdvisor() {
               />
             </div>
 
-            {/* AI Analyze button - sticky after story */}
-            {formData.story.trim().length >= 30 && (
-              <div className="mt-4 sticky top-[calc(60px+env(safe-area-inset-top))] z-10">
-                <button
-                  type="button"
-                  onClick={handleAiAnalyzeStory}
-                  className="w-full md:w-auto rounded-lg bg-teal-500 px-4 py-3.5 font-bold text-slate-950 shadow-lg transition hover:bg-teal-400 min-h-[48px]"
-                  disabled={aiLoading === "analyze"}
-                >
-                  {aiLoading === "analyze" ? t("aiAnalyzingCase") : t("aiAnalyze")}
-                </button>
-                {aiMessage && <p className={`mt-2 text-sm font-bold ${aiMessage.startsWith("AI could not") || aiMessage.startsWith("OpenRouter") || aiMessage.includes("error") || aiMessage.includes("Error") ? "text-red-600" : "text-teal-700"}`} aria-live="polite">{aiMessage}</p>}
-              </div>
-            )}
+
 
           {formData.caseType === "Other / Not Sure" && (
             <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-5 text-slate-950">

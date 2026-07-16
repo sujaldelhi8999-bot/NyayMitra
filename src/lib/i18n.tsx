@@ -93,7 +93,6 @@ export const translations = {
     outputModeLimited: "Limited Guidance Kit",
     outputModeUrgent: "Urgent Legal Aid Route",
 
-    aiAnalyze: "AI Analyze Story",
     aiFollowups: "AI Generate Follow-up Questions",
     aiImproveDraft: "AI Improve Draft",
     aiReview: "AI Review Case Strength",
@@ -606,7 +605,6 @@ export const translations = {
     outputModeFull: "पूर्ण तैयारी किट",
     outputModeLimited: "सीमित मार्गदर्शन किट",
     outputModeUrgent: "तत्काल कानूनी सहायता मार्ग",
-    aiAnalyze: "AI कहानी विश्लेषण करें",
     aiFollowups: "AI फॉलो-अप प्रश्न जनरेट करें",
     aiImproveDraft: "AI ड्राफ्ट सुधारें",
     aiReview: "AI केस ताकत की समीक्षा करें",
@@ -1096,7 +1094,6 @@ export const translations = {
     outputModeLimited: "Limited Guidance Kit",
     outputModeUrgent: "Urgent Legal Aid Route",
 
-    aiAnalyze: "AI Analyze Story",
     aiFollowups: "AI Generate Follow-up Questions",
     aiImproveDraft: "AI Improve Draft",
     aiReview: "AI Review Case Strength",
