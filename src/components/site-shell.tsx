@@ -11,7 +11,6 @@ const navLinks = [
   { href: "/#features", key: "navFeatures" },
   { href: "/#how-it-works", key: "navHowItWorks" },
   { href: "/#safety", key: "navSafety" },
-  { href: "/intake", key: "navIntake" },
   { href: "/dashboard", key: "navDashboard" },
   { href: "/drafts", key: "navDrafts" },
   { href: "/knowledge-base", key: "navKnowledgeBase" },
