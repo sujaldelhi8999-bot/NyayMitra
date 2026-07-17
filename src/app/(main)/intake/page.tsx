@@ -620,8 +620,8 @@ async function handleAskAdvisor() {
       const withoutDuplicate = savedCases.filter((item) => item.caseId !== caseWithLatestAnswers.caseId);
       localStorage.setItem("nyaymitra_case_data", JSON.stringify(caseWithLatestAnswers));
       localStorage.setItem("nyaymitra_saved_cases", JSON.stringify([caseWithLatestAnswers, ...withoutDuplicate]));
-    } catch {}
-    router.push("/drafts");
+     } catch {}
+    router.push("/dashboard");
   }
 
   function saveProgress() {
