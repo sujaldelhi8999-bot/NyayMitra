@@ -562,6 +562,29 @@ async function handleAskAdvisor() {
     setEditableDraft(formData.complaintDraft || "");
     setSubmittedCase({ ...formData, followUpAnswers: formData.followUpAnswers || {}, customProofs: formData.customProofs || [], customReliefs: formData.customReliefs || [] });
 
+    // Auto-save to dashboard on generate
+    const draft = formData.complaintDraft || generateComplaintDraft({ ...formData, followUpAnswers });
+    const now = new Date().toISOString();
+    const caseToSave = {
+      ...formData,
+      followUpAnswers,
+      customProofs: formData.customProofs || [],
+      customReliefs: formData.customReliefs || [],
+      complaintDraft: draft,
+      caseId: formData.caseId || `CASE-${Date.now()}`,
+      createdAt: formData.createdAt || now,
+      updatedAt: now,
+      status: normalizeCaseStatus(formData.status),
+      language,
+      outputMode: getOutputModeForCase(formData),
+    };
+    try {
+      const savedCases = JSON.parse(localStorage.getItem("nyaymitra_saved_cases") || "[]") as CaseData[];
+      const withoutDuplicate = savedCases.filter((item) => item.caseId !== caseToSave.caseId);
+      localStorage.setItem("nyaymitra_case_data", JSON.stringify(caseToSave));
+      localStorage.setItem("nyaymitra_saved_cases", JSON.stringify([caseToSave, ...withoutDuplicate]));
+    } catch {}
+
     setTimeout(() => {
       document
         .getElementById("preview-section")
@@ -597,31 +620,6 @@ async function handleAskAdvisor() {
       localStorage.setItem("nyaymitra_saved_cases", JSON.stringify([caseWithLatestAnswers, ...withoutDuplicate]));
     } catch {}
     router.push("/legal-kit");
-  }
-
-  function handleSaveDraft() {
-    if (!submittedCase) return;
-
-    const draft = submittedCase.complaintDraft || editableDraft || generateComplaintDraft({ ...submittedCase, followUpAnswers });
-    const now = new Date().toISOString();
-    const caseWithLatestAnswers = {
-      ...submittedCase,
-      followUpAnswers,
-      complaintDraft: draft,
-      caseId: submittedCase.caseId || `CASE-${Date.now()}`,
-      createdAt: submittedCase.createdAt || now,
-      updatedAt: now,
-      status: normalizeCaseStatus(submittedCase.status),
-      language,
-      outputMode: getOutputModeForCase(submittedCase),
-    };
-    try {
-      const savedCases = JSON.parse(localStorage.getItem("nyaymitra_saved_cases") || "[]") as CaseData[];
-      const withoutDuplicate = savedCases.filter((item) => item.caseId !== caseWithLatestAnswers.caseId);
-      localStorage.setItem("nyaymitra_case_data", JSON.stringify(caseWithLatestAnswers));
-      localStorage.setItem("nyaymitra_saved_cases", JSON.stringify([caseWithLatestAnswers, ...withoutDuplicate]));
-     } catch {}
-    router.push("/dashboard");
   }
 
   function saveProgress() {
@@ -1338,14 +1336,7 @@ async function handleAskAdvisor() {
               <ul className="mt-4 space-y-2">
                 {getNextStepsChecklist(submittedCase).map((step) => <li key={step}>✅ {step}</li>)}
               </ul>
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={handleSaveDraft}
-                  className="rounded-lg border-2 border-teal-600 bg-transparent px-6 py-4 font-bold text-teal-300 shadow-lg transition hover:bg-teal-600 hover:text-white"
-                >
-                  {t("saveDraft")}
-                </button>
+              <div className="mt-6">
                 <button
                   type="button"
                   onClick={handleGeneratePdf}
