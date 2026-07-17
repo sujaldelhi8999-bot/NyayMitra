@@ -136,7 +136,7 @@ export default function DashboardPage() {
           </section>
         ) : (
           <>
-            <section className="mt-8 grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+            <section className="mt-8 grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6">
               <Stat title={t("statTotalCases")} value={String(cases.length)} />
               <Stat title={t("statDraftReady")} value={String(draftReady)} />
               <Stat title={t("statHighRisk")} value={String(highRisk)} />
@@ -150,7 +150,7 @@ export default function DashboardPage() {
               <label className="block"><span className="text-sm font-black text-teal-700">{t("labelFilter")}</span><TouchSelect value={filter} onChange={setFilter} options={filterOptions} className="mt-2" /></label>
             </section>
 
-            <section className="mt-8 grid gap-5 lg:grid-cols-2">
+            <section className="mt-8 grid gap-5 lg:grid-cols-2 items-start">
               {filteredCases.map((caseData) => {
                 const risk = getCaseRiskLevel(caseData);
                 const quality = calculateCaseQualityScore(caseData);
