@@ -1112,7 +1112,7 @@ async function handleAskAdvisor() {
             )}
 
             {/* GROUP 2: Risk & Routing */}
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-6 lg:grid-cols-2 items-start">
               <div className="rounded-lg border border-teal-400/30 bg-white/10 p-6 shadow-2xl">
                 <h2 className="text-2xl font-bold">{t("riskRouter")}</h2>
                 <p className="mt-3 text-xl font-bold text-teal-300">
@@ -1167,7 +1167,7 @@ async function handleAskAdvisor() {
             </div>
 
             {/* GROUP 4: Preparation */}
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-6 lg:grid-cols-2 items-start">
               <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
                 <h2 className="text-2xl font-bold">{t("timeline")}</h2>
                 <div className="mt-5 grid gap-4 md:grid-cols-5">
@@ -1265,7 +1265,7 @@ async function handleAskAdvisor() {
             </div>
 
             {/* GROUP 6: Gaps & Next Steps */}
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-6 lg:grid-cols-2 items-start">
               <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
                 <h2 className="text-2xl font-bold">{t("missingProof")}</h2>
                 {displayedMissingProofs.length === 0 ? (
