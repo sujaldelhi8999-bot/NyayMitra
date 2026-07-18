@@ -319,7 +319,7 @@ if (!caseData) {
             placeholder={`${t("exportJson")} / ${t("downloadPdf")}`}
             options={exportOptions}
             onChange={(value) => { if (value === "json") exportCaseJson(); else if (value === "pdf") downloadPdf(); }}
-            className="rounded-lg bg-amber-400 px-5 py-3 font-black text-slate-950 shadow-lg hover:bg-amber-300"
+            className="rounded-lg bg-amber-500 px-5 py-3 font-bold text-white shadow-lg hover:bg-amber-600"
           />
         </div>
         {downloadError && <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm font-bold text-red-700">{downloadError}</p>}
