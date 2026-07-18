@@ -24,6 +24,7 @@ export default function DashboardPage() {
   const [loaded, setLoaded] = useState(false);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [downloadError, setDownloadError] = useState("");
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
 
   const filterOptions = [
@@ -95,17 +96,24 @@ export default function DashboardPage() {
   }
 
   function exportCaseJson(caseData: CaseData) {
-    const exportData = { ...caseData, officialActionSuggestions: buildOfficialActionSuggestions(caseData) };
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `nyaymitra-case-${caseData.caseId || "draft"}.json`;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    setDownloadError("");
+    try {
+      const exportData = { ...caseData, officialActionSuggestions: buildOfficialActionSuggestions(caseData) };
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `nyaymitra-case-${caseData.caseId || "draft"}.json`;
+      anchor.click();
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+    } catch {
+      setDownloadError("JSON export failed. Please try again.");
+    }
   }
 
   function downloadPdf(caseData: CaseData) {
+    setDownloadError("");
+    try {
     const doc = new jsPDF({ unit: "pt", format: "a4" });
     doc.addFileToVFS("NotoSansDevanagari-Regular.ttf", notoSansDevanagari);
     doc.addFont("NotoSansDevanagari-Regular.ttf", "NotoSansDevanagari", "normal");
@@ -150,6 +158,9 @@ export default function DashboardPage() {
     text(draft);
 
     doc.save(`nyaymitra-case-${caseData.caseId || "draft"}.pdf`);
+    } catch {
+      setDownloadError("PDF download failed. Please try again.");
+    }
   }
 
   if (!loaded) return null;
@@ -193,6 +204,8 @@ export default function DashboardPage() {
               <Stat title={t("statLawyerReview")} value={String(lawyerReviewCount)} />
               <Stat title={t("statUrgentRoute")} value={String(urgentCount)} />
             </section>
+
+            {downloadError && <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm font-bold text-red-700">{downloadError}</p>}
 
             <section className="mt-8 grid gap-4 rounded-lg bg-white p-5 text-slate-950 shadow-2xl md:grid-cols-2">
               <label className="block"><span className="text-sm font-black text-teal-700">{t("labelSearch")}</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("filterSearchPlaceholder")} className="mt-2 w-full rounded-lg border border-slate-200 p-3.5 outline-none focus:border-teal-500 min-h-[48px]" /></label>

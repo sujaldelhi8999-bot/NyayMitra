@@ -34,6 +34,7 @@ export function TouchSelect({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const optionRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const justSelectedRef = useRef(false);
   const id = useId();
   const triggerId = `${id}-trigger`;
   const listId = `${id}-list`;
@@ -46,9 +47,11 @@ export function TouchSelect({
   }, []);
 
   const selectOption = useCallback((option: TouchSelectOption) => {
+    justSelectedRef.current = true;
     onChange(option.value);
     setIsOpen(false);
     triggerRef.current?.focus();
+    setTimeout(() => { justSelectedRef.current = false; }, 0);
   }, [onChange]);
 
   const handleKeyboardNavigation = useCallback((e: KeyboardEvent) => {
@@ -107,6 +110,7 @@ export function TouchSelect({
         disabled={disabled}
         onClick={() => !disabled && setIsOpen(!isOpen)}
         onBlur={(e) => {
+          if (justSelectedRef.current) return;
           if (!e.currentTarget.contains(e.relatedTarget as Node)) {
             setTimeout(() => setIsOpen(false), 100);
           }

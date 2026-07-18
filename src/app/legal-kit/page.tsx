@@ -42,6 +42,7 @@ export default function LegalKitPage() {
   const [loaded, setLoaded] = useState(false);
   const [copyMessage, setCopyMessage] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+  const [downloadError, setDownloadError] = useState("");
   const [language, setLanguage] = useState<Language>("en");
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
 
@@ -130,19 +131,26 @@ if (!caseData) {
   }
 
   function exportCaseJson() {
+    setDownloadError("");
     if (!caseData) return;
-    const exportData = { ...caseData, officialActionSuggestions: buildOfficialActionSuggestions(caseData), verifiedSourceNotes: getVerifiedSourceNotes(caseData) };
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `nyaymitra-case-${caseData.caseId || "draft"}.json`;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    try {
+      const exportData = { ...caseData, officialActionSuggestions: buildOfficialActionSuggestions(caseData), verifiedSourceNotes: getVerifiedSourceNotes(caseData) };
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `nyaymitra-case-${caseData.caseId || "draft"}.json`;
+      anchor.click();
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+    } catch (err) {
+      setDownloadError("JSON export failed. Please try again.");
+    }
   }
 
   function downloadPdf() {
+    setDownloadError("");
     if (!caseData) return;
+    try {
 
     const doc = new jsPDF({ unit: "pt", format: "a4" });
     doc.addFileToVFS("NotoSansDevanagari-Regular.ttf", notoSansDevanagari);
@@ -296,6 +304,9 @@ if (!caseData) {
     }
 
     doc.save("nyaymitra-legal-action-kit.pdf");
+    } catch (err) {
+      setDownloadError("PDF download failed. Please try again.");
+    }
   }
 
   return (
@@ -311,6 +322,7 @@ if (!caseData) {
             className="rounded-lg bg-amber-400 px-5 py-3 font-black text-slate-950 shadow-lg hover:bg-amber-300"
           />
         </div>
+        {downloadError && <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm font-bold text-red-700">{downloadError}</p>}
 
         <article className="rounded-lg bg-white p-6 shadow-2xl sm:p-10">
           <header className="border-b border-slate-200 pb-8">
