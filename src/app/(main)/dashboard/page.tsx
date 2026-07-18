@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { jsPDF } from "jspdf";
 import { getOutputModeForCase, outputModeLabel } from "@/lib/caseConfig";
 import { caseStatuses, caseStatusLabel, normalizeCaseStatus, type CaseStatus } from "@/lib/caseStatus";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
@@ -58,7 +59,7 @@ export default function DashboardPage() {
     try {
       localStorage.setItem("nyaymitra_case_data", JSON.stringify(caseData));
     } catch {}
-    router.push("/legal-kit");
+    router.push("/preview");
   }
 
   function editCase(caseData: CaseData) {
@@ -101,6 +102,43 @@ export default function DashboardPage() {
     anchor.download = `nyaymitra-case-${caseData.caseId || "draft"}.json`;
     anchor.click();
     URL.revokeObjectURL(url);
+  }
+
+  function downloadPdf(caseData: CaseData) {
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 42;
+    let y = margin;
+
+    function addPageIfNeeded(height = 40) {
+      if (y + height > pageHeight - margin) { doc.addPage(); y = margin; }
+    }
+
+    function text(lines: string | string[], size = 10, bold = false) {
+      doc.setFont("helvetica", bold ? "bold" : "normal");
+      doc.setFontSize(size);
+      const content: string[] = Array.isArray(lines) ? lines : doc.splitTextToSize(lines, pageWidth - margin * 2);
+      content.forEach((line) => { addPageIfNeeded(16); doc.text(line, margin, y); y += size + 6; });
+    }
+
+    function section(title: string) {
+      addPageIfNeeded(34); y += 10; text(title, 14, true); y += 4;
+    }
+
+    text("NyayMitra Case Export", 18, true);
+    text(`Case: ${caseData.fullName || "Unnamed"}`, 11);
+    text(`Type: ${caseData.caseType} | Date: ${caseData.incidentDate} | Amount: Rs. ${caseData.amountLost}`, 10);
+    y += 8;
+
+    section("Case Snapshot");
+    text(`Name: ${caseData.fullName}`); text(`Contact: ${caseData.contact}`); text(`Story: ${caseData.story}`);
+
+    section("Complaint Draft");
+    const draft = caseData.complaintDraft || "No draft generated.";
+    text(draft);
+
+    doc.save(`nyaymitra-case-${caseData.caseId || "draft"}.pdf`);
   }
 
   if (!loaded) return null;
@@ -177,7 +215,16 @@ export default function DashboardPage() {
                     <div className="mt-5 grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                       <button type="button" onClick={() => openLegalKit(caseData)} className="rounded-lg bg-teal-600 px-4 py-3.5 font-bold text-white min-h-[48px]">{t("openLegalKit")}</button>
                       <button type="button" onClick={() => editCase(caseData)} className="rounded-lg bg-slate-950 px-4 py-3.5 font-bold text-white min-h-[48px]">{t("editIntake")}</button>
-                      <button type="button" onClick={() => exportCaseJson(caseData)} className="rounded-lg bg-teal-50 px-4 py-3.5 font-bold text-teal-800 min-h-[48px]">{t("labelExportJson")}</button>
+                      <TouchSelect
+                        value=""
+                        placeholder={t("labelExportJson")}
+                        options={[
+                          { value: "json", label: t("labelExportJson") },
+                          { value: "pdf", label: t("downloadPdf") },
+                        ]}
+                        onChange={(value) => { if (value === "json") exportCaseJson(caseData); else if (value === "pdf") downloadPdf(caseData); }}
+                        className="rounded-lg bg-teal-50 px-4 py-3.5 font-bold text-teal-800 min-h-[48px]"
+                      />
                       <button type="button" onClick={() => deleteCase(caseData)} className="rounded-lg bg-red-50 px-4 py-3.5 font-bold text-red-700 min-h-[48px]">{t("deleteCase")}</button>
                     </div>
                   </article>
