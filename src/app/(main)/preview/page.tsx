@@ -495,7 +495,7 @@ function PreviewContent() {
             {draftMessage && <p className="mt-4 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900">{draftMessage}</p>}
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-2 items-start">
+          <div className="space-y-6">
             <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
               <h2 className="text-2xl font-bold">{t("missingProof")}</h2>
               {displayedMissingProofs.length === 0 ? (
