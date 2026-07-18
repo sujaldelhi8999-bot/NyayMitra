@@ -159,6 +159,7 @@ function PreviewContent() {
   }
 
   function handleGeneratePdf() {
+    if (!caseData) return;
     const draft = caseData.complaintDraft || editableDraft || generateComplaintDraft(caseData);
     const now = new Date().toISOString();
     const updated = {
@@ -177,6 +178,7 @@ function PreviewContent() {
   }
 
   function handleGenerateDraftComplaint() {
+    if (!caseData) return;
     const nextDraft = generateComplaintDraft({ ...caseData, language: draftLanguage });
     setEditableDraft(nextDraft);
     persistCase({ ...caseData, complaintDraft: nextDraft });
@@ -184,12 +186,14 @@ function PreviewContent() {
   }
 
   function handleResetDraft() {
+    if (!caseData) return;
     setEditableDraft("");
     setDraftMessage("");
     persistCase({ ...caseData, complaintDraft: "" });
   }
 
   function handleDraftChange(value: string) {
+    if (!caseData) return;
     setEditableDraft(value);
     persistCase({ ...caseData, complaintDraft: value });
   }
@@ -209,6 +213,7 @@ function PreviewContent() {
   }
 
   function handleUpdatePreviewWithAnswers() {
+    if (!caseData) return;
     persistCase({ ...caseData, followUpAnswers });
     setUpdateMessage(t("msgPreviewUpdated"));
   }
@@ -218,9 +223,11 @@ function PreviewContent() {
   }
 
   async function handleAiFollowups() {
+    if (!caseData) return;
+    const current = caseData;
     setAiLoading("followup");
     setAiMessage(t("aiAnalyzingCase"));
-    const result = await aiGenerateFollowups(caseData) as { questions?: string[] } | AiClientError;
+    const result = await aiGenerateFollowups(current) as { questions?: string[] } | AiClientError;
     setAiLoading("");
     if (isAiError(result) || !result.questions) {
       setAiMessage(isAiError(result) ? result.error : "AI did not return follow-up questions.");
@@ -228,7 +235,7 @@ function PreviewContent() {
     }
     const questions = Array.from(new Set([...extraFollowUpQuestions, ...result.questions]));
     setExtraFollowUpQuestions(questions);
-    const updated = { ...caseData, aiAnalysis: { ...(caseData.aiAnalysis || {}), followupQuestions: questions, lastAnalyzedAt: new Date().toISOString() } };
+    const updated = { ...current, aiAnalysis: { ...(current.aiAnalysis || {}), followupQuestions: questions, lastAnalyzedAt: new Date().toISOString() } };
     persistCase(updated);
     setAiState((prev) => ({
       ...prev,
@@ -240,16 +247,18 @@ function PreviewContent() {
   }
 
   async function handleAiImproveDraft() {
+    if (!caseData) return;
+    const current = caseData;
     setAiLoading("draft");
     setAiMessage(t("aiAnalyzingCase"));
-    const result = await aiGenerateDraft(caseData) as { draftText?: string } | AiClientError;
+    const result = await aiGenerateDraft(current) as { draftText?: string } | AiClientError;
     setAiLoading("");
     if (isAiError(result) || !result.draftText) {
       setAiMessage(isAiError(result) ? result.error : "AI did not return draft text.");
       return;
     }
     setEditableDraft(result.draftText);
-    persistCase({ ...caseData, complaintDraft: result.draftText, aiAnalysis: { ...(caseData.aiAnalysis || {}), generatedDraft: result.draftText, lastAnalyzedAt: new Date().toISOString() } });
+    persistCase({ ...current, complaintDraft: result.draftText, aiAnalysis: { ...(current.aiAnalysis || {}), generatedDraft: result.draftText, lastAnalyzedAt: new Date().toISOString() } });
     setAiState((prev) => ({
       ...prev,
       analysis: { ...(prev.analysis || {}), generatedDraft: result.draftText, lastAnalyzedAt: new Date().toISOString() },
@@ -259,15 +268,17 @@ function PreviewContent() {
   }
 
   async function handleAiReview() {
+    if (!caseData) return;
+    const current = caseData;
     setAiLoading("review");
     setAiMessage(t("aiAnalyzingCase"));
-    const result = await aiReviewCase(caseData) as AiReview | AiClientError;
+    const result = await aiReviewCase(current) as AiReview | AiClientError;
     setAiLoading("");
     if (isAiError(result)) {
       setAiMessage(isAiError(result) ? result.error : "AI review failed.");
       return;
     }
-    persistCase({ ...caseData, aiAnalysis: { ...(caseData.aiAnalysis || {}), review: result, lastAnalyzedAt: new Date().toISOString() } });
+    persistCase({ ...current, aiAnalysis: { ...(current.aiAnalysis || {}), review: result, lastAnalyzedAt: new Date().toISOString() } });
     setAiState((prev) => ({
       ...prev,
       analysis: { ...(prev.analysis || {}), review: result, lastAnalyzedAt: new Date().toISOString() },
@@ -277,10 +288,11 @@ function PreviewContent() {
   }
 
   async function handleAskAdvisor() {
-    if (!advisorQuestion.trim()) return;
+    if (!caseData || !advisorQuestion.trim()) return;
+    const current = caseData;
     setAdvisorLoading(true);
     setAdvisorMessage(t("aiThinkingNyayMitra"));
-    const result = await aiAskAdvisor(caseData, advisorQuestion) as Omit<AdvisorChat, "id" | "question" | "createdAt"> | AiClientError;
+    const result = await aiAskAdvisor(current, advisorQuestion) as Omit<AdvisorChat, "id" | "question" | "createdAt"> | AiClientError;
     const failed = isAiError(result);
     const fallback = {
       answer: "This matter needs legal-aid/lawyer review. NyayMitra can help organize documents but is not legal advice.",
@@ -291,7 +303,7 @@ function PreviewContent() {
     };
     const answer = failed ? fallback : result;
     const chat: AdvisorChat = { ...answer, id: `CHAT-${Date.now()}`, question: advisorQuestion, createdAt: new Date().toISOString() };
-    persistCase({ ...caseData, advisorChats: [...(caseData.advisorChats || []), chat] });
+    persistCase({ ...current, advisorChats: [...(current.advisorChats || []), chat] });
     setAiState((prev) => ({ ...prev, advisorChats: [...(prev.advisorChats || []), chat] }));
     setAdvisorQuestion("");
     setAdvisorMessage(failed ? `${result.error} ${t("aiRuleBasedFallback")}` : t("aiGuidanceGenerated"));

@@ -3,16 +3,16 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { aiClassifyCase, type AiClientError } from "@/lib/aiClient";
-import { getOutputModeForCase, caseConfigs, getCaseConfig, outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
+import { getOutputModeForCase, caseConfigs, getCaseConfig, highRiskCaseTypes, outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
 import { normalizeCaseStatus } from "@/lib/caseStatus";
 import { type Language, translate, useLanguage } from "@/lib/i18n";
-import type { CaseData, AiClassification, UploadedFile } from "@/types/case";
+import type { CaseData, AiClassification, AdvisorChat, UploadedFile } from "@/types/case";
 import { generateComplaintDraft } from "@/lib/draftTemplates";
+import { CardTable } from "@/components/card-table";
+import { formatFileSize } from "@/lib/caseUtils";
 import { OTHER_PROOF_OPTION, OTHER_RELIEF_OPTION } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
-
-type AdvisorAnswer = Omit<AdvisorChat, "id" | "question" | "createdAt">;
 
 const uploadCategories = Array.from(new Set(caseConfigs.flatMap((config) => config.proofs).concat("Other supporting proof")));
 
@@ -276,6 +276,12 @@ useEffect(() => {
   }
 
   function useSuggestedCaseType() {
+    const classification = aiState.analysis?.classification;
+    if (!classification) return;
+    setCaseData((current) => ({ ...current, caseType: classification.caseType, outputMode: safetyOutputMode(current, classification), proofs: Array.from(new Set([...current.proofs, ...classification.suggestedProofs])), relief: Array.from(new Set([...current.relief, ...classification.suggestedReliefs])) }));
+  }
+
+  function handleGenerate() {
     const nextErrors: string[] = [];
 
     if (!formData.fullName.trim()) nextErrors.push(t("errorNameRequired"));
