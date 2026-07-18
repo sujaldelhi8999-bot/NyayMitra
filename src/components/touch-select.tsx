@@ -169,11 +169,13 @@ export function TouchSelect({
         </div>
       )}
 
-      <div
-        className="fixed inset-0 z-40 md:hidden"
-        onClick={() => setIsOpen(false)}
-        aria-hidden="true"
-      />
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 md:hidden"
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
     </div>
   );
 }
