@@ -372,7 +372,7 @@ function PreviewContent() {
             </div>
           )}
 
-          <div className="grid gap-6 lg:grid-cols-2 items-start">
+          <div className="space-y-6">
             <div className="rounded-lg border border-teal-400/30 bg-white/10 p-6 shadow-2xl">
               <h2 className="text-2xl font-bold">{t("riskRouter")}</h2>
               <p className="mt-3 text-xl font-bold text-teal-300">{riskLabel}</p>
