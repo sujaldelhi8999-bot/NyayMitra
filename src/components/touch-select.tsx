@@ -17,6 +17,7 @@ interface TouchSelectProps {
   ariaLabel?: string;
   disabled?: boolean;
   className?: string;
+  size?: "sm" | "md";
 }
 
 export function TouchSelect({
@@ -28,6 +29,7 @@ export function TouchSelect({
   ariaLabel,
   disabled = false,
   className = "",
+  size = "md",
 }: TouchSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -116,9 +118,10 @@ export function TouchSelect({
           }
         }}
         className={`
-          w-full flex items-center justify-between gap-3 rounded-lg border px-4 py-3.5
-          text-left text-base font-semibold min-h-[48px]
+          w-full flex items-center justify-between gap-3 rounded-lg border
+          text-left text-base font-semibold
           transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2
+          ${size === "sm" ? "px-4 py-2 min-h-[32px]" : "px-4 py-3.5 min-h-[48px]"}
           ${disabled
             ? "bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed"
             : "bg-white border-slate-300 text-slate-900 hover:border-teal-400 shadow-sm"
@@ -157,8 +160,8 @@ export function TouchSelect({
                 onClick={() => selectOption(option)}
                 onMouseEnter={() => setHighlightedIndex(index)}
                 className={`
-                  px-4 py-3.5 text-base font-medium min-h-[48px]
-                  transition-colors cursor-pointer
+                  ${size === "sm" ? "px-4 py-2 min-h-[32px] text-sm" : "px-4 py-3.5 min-h-[48px] text-base"}
+                  font-medium transition-colors cursor-pointer
                   ${option.value === value
                     ? "bg-teal-50 text-teal-800"
                     : "text-slate-700 hover:bg-slate-50"

@@ -237,8 +237,8 @@ export default function DashboardPage() {
                     </div>
                     <label className="mt-5 block"><span className="text-sm font-black text-teal-700">{t("labelStatusUpdate")}</span><TouchSelect value={normalizeCaseStatus(caseData.status)} onChange={(value) => updateStatus(caseData, normalizeCaseStatus(value))} options={statusOptions} className="mt-2" /></label>
                     <div className="mt-5 grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-                      <button type="button" onClick={() => openLegalKit(caseData)} className="rounded-lg bg-teal-600 px-4 py-3.5 font-bold text-white min-h-[48px]">{t("openLegalKit")}</button>
-                      <button type="button" onClick={() => editCase(caseData)} className="rounded-lg bg-slate-950 px-4 py-3.5 font-bold text-white min-h-[48px]">{t("editIntake")}</button>
+                      <button type="button" onClick={() => openLegalKit(caseData)} className="rounded-lg bg-teal-600 px-4 py-2 font-bold text-white min-h-[32px]">{t("openLegalKit")}</button>
+                      <button type="button" onClick={() => editCase(caseData)} className="rounded-lg bg-slate-950 px-4 py-2 font-bold text-white min-h-[32px]">{t("editIntake")}</button>
                       <TouchSelect
                         value=""
                         placeholder={t("labelExportJson")}
@@ -247,9 +247,10 @@ export default function DashboardPage() {
                           { value: "pdf", label: t("downloadPdf") },
                         ]}
                         onChange={(value) => { if (value === "json") exportCaseJson(caseData); else if (value === "pdf") downloadPdf(caseData); }}
-                        className="rounded-lg bg-teal-50 px-4 py-3.5 font-bold text-teal-800 min-h-[48px]"
+                        className="rounded-lg bg-teal-50 px-4 py-2 font-bold text-teal-800"
+                        size="sm"
                       />
-                      <button type="button" onClick={() => deleteCase(caseData)} className="rounded-lg bg-red-50 px-4 py-3.5 font-bold text-red-700 min-h-[48px]">{t("deleteCase")}</button>
+                      <button type="button" onClick={() => deleteCase(caseData)} className="rounded-lg bg-red-50 px-4 py-2 font-bold text-red-700 min-h-[32px]">{t("deleteCase")}</button>
                     </div>
                   </article>
                 );
