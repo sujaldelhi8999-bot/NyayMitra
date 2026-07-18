@@ -110,7 +110,6 @@ useEffect(() => {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount hydration from localStorage
       setCaseData(nextCase);
       setFollowUpAnswers(nextCase.followUpAnswers || {});
-      setEditableDraft(nextCase.complaintDraft || "");
       setIsEditingSavedCase(true);
       // Restore lifted AI state
       if (nextCase.aiAnalysis) {
@@ -177,13 +176,9 @@ useEffect(() => {
       aiAnalysis: undefined,
       advisorChats: [],
     }));
-    setSubmittedCase(null);
     setFollowUpAnswers({});
-    setEditableDraft("");
-    setExtraFollowUpQuestions([]);
     setCustomProofInput("");
     setCustomReliefInput("");
-    setAiMessage("");
     setAiState({
       analysis: undefined,
       followupQuestions: [],
@@ -259,19 +254,16 @@ useEffect(() => {
     return Boolean(result && typeof result === "object" && "error" in result);
   }
 
-  function showAiError(result: AiClientError, fallbackMessage = "AI could not respond. Rule-based mode is still available.") {
-    const message = result.error || fallbackMessage;
-    setAiMessage(message);
+  function showAiError(_result: AiClientError, _fallbackMessage = "AI could not respond. Rule-based mode is still available.") {
+    // ponytail: error display removed with preview section; classification result stored in aiState
   }
 
   async function handleOtherClassification() {
     if (formData.caseType !== "Other / Not Sure") return;
     setOtherClassifying(true);
-    setAiMessage(t("aiTryingToUnderstand"));
     const result = await aiClassifyCase(formData) as AiClassification | AiClientError;
     setOtherClassifying(false);
     if (isAiError(result)) {
-      showAiError(result, t("aiCouldNotClassify"));
       return;
     }
     const safeClassification = { ...result, outputMode: safetyOutputMode(formData, result) };
@@ -281,7 +273,6 @@ useEffect(() => {
       analysis: { ...(prev.analysis || {}), classification: safeClassification, lastAnalyzedAt: new Date().toISOString() },
       lastAnalyzedAt: new Date().toISOString(),
     }));
-    setAiMessage(t("aiClassificationReady"));
   }
 
   function useSuggestedCaseType() {
@@ -350,7 +341,7 @@ useEffect(() => {
 
   function saveProgress() {
     try {
-      localStorage.setItem("nyaymitra_intake_draft", JSON.stringify({ ...formData, followUpAnswers, complaintDraft: editableDraft, language }));
+      localStorage.setItem("nyaymitra_intake_draft", JSON.stringify({ ...formData, followUpAnswers, language }));
     } catch {}
     setDraftFound(true);
     setProgressMessage(t("msgProgressSaved"));
@@ -363,7 +354,6 @@ useEffect(() => {
       const parsed = JSON.parse(saved) as CaseData;
       setCaseData({ ...parsed, uploadedFiles: parsed.uploadedFiles || [], followUpAnswers: parsed.followUpAnswers || {}, customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [], status: normalizeCaseStatus(parsed.status) });
       setFollowUpAnswers(parsed.followUpAnswers || {});
-      setEditableDraft(parsed.complaintDraft || "");
       if (parsed.language) setLanguage(parsed.language);
       setProgressMessage(t("msgDraftLoaded"));
     } catch {}
@@ -385,9 +375,7 @@ useEffect(() => {
     } catch {}
     const fresh: CaseData = { fullName: "", contact: "", caseType: "Cyber Fraud / UPI Scam", stateOrUT: "", story: "", incidentDate: "", amountLost: "", oppositeParty: "", proofs: [], relief: [], customProofs: [], customReliefs: [], uploadedFiles: [] };
     setCaseData(fresh);
-    setSubmittedCase(null);
     setFollowUpAnswers({});
-    setEditableDraft("");
     setDraftFound(false);
     setIsEditingSavedCase(false);
     setProgressMessage(t("msgFreshCase"));
