@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { jsPDF } from "jspdf";
+import { jsPDF } from "jspdf-fontkit";
 import { getOutputModeForCase, outputModeLabel } from "@/lib/caseConfig";
 import { caseStatuses, caseStatusLabel, normalizeCaseStatus, type CaseStatus } from "@/lib/caseStatus";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
@@ -13,6 +13,7 @@ import { getCaseRiskLevel } from "@/lib/caseUtils";
 import { OTHER_PROOF_OPTION, OTHER_RELIEF_OPTION } from "@/lib/constants";
 import { calculateCaseQualityScore } from "@/lib/qualityScore";
 import { TouchSelect } from "@/components/touch-select";
+import { notoSansDevanagari } from "@/fonts/NotoSansDevanagari";
 
 export const dynamic = "force-dynamic";
 
@@ -106,6 +107,8 @@ export default function DashboardPage() {
 
   function downloadPdf(caseData: CaseData) {
     const doc = new jsPDF({ unit: "pt", format: "a4" });
+    doc.addFileToVFS("NotoSansDevanagari-Regular.ttf", notoSansDevanagari);
+    doc.addFont("NotoSansDevanagari-Regular.ttf", "NotoSansDevanagari", "normal");
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 42;
@@ -116,10 +119,18 @@ export default function DashboardPage() {
     }
 
     function text(lines: string | string[], size = 10, bold = false) {
-      doc.setFont("helvetica", bold ? "bold" : "normal");
       doc.setFontSize(size);
       const content: string[] = Array.isArray(lines) ? lines : doc.splitTextToSize(lines, pageWidth - margin * 2);
-      content.forEach((line) => { addPageIfNeeded(16); doc.text(line, margin, y); y += size + 6; });
+      content.forEach((line) => {
+        addPageIfNeeded(16);
+        if (/[\u0900-\u097F]/.test(line)) {
+          doc.setFont("NotoSansDevanagari", "normal");
+        } else {
+          doc.setFont("helvetica", bold ? "bold" : "normal");
+        }
+        doc.text(line, margin, y);
+        y += size + 6;
+      });
     }
 
     function section(title: string) {

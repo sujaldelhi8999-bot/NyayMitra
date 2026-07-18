@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { jsPDF } from "jspdf";
+import { jsPDF } from "jspdf-fontkit";
 import { type Language, translate, useLanguage } from "@/lib/i18n";
+import { notoSansDevanagari } from "@/fonts/NotoSansDevanagari";
 import { getCaseConfig, getOutputModeForCase, outputModeLabel } from "@/lib/caseConfig";
 import { caseStatuses, caseStatusLabel, normalizeCaseStatus, type CaseStatus } from "@/lib/caseStatus";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
@@ -144,6 +145,8 @@ if (!caseData) {
     if (!caseData) return;
 
     const doc = new jsPDF({ unit: "pt", format: "a4" });
+    doc.addFileToVFS("NotoSansDevanagari-Regular.ttf", notoSansDevanagari);
+    doc.addFont("NotoSansDevanagari-Regular.ttf", "NotoSansDevanagari", "normal");
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 42;
@@ -157,11 +160,15 @@ if (!caseData) {
     }
 
     function text(lines: string | string[], size = 10, bold = false) {
-      doc.setFont("helvetica", bold ? "bold" : "normal");
       doc.setFontSize(size);
       const content: string[] = Array.isArray(lines) ? lines : doc.splitTextToSize(lines, pageWidth - margin * 2);
       content.forEach((line) => {
         addPageIfNeeded(16);
+        if (/[\u0900-\u097F]/.test(line)) {
+          doc.setFont("NotoSansDevanagari", "normal");
+        } else {
+          doc.setFont("helvetica", bold ? "bold" : "normal");
+        }
         doc.text(line, margin, y);
         y += size + 6;
       });
