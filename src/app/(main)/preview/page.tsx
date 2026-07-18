@@ -482,7 +482,6 @@ function PreviewContent() {
                   <select value={draftLanguage} onChange={(e) => setDraftLanguage(e.target.value as Language)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold outline-none focus:border-teal-500">
                     <option value="en">{t("draftLangEnglish")}</option>
                     <option value="hi">{t("draftLangHindi")}</option>
-                    <option value="hinglish">{t("draftLangHinglish")}</option>
                   </select>
                 </label>
                 <button type="button" onClick={handleGenerateDraftComplaint} className="rounded-lg bg-teal-600 px-5 py-3 font-bold text-white hover:bg-teal-700">{outputMode === "urgent-legal-aid-route" ? t("btnGenerateLegalAid") : t("btnGenerateDraft")}</button>
