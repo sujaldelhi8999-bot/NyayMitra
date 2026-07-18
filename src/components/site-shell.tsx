@@ -212,7 +212,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         language={language}
         onChangeLanguage={setLanguage}
       />
-      <main>{children}</main>
+      <main className="flex-1 main-content">{children}</main>
       <Footer language={language} />
     </>
   );
