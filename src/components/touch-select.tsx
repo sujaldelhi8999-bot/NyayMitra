@@ -157,7 +157,7 @@ export function TouchSelect({
                 ref={(el) => { optionRefs.current[index] = el; }}
                 role="option"
                 aria-selected={option.value === value}
-                onClick={() => selectOption(option)}
+                onMouseDown={(e) => { e.preventDefault(); selectOption(option); }}
                 onMouseEnter={() => setHighlightedIndex(index)}
                 className={`
                   ${size === "sm" ? "px-4 py-2 min-h-[32px] text-sm" : "px-4 py-3.5 min-h-[48px] text-base"}

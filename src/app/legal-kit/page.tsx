@@ -143,6 +143,7 @@ if (!caseData) {
       anchor.click();
       setTimeout(() => URL.revokeObjectURL(url), 100);
     } catch (err) {
+      console.error("JSON export failed:", err);
       setDownloadError("JSON export failed. Please try again.");
     }
   }
@@ -305,6 +306,7 @@ if (!caseData) {
 
     doc.save("nyaymitra-legal-action-kit.pdf");
     } catch (err) {
+      console.error("PDF download failed:", err);
       setDownloadError("PDF download failed. Please try again.");
     }
   }
@@ -319,7 +321,7 @@ if (!caseData) {
             placeholder={`${t("exportJson")} / ${t("downloadPdf")}`}
             options={exportOptions}
             onChange={(value) => { if (value === "json") exportCaseJson(); else if (value === "pdf") downloadPdf(); }}
-            className="rounded-lg bg-amber-500 px-5 py-3 font-bold text-white shadow-lg hover:bg-amber-600"
+            className=""
           />
         </div>
         {downloadError && <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm font-bold text-red-700">{downloadError}</p>}

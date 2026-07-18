@@ -106,7 +106,8 @@ export default function DashboardPage() {
       anchor.download = `nyaymitra-case-${caseData.caseId || "draft"}.json`;
       anchor.click();
       setTimeout(() => URL.revokeObjectURL(url), 100);
-    } catch {
+    } catch (err) {
+      console.error("JSON export failed:", err);
       setDownloadError("JSON export failed. Please try again.");
     }
   }
@@ -158,7 +159,8 @@ export default function DashboardPage() {
     text(draft);
 
     doc.save(`nyaymitra-case-${caseData.caseId || "draft"}.pdf`);
-    } catch {
+    } catch (err) {
+      console.error("PDF download failed:", err);
       setDownloadError("PDF download failed. Please try again.");
     }
   }
@@ -247,7 +249,7 @@ export default function DashboardPage() {
                           { value: "pdf", label: t("downloadPdf") },
                         ]}
                         onChange={(value) => { if (value === "json") exportCaseJson(caseData); else if (value === "pdf") downloadPdf(caseData); }}
-                        className="rounded-lg bg-teal-50 px-4 py-2 font-bold text-teal-800"
+                        className=""
                         size="sm"
                       />
                       <button type="button" onClick={() => deleteCase(caseData)} className="rounded-lg bg-red-50 px-4 py-2 font-bold text-red-700 min-h-[32px]">{t("deleteCase")}</button>
