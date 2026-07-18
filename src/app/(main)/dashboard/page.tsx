@@ -3,17 +3,17 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { jsPDF } from "jspdf-fontkit";
+import { type Language, translate, useLanguage } from "@/lib/i18n";
 import { getOutputModeForCase, outputModeLabel } from "@/lib/caseConfig";
 import { caseStatuses, caseStatusLabel, normalizeCaseStatus, type CaseStatus } from "@/lib/caseStatus";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
-import { translate, useLanguage } from "@/lib/i18n";
 import type { CaseData } from "@/types/case";
 import { getCaseRiskLevel } from "@/lib/caseUtils";
 import { OTHER_PROOF_OPTION, OTHER_RELIEF_OPTION } from "@/lib/constants";
 import { calculateCaseQualityScore } from "@/lib/qualityScore";
+import { generateComplaintDraft } from "@/lib/draftTemplates";
+import { generateLegalKitPdf } from "@/lib/generatePdf";
 import { TouchSelect } from "@/components/touch-select";
-import { notoSansDevanagari } from "@/fonts/NotoSansDevanagari";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +25,13 @@ export default function DashboardPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [downloadError, setDownloadError] = useState("");
+  const [pdfLanguage, setPdfLanguage] = useState<Language>("en");
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
+
+  const downloadLangOptions = [
+    { value: "en", label: "English" },
+    { value: "hi", label: "हिन्दी" },
+  ];
 
   const filterOptions = [
     { value: "all", label: t("filterAll") },
@@ -98,7 +104,8 @@ export default function DashboardPage() {
   function exportCaseJson(caseData: CaseData) {
     setDownloadError("");
     try {
-      const exportData = { ...caseData, officialActionSuggestions: buildOfficialActionSuggestions(caseData) };
+      const draft = caseData.complaintDraft || generateComplaintDraft(caseData, pdfLanguage);
+      const exportData = { ...caseData, complaintDraft: draft, officialActionSuggestions: buildOfficialActionSuggestions(caseData) };
       const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
@@ -115,50 +122,7 @@ export default function DashboardPage() {
   function downloadPdf(caseData: CaseData) {
     setDownloadError("");
     try {
-    const doc = new jsPDF({ unit: "pt", format: "a4" });
-    doc.addFileToVFS("NotoSansDevanagari-Regular.ttf", notoSansDevanagari);
-    doc.addFont("NotoSansDevanagari-Regular.ttf", "NotoSansDevanagari", "normal");
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 42;
-    let y = margin;
-
-    function addPageIfNeeded(height = 40) {
-      if (y + height > pageHeight - margin) { doc.addPage(); y = margin; }
-    }
-
-    function text(lines: string | string[], size = 10, bold = false) {
-      doc.setFontSize(size);
-      const content: string[] = Array.isArray(lines) ? lines : doc.splitTextToSize(lines, pageWidth - margin * 2);
-      content.forEach((line) => {
-        addPageIfNeeded(16);
-        if (/[\u0900-\u097F]/.test(line)) {
-          doc.setFont("NotoSansDevanagari", "normal");
-        } else {
-          doc.setFont("helvetica", bold ? "bold" : "normal");
-        }
-        doc.text(line, margin, y);
-        y += size + 6;
-      });
-    }
-
-    function section(title: string) {
-      addPageIfNeeded(34); y += 10; text(title, 14, true); y += 4;
-    }
-
-    text("NyayMitra Case Export", 18, true);
-    text(`Case: ${caseData.fullName || "Unnamed"}`, 11);
-    text(`Type: ${caseData.caseType} | Date: ${caseData.incidentDate} | Amount: Rs. ${caseData.amountLost}`, 10);
-    y += 8;
-
-    section("Case Snapshot");
-    text(`Name: ${caseData.fullName}`); text(`Contact: ${caseData.contact}`); text(`Story: ${caseData.story}`);
-
-    section("Complaint Draft");
-    const draft = caseData.complaintDraft || "No draft generated.";
-    text(draft);
-
-    doc.save(`nyaymitra-case-${caseData.caseId || "draft"}.pdf`);
+      generateLegalKitPdf(caseData, pdfLanguage);
     } catch (err) {
       console.error("PDF download failed:", err);
       setDownloadError("PDF download failed. Please try again.");
@@ -208,6 +172,18 @@ export default function DashboardPage() {
             </section>
 
             {downloadError && <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm font-bold text-red-700">{downloadError}</p>}
+
+            <section className="mt-4 flex flex-wrap items-center gap-3 rounded-lg bg-white p-5 text-slate-950 shadow-2xl">
+              <span className="text-sm font-black text-teal-700">{t("downloadLang")}</span>
+              <TouchSelect
+                value={pdfLanguage}
+                placeholder={t("downloadLang")}
+                options={downloadLangOptions}
+                onChange={(value) => setPdfLanguage(value as Language)}
+                className="w-36"
+                size="sm"
+              />
+            </section>
 
             <section className="mt-8 grid gap-4 rounded-lg bg-white p-5 text-slate-950 shadow-2xl md:grid-cols-2">
               <label className="block"><span className="text-sm font-black text-teal-700">{t("labelSearch")}</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("filterSearchPlaceholder")} className="mt-2 w-full rounded-lg border border-slate-200 p-3.5 outline-none focus:border-teal-500 min-h-[48px]" /></label>
