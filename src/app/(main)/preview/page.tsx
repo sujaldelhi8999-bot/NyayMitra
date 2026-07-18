@@ -160,7 +160,7 @@ function PreviewContent() {
 
   function handleGeneratePdf() {
     if (!caseData) return;
-    const draft = caseData.complaintDraft || editableDraft || generateComplaintDraft(caseData);
+    const draft = caseData.complaintDraft || editableDraft || generateComplaintDraft(caseData, caseData.language);
     const now = new Date().toISOString();
     const updated = {
       ...caseData,
@@ -179,7 +179,7 @@ function PreviewContent() {
 
   function handleGenerateDraftComplaint() {
     if (!caseData) return;
-    const nextDraft = generateComplaintDraft({ ...caseData, language: draftLanguage });
+    const nextDraft = generateComplaintDraft(caseData, draftLanguage);
     setEditableDraft(nextDraft);
     persistCase({ ...caseData, complaintDraft: nextDraft });
     setDraftMessage("");

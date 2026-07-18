@@ -91,7 +91,7 @@ if (!caseData) {
   const activeProofOptions = Array.from(new Set([...getCaseConfig(caseData.caseType).proofs, ...(caseData.aiAnalysis?.classification?.suggestedProofs || [])]));
   const missingProofs = getMissingProofSuggestions(caseData, activeProofOptions.filter((proof) => !caseData.proofs.includes(proof)));
   const quality = calculateCaseQualityScore(caseData);
-  const complaint = caseData.complaintDraft || generateComplaintDraft(caseData);
+  const complaint = caseData.complaintDraft || generateComplaintDraft(caseData, caseData.language);
   const answeredFollowUps = Object.entries(caseData.followUpAnswers || {}).filter(([, answer]) => answer.trim());
   const amountMismatch = detectAmountMismatch(caseData);
   const verifiedSourceNotes = getVerifiedSourceNotes(caseData);

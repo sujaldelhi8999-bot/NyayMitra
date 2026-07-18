@@ -320,7 +320,7 @@ useEffect(() => {
     setErrors([]);
 
     // Save to dashboard
-    const draft = formData.complaintDraft || generateComplaintDraft({ ...formData, followUpAnswers });
+    const draft = formData.complaintDraft || generateComplaintDraft({ ...formData, followUpAnswers }, formData.language);
     const now = new Date().toISOString();
     const caseToSave = {
       ...formData,
