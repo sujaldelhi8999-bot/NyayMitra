@@ -479,7 +479,11 @@ function PreviewContent() {
               <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                 <label className="flex items-center gap-2">
                   <span className="text-sm font-bold text-slate-700">{t("draftLanguageLabel")}:</span>
-                  <select value={draftLanguage} onChange={(e) => setDraftLanguage(e.target.value as Language)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold outline-none focus:border-teal-500">
+                  <select value={draftLanguage} onChange={(e) => {
+                    const lang = e.target.value as Language;
+                    setDraftLanguage(lang);
+                    if (caseData) persistCase({ ...caseData, language: lang });
+                  }} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold outline-none focus:border-teal-500">
                     <option value="en">{t("draftLangEnglish")}</option>
                     <option value="hi">{t("draftLangHindi")}</option>
                   </select>
