@@ -53,10 +53,6 @@ CLAUDE.md
 # test reports
 TEST_REPORT.md
 
-# playwright
-test-results/
-playwright-report/
-tests/
 
 # editor/ide
 .vscode/

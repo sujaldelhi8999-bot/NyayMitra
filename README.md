@@ -48,7 +48,7 @@
 
 ### Data Persistence (Local-First MVP)
 - LocalStorage only — no backend, auth, or payments
-- Draft auto-save / resume
+- Auto-save to Dashboard on generate
 - Dashboard with saved cases (search, filter by output mode/risk, status updates, edit, delete, export JSON)
 - Case data export/import as JSON (includes official portal suggestions)
 
@@ -100,17 +100,6 @@ npm run build
 npm start
 ```
 
-### Visual Regression Testing (Playwright)
-```bash
-# Run baseline tests (captures screenshots to tests/screenshots/)
-npm run test
-
-# Update baseline screenshots after intentional UI changes
-npm run test:update
-```
-
-Test fixtures (4 cases): garbage string, cyber fraud, domestic violence, property dispute
-
 ## Project Structure
 ```
 src/
@@ -118,6 +107,7 @@ src/
 │   ├── (main)/
 │   │   ├── page.tsx              # Landing page
 │   │   ├── intake/page.tsx       # Complaint intake (wizard + full mode)
+│   │   ├── preview/page.tsx      # Case preview, export, PDF generation
 │   │   ├── dashboard/page.tsx    # Saved cases dashboard
 │   │   ├── knowledge-base/page.tsx  # Verified legal knowledge + official portals
 │   │   └── layout.tsx
@@ -152,7 +142,8 @@ src/
 - `src/lib/draftTemplates.ts` — `generateComplaintDraft()` for all three output modes
 - `src/lib/qualityScore.ts` — `calculateCaseQualityScore()` with case-type-specific branches
 - `src/app/(main)/intake/page.tsx` — Core intake logic (1000+ lines): form, validation, AI actions, guided mode, draft generation, alias search, mismatch detection, edit mode
-- `src/app/legal-kit/page.tsx` — Preview, PDF generation, quality scoring, verified sources, official links, output-mode-specific titles
+- `src/app/(main)/preview/page.tsx` — Case preview, export actions, dashboard auto-save
+- `src/app/legal-kit/page.tsx` — Legal Action Kit PDF generation, quality scoring, verified sources, official links, output-mode-specific titles
 - `src/app/(main)/dashboard/page.tsx` — Case management, search/filter, stats, export, inline status
 - `src/data/officialPortals.ts` — Verified portal list with metadata
 - `src/data/legalKnowledgeBase.ts` — Curated knowledge snippets

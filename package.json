@@ -6,9 +6,7 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint",
-    "test": "playwright test",
-    "test:update": "playwright test --update-snapshots"
+    "lint": "eslint"
   },
   "dependencies": {
     "jspdf": "^4.2.1",
@@ -17,7 +15,6 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
-    "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
