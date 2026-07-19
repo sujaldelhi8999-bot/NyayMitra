@@ -1,0 +1,12 @@
+diff --git a/node_modules/jspdf-fontkit/lib/jspdf-fontkit.js b/node_modules/jspdf-fontkit/lib/jspdf-fontkit.js
+index e9e40b3..36a3f0a 100644
+--- a/node_modules/jspdf-fontkit/lib/jspdf-fontkit.js
++++ b/node_modules/jspdf-fontkit/lib/jspdf-fontkit.js
+@@ -26520,6 +26520,7 @@ Be("hiaU5", function(r, t) {
+       f.xOffset = s.x - l.x, f.yOffset = s.y - l.y, this.glyphIterator.cur.markAttachment = o;
+     }
+     getAnchor(u) {
++      if (!u) return { x: 0, y: 0 };
+       let h = u.xCoordinate, o = u.yCoordinate, s = this.font._variationProcessor, l = this.font.GDEF && this.font.GDEF.itemVariationStore;
+       return s && l && (u.xDeviceTable && (h += s.getDelta(l, u.xDeviceTable.a, u.xDeviceTable.b)), u.yDeviceTable && (o += s.getDelta(l, u.yDeviceTable.a, u.yDeviceTable.b))), {
+         x: h,
