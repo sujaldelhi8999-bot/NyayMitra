@@ -23,7 +23,9 @@ import type {
   AdvisorChat,
 } from "@/types/case";
 import { generateComplaintDraft } from "@/lib/draftTemplates";
+import { generateLegalKitPdf } from "@/lib/generatePdf";
 import { calculateCaseQualityScore } from "@/lib/qualityScore";
+import { TouchSelect } from "@/components/touch-select";
 import { PortalCard } from "@/components/portal-card";
 import { SourceTag } from "@/components/source-tag";
 import { CardTable } from "@/components/card-table";
@@ -62,6 +64,8 @@ function PreviewContent() {
   const [aiLoading, setAiLoading] = useState("");
   const [aiMessage, setAiMessage] = useState("");
   const [extraFollowUpQuestions, setExtraFollowUpQuestions] = useState<string[]>([]);
+  const [pdfLanguage, setPdfLanguage] = useState<Language>("en");
+  const [downloadError, setDownloadError] = useState("");
   const [advisorQuestion, setAdvisorQuestion] = useState("");
   const [advisorLoading, setAdvisorLoading] = useState(false);
   const [advisorMessage, setAdvisorMessage] = useState("");
@@ -78,6 +82,16 @@ function PreviewContent() {
   });
 
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
+
+  const downloadLangOptions = [
+    { value: "en", label: "English" },
+    { value: "hi", label: "हिन्दी" },
+  ];
+
+  const exportOptions = [
+    { value: "json", label: t("exportJson") },
+    { value: "pdf", label: t("downloadPdf") },
+  ];
 
   useEffect(() => {
     let cancelled = false;
@@ -158,23 +172,37 @@ function PreviewContent() {
     router.push("/intake?edit=true");
   }
 
-  function handleGeneratePdf() {
+  function handleDownloadPdf() {
     if (!caseData) return;
-    const draft = caseData.complaintDraft || editableDraft || generateComplaintDraft(caseData, caseData.language);
-    const now = new Date().toISOString();
-    const updated = {
-      ...caseData,
-      followUpAnswers,
-      complaintDraft: draft,
-      caseId: caseData.caseId || `CASE-${Date.now()}`,
-      createdAt: caseData.createdAt || now,
-      updatedAt: now,
-      status: normalizeCaseStatus(caseData.status),
-      language,
-      outputMode: getOutputModeForCase(caseData),
-    };
-    persistCase(updated);
-    router.push("/legal-kit");
+    setDownloadError("");
+    try {
+      const draft = caseData.complaintDraft || editableDraft || generateComplaintDraft(caseData, pdfLanguage);
+      const updated = { ...caseData, complaintDraft: draft, language: pdfLanguage };
+      persistCase(updated);
+      generateLegalKitPdf(updated, pdfLanguage);
+    } catch (err) {
+      console.error("PDF download failed:", err);
+      setDownloadError("PDF download failed. Please try again.");
+    }
+  }
+
+  function handleExportJson() {
+    if (!caseData) return;
+    setDownloadError("");
+    try {
+      const draft = caseData.complaintDraft || editableDraft || generateComplaintDraft(caseData, pdfLanguage);
+      const exportData = { ...caseData, complaintDraft: draft, officialActionSuggestions: buildOfficialActionSuggestions(caseData) };
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `nyaymitra-case-${caseData.caseId || "draft"}.json`;
+      anchor.click();
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+    } catch (err) {
+      console.error("JSON export failed:", err);
+      setDownloadError("JSON export failed. Please try again.");
+    }
   }
 
   function handleGenerateDraftComplaint() {
@@ -326,12 +354,25 @@ function PreviewContent() {
     <div className="bg-slate-950 text-white">
       <section className="mx-auto max-w-7xl px-6 py-10">
         <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <button type="button" onClick={editCase} className="rounded-lg bg-white/10 px-5 py-3 font-bold text-white hover:bg-white/20">{t("editIntake")}</button>
             <Link href="/dashboard" className="rounded-lg border border-white/20 px-5 py-3 text-center font-bold text-white hover:bg-white/10">{t("backDashboard")}</Link>
+            <TouchSelect
+              value={pdfLanguage}
+              placeholder={t("downloadLang")}
+              options={downloadLangOptions}
+              onChange={(value) => setPdfLanguage(value as Language)}
+              className="w-36"
+            />
+            <TouchSelect
+              value=""
+              placeholder={`${t("exportJson")} / ${t("downloadPdf")}`}
+              options={exportOptions}
+              onChange={(value) => { if (value === "json") handleExportJson(); else if (value === "pdf") handleDownloadPdf(); }}
+            />
           </div>
-          <button type="button" onClick={handleGeneratePdf} className="rounded-lg bg-teal-600 px-6 py-3 font-bold text-white hover:bg-teal-700">{t("generatePdf")}</button>
         </div>
+        {downloadError && <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm font-bold text-red-700">{downloadError}</p>}
 
         <div className="space-y-8">
           <CaseQualityCard result={quality} />
@@ -555,7 +596,7 @@ function PreviewContent() {
               {getNextStepsChecklist(caseData).map((step) => <li key={step}>✅ {step}</li>)}
             </ul>
             <div className="mt-6">
-              <button type="button" onClick={handleGeneratePdf} className="rounded-lg bg-teal-600 px-6 py-4 font-bold text-white shadow-lg transition hover:bg-teal-700">{t("generatePdf")}</button>
+              <button type="button" onClick={handleDownloadPdf} className="rounded-lg bg-teal-600 px-6 py-4 font-bold text-white shadow-lg transition hover:bg-teal-700">{t("downloadPdf")}</button>
             </div>
           </div>
         </div>
