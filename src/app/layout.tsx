@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { cookies } from "next/headers";
+import { LanguageProvider, type Language } from "@/lib/i18n";
 import "./globals.css";
-import { LanguageProviderWrapper } from "@/components/LanguageProviderWrapper";
-
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,11 +20,18 @@ export const metadata: Metadata = {
     "AI-powered legal self-help and case-preparation assistant for cyber fraud complaints in Bharat.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const langCookie = cookieStore.get("nyaymitra_language")?.value;
+  const initialLanguage: Language | undefined =
+    langCookie === "hi" || langCookie === "hinglish" || langCookie === "en"
+      ? langCookie
+      : undefined;
+
   return (
     <html
       lang="en"
@@ -36,7 +43,7 @@ export default function RootLayout({
             __html: `(function(){try{var l=localStorage.getItem("nyaymitra_language");if(l&&document.cookie.indexOf("nyaymitra_language=")===-1){document.cookie="nyaymitra_language="+encodeURIComponent(l)+";path=/;max-age=31536000;SameSite=Lax";}}catch(e){}})();`,
           }}
         />
-        <LanguageProviderWrapper>{children}</LanguageProviderWrapper>
+        <LanguageProvider initialLanguage={initialLanguage}>{children}</LanguageProvider>
       </body>
     </html>
   );

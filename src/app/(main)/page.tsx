@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { SectionHeading } from "@/components/section-heading";
 import { translate, useLanguage } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
@@ -71,7 +70,11 @@ export default function Home() {
       </section>
 
       <section id="features" className="px-5 py-16 sm:px-8 sm:py-20">
-        <SectionHeading eyebrow={t("homeSectionFeaturesEyebrow")} title={t("homeSectionFeaturesTitle")} description={t("homeSectionFeaturesDesc")} />
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-sm font-black uppercase tracking-[0.25em] text-teal-700">{t("homeSectionFeaturesEyebrow")}</p>
+          <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">{t("homeSectionFeaturesTitle")}</h2>
+          <p className="mt-4 text-lg leading-8 text-slate-600">{t("homeSectionFeaturesDesc")}</p>
+        </div>
         <div className="mx-auto mt-8 grid max-w-7xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {legalProblems.map((item) => <div key={item} className="rounded-lg bg-slate-950 p-4 text-base font-black text-white shadow-xl sm:p-5 sm:text-lg">{item}</div>)}
         </div>
@@ -87,7 +90,11 @@ export default function Home() {
       </section>
 
       <section id="how-it-works" className="bg-white px-5 py-16 sm:px-8 sm:py-20">
-        <SectionHeading eyebrow={t("homeSectionProcessEyebrow")} title={t("homeSectionProcessTitle")} description={t("homeSectionProcessDesc")} />
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-sm font-black uppercase tracking-[0.25em] text-teal-700">{t("homeSectionProcessEyebrow")}</p>
+          <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">{t("homeSectionProcessTitle")}</h2>
+          <p className="mt-4 text-lg leading-8 text-slate-600">{t("homeSectionProcessDesc")}</p>
+        </div>
         <div className="mx-auto mt-10 grid max-w-6xl gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
           {steps.map((step, index) => (
             <div key={step} className="rounded-lg bg-slate-950 p-5 text-white shadow-xl shadow-slate-950/15 sm:p-6">

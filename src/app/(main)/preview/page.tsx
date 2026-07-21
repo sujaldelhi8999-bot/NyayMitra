@@ -25,9 +25,7 @@ import type {
 import { generateComplaintDraft } from "@/lib/draftTemplates";
 import { generateLegalKitPdf } from "@/lib/generatePdf";
 import { calculateCaseQualityScore } from "@/lib/qualityScore";
-import { TouchSelect } from "@/components/touch-select";
 import { PortalCard } from "@/components/portal-card";
-import { SourceTag } from "@/components/source-tag";
 import { CardTable } from "@/components/card-table";
 import {
   getMissingProofSuggestions,
@@ -45,6 +43,19 @@ import {
   consumerKeywords,
   rtiKeywords,
 } from "@/lib/constants";
+
+function SourceTag({ source }: { source: "ai" | "rule" }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${
+        source === "ai" ? "bg-purple-100 text-purple-800" : "bg-teal-100 text-teal-800"
+      }`}
+      title={source === "ai" ? "AI-generated" : "Rule-based"}
+    >
+      {source === "ai" ? "AI" : "Rule"}
+    </span>
+  );
+}
 
 export default function PreviewPage() {
   return <PreviewContent />;
