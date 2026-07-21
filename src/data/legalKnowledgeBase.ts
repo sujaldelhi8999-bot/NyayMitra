@@ -20,3 +20,16 @@ export const verifiedLegalKnowledge: LegalKnowledgeEntry[] = [
   { id: "legal-aid-1", caseType: "Legal Aid / NALSA", title: "Legal aid route", category: "legal-aid", sourceName: "NALSA", sourceUrl: "https://nalsa.gov.in/", lastChecked: "2026-07-11", plainSummary: "People who cannot afford a lawyer may approach District Legal Services Authority, State Legal Services Authority, or NALSA channels.", usageNote: "Recommend legal-aid/lawyer review for serious or high-value matters." },
   { id: "safety-high-risk-1", caseType: "High-risk legal-aid routing", title: "High-risk matter safety routing", category: "safety", sourceName: "NyayMitra safety policy", sourceUrl: "https://nalsa.gov.in/", lastChecked: "2026-07-11", plainSummary: "High-stakes issues such as arrest, bail, domestic violence, custody, serious violence, and property disputes should be routed to urgent legal-aid/lawyer support.", usageNote: "Do not generate final strategy. Provide document organization and urgent referral only." },
 ];
+
+export type CaseLike = { caseType?: string; aiAnalysis?: { classification?: { outputMode?: string } } };
+
+export function buildKnowledgeContext(caseData: CaseLike) {
+  const caseTypeEntries = verifiedLegalKnowledge.filter((entry) => entry.caseType === caseData.caseType);
+  const legalAidEntries = verifiedLegalKnowledge.filter((entry) => entry.category === "legal-aid");
+  const outputMode = caseData.aiAnalysis?.classification?.outputMode;
+  const safetyEntries = verifiedLegalKnowledge.filter((entry) => entry.category === "safety" || outputMode === "urgent-legal-aid-route");
+
+  const entries = [...caseTypeEntries, ...legalAidEntries, ...safetyEntries];
+  return Array.from(new Map(entries.map((entry) => [entry.id, entry])).values());
+}
+

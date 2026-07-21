@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { buildKnowledgeContext } from "@/lib/legalKnowledge";
+import { buildKnowledgeContext } from "@/data/legalKnowledgeBase";
 import { buildOfficialActionSuggestions } from "@/lib/officialPortals";
 import { HTTP_STATUS, TIMEOUT } from "@/lib/constants";
 

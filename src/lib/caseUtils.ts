@@ -1,5 +1,5 @@
 import type { CaseData, VerifiedSource } from "@/types/case";
-import { buildKnowledgeContext } from "./legalKnowledge";
+import { buildKnowledgeContext } from "@/data/legalKnowledgeBase";
 import { buildOfficialActionSuggestions } from "./officialPortals";
 import { getCaseConfig, getOutputModeForCase } from "./caseConfig";
 import { OTHER_PROOF_OPTION } from "./constants";
