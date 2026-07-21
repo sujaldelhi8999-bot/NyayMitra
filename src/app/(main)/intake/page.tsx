@@ -552,8 +552,8 @@ useEffect(() => {
                     </button>
                     {isExpanded && (
                       <div className="border-t border-slate-100 bg-slate-50/50 p-4 animate-in slide-in-from-top-2 duration-150">
-                        {index === 0 && <><Input label={t("fullName")} name="fullName" value={formData.fullName} onChange={handleInputChange} className="min-h-[48px]" /><Input label={t("contact")} name="contact" value={formData.contact} onChange={handleInputChange} className="min-h-[48px]" /><Input label={t("stateOrUT")} name="stateOrUT" value={formData.stateOrUT || ""} onChange={handleInputChange} className="min-h-[48px]" /><div><CaseTypeSelector selected={formData.caseType} search={caseTypeSearch} onSearch={setCaseTypeSearch} onSelect={selectCaseType} /></div></>}
-                        {index === 1 && <><Input label={t("incidentDate")} type="date" name="incidentDate" value={formData.incidentDate} onChange={handleInputChange} max={todayISO} className="min-h-[48px]" /><Input label={t("amountLost")} type="number" name="amountLost" value={formData.amountLost} onChange={handleInputChange} className="min-h-[48px]" /></>}
+                        {index === 0 && <><Input label={t("fullName")} name="fullName" value={formData.fullName} onChange={handleInputChange} onBlur={() => handleFieldBlur("fullName")} required error={getFieldError("fullName")} isValid={isFieldValid("fullName")} className="min-h-[48px]" /><Input label={t("phone")} name="phone" value={formData.phone} onChange={handleInputChange} onBlur={() => handleFieldBlur("phone")} required error={getFieldError("phone")} isValid={isFieldValid("phone")} className="min-h-[48px]" /><Input label={t("email")} name="email" value={formData.email || ""} onChange={handleInputChange} onBlur={() => handleFieldBlur("email")} error={getFieldError("email")} isValid={isFieldValid("email")} className="min-h-[48px]" /><Input label={t("stateOrUT")} name="stateOrUT" value={formData.stateOrUT || ""} onChange={handleInputChange} className="min-h-[48px]" /><div><CaseTypeSelector selected={formData.caseType} search={caseTypeSearch} onSearch={setCaseTypeSearch} onSelect={selectCaseType} /></div></>}
+                        {index === 1 && <><Input label={t("incidentDate")} type="date" name="incidentDate" value={formData.incidentDate} onChange={handleInputChange} onBlur={() => handleFieldBlur("incidentDate")} required error={getFieldError("incidentDate")} isValid={isFieldValid("incidentDate")} max={todayISO} className="min-h-[48px]" /><Input label={t("amountLost")} type="number" name="amountLost" value={formData.amountLost} onChange={handleInputChange} className="min-h-[48px]" /></>}
                         {index === 2 && <label className="block"><span className="mb-2 block font-semibold">{t("story")}</span><textarea name="story" value={formData.story} onChange={handleInputChange} rows={6} className="w-full rounded-lg border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100 min-h-[120px]" /></label>}
 
                         {index === 3 && <Input label={t("oppositeParty")} name="oppositeParty" value={formData.oppositeParty} onChange={handleInputChange} className="min-h-[48px]" />}
@@ -575,8 +575,8 @@ useEffect(() => {
               {voiceMessage && <p className="mt-3 rounded-lg bg-amber-100 p-3 text-sm font-bold text-amber-900" aria-live="polite">{voiceMessage}</p>}
 
               <div className="mt-6 grid gap-5 md:grid-cols-2">
-                {wizardStep === 0 && <><Input label={t("fullName")} name="fullName" value={formData.fullName} onChange={handleInputChange} className="min-h-[48px]" /><Input label={t("contact")} name="contact" value={formData.contact} onChange={handleInputChange} className="min-h-[48px]" /><Input label={t("stateOrUT")} name="stateOrUT" value={formData.stateOrUT || ""} onChange={handleInputChange} className="min-h-[48px]" /><div className="md:col-span-2"><CaseTypeSelector selected={formData.caseType} search={caseTypeSearch} onSearch={setCaseTypeSearch} onSelect={selectCaseType} /></div></>}
-                {wizardStep === 1 && <><Input label={t("incidentDate")} type="date" name="incidentDate" value={formData.incidentDate} onChange={handleInputChange} max={todayISO} className="min-h-[48px]" /><Input label={t("amountLost")} type="number" name="amountLost" value={formData.amountLost} onChange={handleInputChange} className="min-h-[48px]" /></>}
+                {wizardStep === 0 && <><Input label={t("fullName")} name="fullName" value={formData.fullName} onChange={handleInputChange} onBlur={() => handleFieldBlur("fullName")} required error={getFieldError("fullName")} isValid={isFieldValid("fullName")} className="min-h-[48px]" /><Input label={t("phone")} name="phone" value={formData.phone} onChange={handleInputChange} onBlur={() => handleFieldBlur("phone")} required error={getFieldError("phone")} isValid={isFieldValid("phone")} className="min-h-[48px]" /><Input label={t("email")} name="email" value={formData.email || ""} onChange={handleInputChange} onBlur={() => handleFieldBlur("email")} error={getFieldError("email")} isValid={isFieldValid("email")} className="min-h-[48px]" /><Input label={t("stateOrUT")} name="stateOrUT" value={formData.stateOrUT || ""} onChange={handleInputChange} className="min-h-[48px]" /><div className="md:col-span-2"><CaseTypeSelector selected={formData.caseType} search={caseTypeSearch} onSearch={setCaseTypeSearch} onSelect={selectCaseType} /></div></>}
+                {wizardStep === 1 && <><Input label={t("incidentDate")} type="date" name="incidentDate" value={formData.incidentDate} onChange={handleInputChange} onBlur={() => handleFieldBlur("incidentDate")} required error={getFieldError("incidentDate")} isValid={isFieldValid("incidentDate")} max={todayISO} className="min-h-[48px]" /><Input label={t("amountLost")} type="number" name="amountLost" value={formData.amountLost} onChange={handleInputChange} className="min-h-[48px]" /></>}
                 {wizardStep === 2 && <label className="block md:col-span-2"><span className="mb-2 block font-semibold">{t("story")}</span><textarea name="story" value={formData.story} onChange={handleInputChange} rows={6} className="w-full rounded-lg border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100 min-h-[120px]" /></label>}
 
                 {wizardStep === 3 && <Input label={t("oppositeParty")} name="oppositeParty" value={formData.oppositeParty} onChange={handleInputChange} className="min-h-[48px]" />}
@@ -603,71 +603,52 @@ useEffect(() => {
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleInputChange}
-                className="w-full rounded-lg border p-3 outline-none focus:border-teal-500"
+                onBlur={() => handleFieldBlur("fullName")}
+                className={`w-full rounded-lg border p-3 outline-none focus:ring-4 min-h-[48px] ${getFieldError("fullName") ? "border-red-400 focus:border-red-500 focus:ring-red-100" : isFieldValid("fullName") ? "border-green-400 focus:border-green-500 focus:ring-green-100" : "focus:border-teal-500 focus:ring-teal-100"}`}
                 placeholder={t("fullNamePlaceholder")}
               />
+              <span className="ml-1 text-red-500">*</span>
+              {getFieldError("fullName") && <p className="mt-1 text-xs font-semibold text-red-600">{getFieldError("fullName")}</p>}
+              {isFieldValid("fullName") && <p className="mt-1 text-xs font-semibold text-green-600">✓</p>}
             </div>
 
             <div>
-              <label className="mb-2 block font-semibold">{t("contact")}</label>
+              <label className="mb-2 block font-semibold">{t("phone")}<span className="ml-1 text-red-500">*</span></label>
               <input
-                name="contact"
-                value={formData.contact}
+                name="phone"
+                value={formData.phone}
                 onChange={handleInputChange}
-                className="w-full rounded-lg border p-3 outline-none focus:border-teal-500"
-                placeholder={t("contactPlaceholder")}
+                onBlur={() => handleFieldBlur("phone")}
+                className={`w-full rounded-lg border p-3 outline-none focus:ring-4 min-h-[48px] ${getFieldError("phone") ? "border-red-400 focus:border-red-500 focus:ring-red-100" : isFieldValid("phone") ? "border-green-400 focus:border-green-500 focus:ring-green-100" : "focus:border-teal-500 focus:ring-teal-100"}`}
+                placeholder={t("phonePlaceholder")}
               />
+              {getFieldError("phone") && <p className="mt-1 text-xs font-semibold text-red-600">{getFieldError("phone")}</p>}
+              {isFieldValid("phone") && <p className="mt-1 text-xs font-semibold text-green-600">✓</p>}
+            </div>
+
+            <div>
+              <label className="mb-2 block font-semibold">{t("email")}</label>
+              <input
+                name="email"
+                value={formData.email || ""}
+                onChange={handleInputChange}
+                onBlur={() => handleFieldBlur("email")}
+                className={`w-full rounded-lg border p-3 outline-none focus:ring-4 min-h-[48px] ${getFieldError("email") ? "border-red-400 focus:border-red-500 focus:ring-red-100" : isFieldValid("email") ? "border-green-400 focus:border-green-500 focus:ring-green-100" : "focus:border-teal-500 focus:ring-teal-100"}`}
+                placeholder={t("emailPlaceholder")}
+              />
+              {getFieldError("email") && <p className="mt-1 text-xs font-semibold text-red-600">{getFieldError("email")}</p>}
+              {isFieldValid("email") && <p className="mt-1 text-xs font-semibold text-green-600">✓</p>}
             </div>
 
             <div className="md:col-span-2"><CaseTypeSelector selected={formData.caseType} search={caseTypeSearch} onSearch={setCaseTypeSearch} onSelect={selectCaseType} /></div>
 
-            <div>
-              <label className="mb-2 block font-semibold">{t("incidentDate")}</label>
-              <input
-                type="date"
-                name="incidentDate"
-                value={formData.incidentDate}
-                onChange={handleInputChange}
-                max={todayISO}
-                className="w-full rounded-lg border p-3 outline-none focus:border-teal-500"
-              />
-            </div>
+            <Input label={t("incidentDate")} type="date" name="incidentDate" value={formData.incidentDate} onChange={handleInputChange} onBlur={() => handleFieldBlur("incidentDate")} required error={getFieldError("incidentDate")} isValid={isFieldValid("incidentDate")} max={todayISO} className="min-h-[48px]" />
 
-            <div>
-              <label className="mb-2 block font-semibold">{t("stateOrUT")}</label>
-              <input
-                name="stateOrUT"
-                value={formData.stateOrUT || ""}
-                onChange={handleInputChange}
-                className="w-full rounded-lg border p-3 outline-none focus:border-teal-500"
-                placeholder={t("stateUTPlaceholder")}
-              />
-            </div>
+            <Input label={t("stateOrUT")} name="stateOrUT" value={formData.stateOrUT || ""} onChange={handleInputChange} className="min-h-[48px]" />
 
-            <div>
-              <label className="mb-2 block font-semibold">{t("amountLost")}</label>
-              <input
-                type="number"
-                name="amountLost"
-                value={formData.amountLost}
-                onChange={handleInputChange}
-                className="w-full rounded-lg border p-3 outline-none focus:border-teal-500"
-                placeholder={t("amountLostPlaceholder")}
-              />
-            </div>
+            <Input label={t("amountLost")} type="number" name="amountLost" value={formData.amountLost} onChange={handleInputChange} className="min-h-[48px]" />
 
-            <div>
-              <label className="mb-2 block font-semibold">
-                {t("oppositeParty")}
-              </label>
-              <input
-                name="oppositeParty"
-                value={formData.oppositeParty}
-                onChange={handleInputChange}
-                className="w-full rounded-lg border p-3 outline-none focus:border-teal-500"
-                placeholder={t("oppositePartyPlaceholder")}
-              />
-            </div>
+            <Input label={t("oppositeParty")} name="oppositeParty" value={formData.oppositeParty} onChange={handleInputChange} className="min-h-[48px]" />
           </div>
 
 <div className="mt-5">
@@ -873,11 +854,14 @@ function CustomItemsEditor({ type, enabled, value, items, onChange, onAdd, onRem
   );
 }
 
-function Input({ label, name, value, onChange, type = "text", max, className = "" }: { label: string; name: string; value: string; onChange: (event: React.ChangeEvent<HTMLInputElement>) => void; type?: string; max?: string; className?: string }) {
+function Input({ label, name, value, onChange, type = "text", max, className = "", required = false, error, isValid, onBlur }: { label: string; name: string; value: string; onChange: (event: React.ChangeEvent<HTMLInputElement>) => void; type?: string; max?: string; className?: string; required?: boolean; error?: string | null; isValid?: boolean; onBlur?: () => void }) {
+  const borderColor = error ? "border-red-400 focus:border-red-500 focus:ring-red-100" : isValid ? "border-green-400 focus:border-green-500 focus:ring-green-100" : "";
   return (
     <label className="block">
-      <span className="mb-2 block font-semibold">{label}</span>
-      <input name={name} type={type} value={value} onChange={onChange} max={max} className={`w-full rounded-lg border p-3 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100 min-h-[48px] ${className}`} />
+      <span className="mb-2 block font-semibold">{label}{required && <span className="ml-1 text-red-500">*</span>}</span>
+      <input name={name} type={type} value={value} onChange={onChange} onBlur={onBlur} max={max} className={`w-full rounded-lg border p-3 outline-none focus:ring-4 min-h-[48px] ${borderColor || "focus:border-teal-500 focus:ring-teal-100"} ${className}`} />
+      {error && <p className="mt-1 text-xs font-semibold text-red-600">{error}</p>}
+      {isValid && !error && <p className="mt-1 text-xs font-semibold text-green-600">✓</p>}
     </label>
   );
 }
