@@ -61,7 +61,9 @@ export type UploadedFile = {
 
 export type CaseData = {
   fullName: string;
-  contact: string;
+  phone: string;
+  email?: string;
+  contact?: string;
   caseType: string;
   stateOrUT?: string;
   story: string;
