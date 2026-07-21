@@ -213,7 +213,7 @@ if (!caseData) {
           <KitSection title={t("kitCaseSnapshot")}>
             <div className="grid gap-4 md:grid-cols-2">
               <Info label={t("kitLabelName")} value={caseData.fullName} />
-              <Info label={t("kitLabelContact")} value={[caseData.phone, caseData.email].filter(Boolean).join(" | ") || (caseData as Record<string, unknown>).contact || ""} />
+              <Info label={t("kitLabelContact")} value={([caseData.phone, caseData.email].filter(Boolean).join(" | ") || String((caseData as Record<string, unknown>).contact || "")) as string} />
               <Info label={t("kitLabelCaseType")} value={caseData.caseType} />
               <Info label={t("kitLabelStateUT")} value={caseData.stateOrUT || t("kitLabelNotProvided")} />
               <Info label={t("kitLabelIncidentDate")} value={caseData.incidentDate} />
