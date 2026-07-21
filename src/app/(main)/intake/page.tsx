@@ -189,6 +189,29 @@ useEffect(() => {
     return getFieldError(fieldName) === null && touchedFields.has(fieldName);
   }
 
+  function getStepMissingFields(step: number): string[] {
+    const missing: string[] = [];
+    const check = (field: string) => {
+      const error = getFieldError(field);
+      if (error) missing.push(field);
+    };
+    switch (step) {
+      case 0:
+        check("fullName");
+        check("phone");
+        break;
+      case 1:
+        check("incidentDate");
+        break;
+      case 2:
+        check("story");
+        break;
+    }
+    return missing;
+  }
+
+  const [stepWarning, setStepWarning] = useState("");
+
   function handleCheckboxChange(
     e: React.ChangeEvent<HTMLInputElement>,
     field: "proofs" | "relief"
@@ -573,6 +596,7 @@ useEffect(() => {
               <p className="mt-2 font-semibold leading-7 text-slate-600">{wizardSteps[wizardStep].instruction}</p>
               <button type="button" onClick={readStepAloud} className="mt-4 rounded-lg bg-slate-950 px-5 py-3 font-bold text-white">{t("readAloud")}</button>
               {voiceMessage && <p className="mt-3 rounded-lg bg-amber-100 p-3 text-sm font-bold text-amber-900" aria-live="polite">{voiceMessage}</p>}
+              {stepWarning && <p className="mt-3 rounded-lg bg-amber-100 p-3 text-sm font-bold text-amber-900" aria-live="polite">{stepWarning}</p>}
 
               <div className="mt-6 grid gap-5 md:grid-cols-2">
                 {wizardStep === 0 && <><Input label={t("fullName")} name="fullName" value={formData.fullName} onChange={handleInputChange} onBlur={() => handleFieldBlur("fullName")} required error={getFieldError("fullName")} isValid={isFieldValid("fullName")} className="min-h-[48px]" /><Input label={t("phone")} name="phone" value={formData.phone} onChange={handleInputChange} onBlur={() => handleFieldBlur("phone")} required error={getFieldError("phone")} isValid={isFieldValid("phone")} className="min-h-[48px]" /><Input label={t("email")} name="email" value={formData.email || ""} onChange={handleInputChange} onBlur={() => handleFieldBlur("email")} error={getFieldError("email")} isValid={isFieldValid("email")} className="min-h-[48px]" /><Input label={t("stateOrUT")} name="stateOrUT" value={formData.stateOrUT || ""} onChange={handleInputChange} className="min-h-[48px]" /><div className="md:col-span-2"><CaseTypeSelector selected={formData.caseType} search={caseTypeSearch} onSearch={setCaseTypeSearch} onSelect={selectCaseType} /></div></>}
@@ -582,12 +606,50 @@ useEffect(() => {
                 {wizardStep === 3 && <Input label={t("oppositeParty")} name="oppositeParty" value={formData.oppositeParty} onChange={handleInputChange} className="min-h-[48px]" />}
                 {wizardStep === 4 && <div className="md:col-span-2"><h3 className="mb-3 font-black">{t("proofAvailable")}</h3><div className="grid gap-3 md:grid-cols-2">{proofOptions.map((proof) => <label key={proof} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3 min-h-[48px]"><input type="checkbox" value={proof} checked={formData.proofs.includes(proof)} onChange={(e) => handleCheckboxChange(e, "proofs")} />{proof}</label>)}</div><CustomItemsEditor type="proof" enabled={formData.proofs.includes(OTHER_PROOF_OPTION)} value={customProofInput} items={formData.customProofs || []} onChange={setCustomProofInput} onAdd={addCustomProof} onRemove={removeCustomProof} /></div>}
                 {wizardStep === 5 && <div className="md:col-span-2"><h3 className="mb-3 font-black">{t("reliefWanted")}</h3><div className="grid gap-3 md:grid-cols-2">{reliefOptions.map((item) => <label key={item} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3 min-h-[48px]"><input type="checkbox" value={item} checked={formData.relief.includes(item)} onChange={(e) => handleCheckboxChange(e, "relief")} />{item}</label>)}</div><CustomItemsEditor type="relief" enabled={formData.relief.includes(OTHER_RELIEF_OPTION)} value={customReliefInput} items={formData.customReliefs || []} onChange={setCustomReliefInput} onAdd={addCustomRelief} onRemove={removeCustomRelief} /></div>}
-                {wizardStep === 6 && <div className="md:col-span-2 rounded-lg bg-slate-50 p-5"><p><b>{t("fullName")}:</b> {formData.fullName || "-"}</p><p><b>{t("amountLost")}:</b> ₹{formData.amountLost || "-"}</p><p><b>{t("proofAvailable")}:</b> {formData.proofs.filter((item) => item !== OTHER_PROOF_OPTION).length} standard + {(formData.customProofs || []).length} custom</p><p><b>{t("reliefWanted")}:</b> {[...formData.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(formData.customReliefs || [])].join(", ") || "-"}</p></div>}
+                {wizardStep === 6 && <div className="md:col-span-2 rounded-lg bg-slate-50 p-5">
+                  <p><b>{t("fullName")}:</b> {formData.fullName || "-"}</p>
+                  <p><b>{t("phone")}:</b> {formData.phone || "-"}</p>
+                  {formData.email && <p><b>{t("email")}:</b> {formData.email}</p>}
+                  <p><b>{t("amountLost")}:</b> ₹{formData.amountLost || "-"}</p>
+                  <p><b>{t("proofAvailable")}:</b> {formData.proofs.filter((item) => item !== OTHER_PROOF_OPTION).length} standard + {(formData.customProofs || []).length} custom</p>
+                  <p><b>{t("reliefWanted")}:</b> {[...formData.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(formData.customReliefs || [])].join(", ") || "-"}</p>
+                  <div className="mt-4 border-t border-slate-200 pt-4">
+                    <p className="mb-2 text-sm font-black uppercase tracking-wider text-slate-500">Required Fields Status</p>
+                    {[
+                      { field: "fullName", label: t("fullName") },
+                      { field: "phone", label: t("phone") },
+                      { field: "incidentDate", label: t("incidentDate") },
+                      { field: "story", label: t("story") },
+                    ].map(({ field, label }) => {
+                      const error = getFieldError(field);
+                      const valid = isFieldValid(field);
+                      return (
+                        <div key={field} className="flex items-center gap-2 text-sm py-1">
+                          {valid ? <span className="text-green-500">✓</span> : error ? <span className="text-red-500">✗</span> : <span className="text-slate-300">○</span>}
+                          <span className={valid ? "text-green-700" : error ? "text-red-700" : "text-slate-600"}>{label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>}
               </div>
 
               <div className="mt-6 flex flex-wrap gap-3">
                 <button type="button" onClick={() => setWizardStep((step) => Math.max(0, step - 1))} className="rounded-lg bg-slate-100 px-5 py-3.5 font-bold text-slate-700 min-h-[48px]">{t("previous")}</button>
-                <button type="button" onClick={() => setWizardStep((step) => Math.min(wizardSteps.length - 1, step + 1))} className="rounded-lg bg-slate-950 px-5 py-3.5 font-bold text-white min-h-[48px]">{t("next")}</button>
+                <button type="button" onClick={() => {
+                  // Mark current step fields as touched
+                  const stepFields: Record<number, string[]> = { 0: ["fullName", "phone"], 1: ["incidentDate"], 2: ["story"] };
+                  const fields = stepFields[wizardStep] || [];
+                  setTouchedFields((prev) => { const next = new Set(prev); fields.forEach((f) => next.add(f)); return next; });
+                  // Check for missing fields
+                  const missing = getStepMissingFields(wizardStep);
+                  if (missing.length > 0 && wizardStep < wizardSteps.length - 1) {
+                    setStepWarning("Some required fields in this step are incomplete. You can continue, but they'll be needed before generating.");
+                  } else {
+                    setStepWarning("");
+                  }
+                  setWizardStep((step) => Math.min(wizardSteps.length - 1, step + 1));
+                }} className="rounded-lg bg-slate-950 px-5 py-3.5 font-bold text-white min-h-[48px]">{t("next")}</button>
                 <button type="button" onClick={saveProgress} className="rounded-lg bg-teal-100 px-5 py-3.5 font-bold text-teal-900 min-h-[48px]">{t("saveProgress")}</button>
                 {wizardStep === wizardSteps.length - 1 && <button type="button" onClick={handleGenerate} className="rounded-lg bg-teal-600 px-5 py-3.5 font-black text-white min-h-[48px]">{t("generateSummary")}</button>}
               </div>
