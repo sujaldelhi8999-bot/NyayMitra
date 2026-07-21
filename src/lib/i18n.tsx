@@ -10,6 +10,8 @@ export const translations = {
     startCase: "File Complaint",
     heroSubtitle: "AI-powered legal self-help assistant for Bharat",
     fullName: "Full Name",
+    phone: "Phone Number",
+    email: "Email",
     contact: "Phone / Email",
     caseType: "Case Type",
     incidentDate: "Date of Incident",
@@ -155,6 +157,9 @@ export const translations = {
     msgNoLegalAidDraft: "Click Generate Legal Aid Consultation Note to create an editable note.",
 
     errorNameRequired: "Full name is required.",
+    errorPhoneRequired: "Phone number is required.",
+    errorPhoneInvalid: "Please enter a valid phone number (at least 10 digits).",
+    errorEmailInvalid: "Please enter a valid email address.",
     errorContactRequired: "Contact is required.",
     errorDateRequired: "Incident date is required.",
     errorStoryShort: "Please describe what happened in at least 30 characters so the draft can be useful.",
@@ -475,6 +480,8 @@ export const translations = {
 
     // Full form mode - new translations (English)
     fullNamePlaceholder: "e.g., Sujal",
+    phonePlaceholder: "e.g., 9876543210",
+    emailPlaceholder: "e.g., sujal@example.com",
     contactPlaceholder: "e.g., sujal@example.com",
     stateUTPlaceholder: "e.g., Delhi, Uttar Pradesh, Maharashtra",
     amountLostPlaceholder: "e.g., 3000",
@@ -671,6 +678,9 @@ export const translations = {
     msgNoDraft: "संपादन योग्य शिकायत ड्राफ्ट बनाने के लिए 'शिकायत ड्राफ्ट बनाएं' पर क्लिक करें।",
     msgNoLegalAidDraft: "संपादन योग्य नोट बनाने के लिए 'कानूनी सहायता परामर्श नोट बनाएं' पर क्लिक करें।",
     errorNameRequired: "पूरा नाम आवश्यक है।",
+    errorPhoneRequired: "फोन नंबर आवश्यक है।",
+    errorPhoneInvalid: "कृपया वैध फोन नंबर दर्ज करें (कम से कम 10 अंक)।",
+    errorEmailInvalid: "कृपया वैध ईमेल पता दर्ज करें।",
     errorContactRequired: "संपर्क आवश्यक है।",
     errorDateRequired: "घटना की तारीख आवश्यक है।",
     errorStoryShort: "कृपया कम से कम 30 अक्षरों में बताएं क्या हुआ ताकि ड्राफ्ट उपयोगी हो सके।",
@@ -961,6 +971,8 @@ export const translations = {
     draftLangHindi: "हिंदी",
     draftLangHinglish: "हिंग्लिश",
     fullNamePlaceholder: "उदाहरण: सुजल",
+    phonePlaceholder: "उदाहरण: 9876543210",
+    emailPlaceholder: "उदाहरण: sujal@example.com",
     contactPlaceholder: "उदाहरण: sujal@example.com",
     stateUTPlaceholder: "उदाहरण: दिल्ली, उत्तर प्रदेश, महाराष्ट्र",
     amountLostPlaceholder: "उदाहरण: 3000",
@@ -1160,6 +1172,9 @@ export const translations = {
     msgNoLegalAidDraft: "Editable note banane ke liye 'Legal Aid Consultation Note Generate Karein' click karein.",
 
     errorNameRequired: "Full name required hai.",
+    errorPhoneRequired: "Phone number required hai.",
+    errorPhoneInvalid: "Kripya valid phone number enter karein (kam se kam 10 digits).",
+    errorEmailInvalid: "Kripya valid email address enter karein.",
     errorContactRequired: "Contact required hai.",
     errorDateRequired: "Incident date required hai.",
     errorStoryShort: "Kripya kam se kam 30 characters mein bataiye kya hua taaki draft useful ho sake.",
@@ -1473,6 +1488,8 @@ export const translations = {
 
     // Full form mode - new translations (English)
     fullNamePlaceholder: "e.g., Sujal",
+    phonePlaceholder: "e.g., 9876543210",
+    emailPlaceholder: "e.g., sujal@example.com",
     contactPlaceholder: "e.g., sujal@example.com",
     stateUTPlaceholder: "e.g., Delhi, Uttar Pradesh, Maharashtra",
     amountLostPlaceholder: "e.g., 3000",
