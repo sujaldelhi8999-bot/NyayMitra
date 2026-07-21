@@ -108,7 +108,7 @@ export function generateLegalKitPdf(caseData: CaseData, language: Language) {
   section(t("kitCaseSnapshot"));
   text([
     `${t("kitLabelName")}: ${caseData.fullName}`,
-    `${t("kitLabelContact")}: ${caseData.contact}`,
+    `${t("kitLabelContact")}: ${[caseData.phone, caseData.email].filter(Boolean).join(" | ") || ""}`,
     `${t("kitLabelCaseType")}: ${caseData.caseType}`,
     `${t("kitLabelStateUT")}: ${caseData.stateOrUT || t("kitLabelNotProvided")}`,
     `${t("kitLabelIncidentDate")}: ${caseData.incidentDate}`,

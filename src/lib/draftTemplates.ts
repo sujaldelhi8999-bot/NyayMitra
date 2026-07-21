@@ -74,7 +74,7 @@ function buildUrgentAidDraft(data: CaseData, today: string) {
 This is not a final complaint or defence strategy. This matter should be reviewed urgently by legal aid or a licensed advocate.
 
 Name: ${data.fullName}
-Contact: ${data.contact}
+Contact: ${[data.phone, data.email].filter(Boolean).join(" | ") || ""}
 Case type: ${data.caseType}
 Incident date: ${data.incidentDate}
 
@@ -126,7 +126,7 @@ This is a preparation draft for legal-aid/lawyer or authority review. It is not 
 
 User details:
 Name: ${data.fullName}
-Contact: ${data.contact}
+Contact: ${[data.phone, data.email].filter(Boolean).join(" | ") || ""}
 Case type: ${data.caseType}
 
 Facts summary:
@@ -208,7 +208,7 @@ Declaration:
 The information stated above is true to the best of my knowledge.
 
 Name: ${data.fullName}
-Contact: ${data.contact}
+Contact: ${[data.phone, data.email].filter(Boolean).join(" | ") || ""}
 Date: ${today}`;
 }
 
@@ -221,7 +221,7 @@ function buildUrgentAidDraftHi(data: CaseData, today: string) {
 यह कोई अंतिम शिकायत या बचाव रणनीति नहीं है। इस मामले की तत्काल कानूनी सहायता या लाइसेंस प्राप्त अधिवक्ता द्वारा समीक्षा की जानी चाहिए।
 
 नाम: ${data.fullName}
-संपर्क: ${data.contact}
+संपर्क: ${[data.phone, data.email].filter(Boolean).join(" | ") || ""}
 केस प्रकार: ${data.caseType}
 घटना की तिथि: ${data.incidentDate}
 
@@ -273,7 +273,7 @@ function buildLimitedGuidanceDraftHi(data: CaseData, today: string) {
 
 उपयोगकर्ता विवरण:
 नाम: ${data.fullName}
-संपर्क: ${data.contact}
+संपर्क: ${[data.phone, data.email].filter(Boolean).join(" | ") || ""}
 केस प्रकार: ${data.caseType}
 
 तथ्य सारांश:
@@ -355,7 +355,7 @@ ${reliefList}
 उपर दी गई जानकारी मेरी जानकारी के अनुसार सत्य है।
 
 नाम: ${data.fullName}
-संपर्क: ${data.contact}
+संपर्क: ${[data.phone, data.email].filter(Boolean).join(" | ") || ""}
 तिथि: ${today}`;
 }
 
