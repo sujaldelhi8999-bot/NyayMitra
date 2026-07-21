@@ -351,7 +351,14 @@ useEffect(() => {
     const nextErrors: string[] = [];
 
     if (!formData.fullName.trim()) nextErrors.push(t("errorNameRequired"));
-    if (!formData.contact.trim()) nextErrors.push(t("errorContactRequired"));
+    if (!formData.phone.trim()) {
+      nextErrors.push(t("errorPhoneRequired"));
+    } else if (formData.phone.replace(/\D/g, "").length < 10) {
+      nextErrors.push(t("errorPhoneInvalid"));
+    }
+    if (formData.email?.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      nextErrors.push(t("errorEmailInvalid"));
+    }
     if (!formData.incidentDate) nextErrors.push(t("errorDateRequired"));
 
     if (formData.story.trim().length < 30) {
@@ -384,6 +391,7 @@ useEffect(() => {
     }
 
     setErrors([]);
+    setTouchedFields(new Set(["fullName", "phone", "email", "incidentDate", "story"]));
 
     // Save to dashboard
     const draft = formData.complaintDraft || generateComplaintDraft({ ...formData, followUpAnswers }, formData.language);
