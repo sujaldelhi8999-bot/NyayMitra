@@ -790,6 +790,35 @@ useEffect(() => {
             </div>
           )}
 
+          {touchedFields.size > 0 && (
+            <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
+              <p className="mb-3 text-sm font-black uppercase tracking-wider text-slate-500">Required Fields</p>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {[
+                  { field: "fullName", label: t("fullName") },
+                  { field: "phone", label: t("phone") },
+                  { field: "incidentDate", label: t("incidentDate") },
+                  { field: "story", label: t("story") },
+                ].map(({ field, label }) => {
+                  const error = getFieldError(field);
+                  const valid = isFieldValid(field);
+                  return (
+                    <div key={field} className="flex items-center gap-2 text-sm">
+                      {valid ? (
+                        <span className="flex-shrink-0 text-green-500">✓</span>
+                      ) : error ? (
+                        <span className="flex-shrink-0 text-red-500">✗</span>
+                      ) : (
+                        <span className="flex-shrink-0 text-slate-300">○</span>
+                      )}
+                      <span className={valid ? "text-green-700" : error ? "text-red-700" : "text-slate-600"}>{label}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={handleGenerate}
