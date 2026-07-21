@@ -43,7 +43,8 @@ function IntakeContent() {
   const { language, setLanguage } = useLanguage();
   const [formData, setCaseData] = useState<CaseData>({
     fullName: "",
-    contact: "",
+    phone: "",
+    email: "",
     caseType: "Cyber Fraud / UPI Scam",
     stateOrUT: "",
     story: "",
@@ -58,6 +59,7 @@ function IntakeContent() {
   });
 
   const [errors, setErrors] = useState<string[]>([]);
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [followUpAnswers, setFollowUpAnswers] = useState<Record<string, string>>({});
   const [selectedCategory, setSelectedCategory] = useState(uploadCategories[0]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -106,7 +108,17 @@ useEffect(() => {
       if (!saved) return;
 
       const parsed = JSON.parse(saved) as CaseData;
-      const nextCase = { ...parsed, uploadedFiles: parsed.uploadedFiles || [], followUpAnswers: parsed.followUpAnswers || {}, customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [], status: normalizeCaseStatus(parsed.status) };
+      // Migrate old contact field to phone/email
+      const migrated = { ...parsed };
+      if (!migrated.phone && (migrated as Record<string, unknown>).contact) {
+        const oldContact = String((migrated as Record<string, unknown>).contact);
+        if (oldContact.includes("@")) {
+          migrated.email = oldContact;
+        } else {
+          migrated.phone = oldContact;
+        }
+      }
+      const nextCase = { ...migrated, phone: migrated.phone || "", email: migrated.email || "", uploadedFiles: migrated.uploadedFiles || [], followUpAnswers: migrated.followUpAnswers || {}, customProofs: migrated.customProofs || [], customReliefs: migrated.customReliefs || [], status: normalizeCaseStatus(migrated.status) };
       // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount hydration from localStorage
       setCaseData(nextCase);
       setFollowUpAnswers(nextCase.followUpAnswers || {});
@@ -144,6 +156,37 @@ useEffect(() => {
       ...prev,
       [name]: value,
     }));
+  }
+
+  function handleFieldBlur(fieldName: string) {
+    setTouchedFields((prev) => new Set(prev).add(fieldName));
+  }
+
+  function getFieldError(fieldName: string): string | null {
+    if (!touchedFields.has(fieldName)) return null;
+    switch (fieldName) {
+      case "fullName":
+        return formData.fullName.trim() ? null : t("errorNameRequired");
+      case "phone":
+        if (!formData.phone.trim()) return t("errorPhoneRequired");
+        if (formData.phone.replace(/\D/g, "").length < 10) return t("errorPhoneInvalid");
+        return null;
+      case "email":
+        if (!formData.email?.trim()) return null;
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return t("errorEmailInvalid");
+        return null;
+      case "incidentDate":
+        return formData.incidentDate ? null : t("errorDateRequired");
+      case "story":
+        if (formData.story.trim().length < 30) return t("errorStoryShort");
+        return null;
+      default:
+        return null;
+    }
+  }
+
+  function isFieldValid(fieldName: string): boolean {
+    return getFieldError(fieldName) === null && touchedFields.has(fieldName);
   }
 
   function handleCheckboxChange(
@@ -347,7 +390,7 @@ useEffect(() => {
 
   function saveProgress() {
     try {
-      localStorage.setItem("nyaymitra_intake_draft", JSON.stringify({ ...formData, followUpAnswers, language }));
+      localStorage.setItem("nyaymitra_intake_draft", JSON.stringify({ ...formData, followUpAnswers, language, mode }));
     } catch {}
     setDraftFound(true);
     setProgressMessage(t("msgProgressSaved"));
@@ -358,9 +401,20 @@ useEffect(() => {
       const saved = localStorage.getItem("nyaymitra_intake_draft");
       if (!saved) return;
       const parsed = JSON.parse(saved) as CaseData;
-      setCaseData({ ...parsed, uploadedFiles: parsed.uploadedFiles || [], followUpAnswers: parsed.followUpAnswers || {}, customProofs: parsed.customProofs || [], customReliefs: parsed.customReliefs || [], status: normalizeCaseStatus(parsed.status) });
-      setFollowUpAnswers(parsed.followUpAnswers || {});
+      // Migrate old contact field to phone/email
+      const migrated = { ...parsed };
+      if (!migrated.phone && (migrated as Record<string, unknown>).contact) {
+        const oldContact = String((migrated as Record<string, unknown>).contact);
+        if (oldContact.includes("@")) {
+          migrated.email = oldContact;
+        } else {
+          migrated.phone = oldContact;
+        }
+      }
+      setCaseData({ ...migrated, phone: migrated.phone || "", email: migrated.email || "", uploadedFiles: migrated.uploadedFiles || [], followUpAnswers: migrated.followUpAnswers || {}, customProofs: migrated.customProofs || [], customReliefs: migrated.customReliefs || [], status: normalizeCaseStatus(migrated.status) });
+      setFollowUpAnswers(migrated.followUpAnswers || {});
       if (parsed.language) setLanguage(parsed.language);
+      if ((parsed as Record<string, unknown>).mode) setMode((parsed as Record<string, unknown>).mode as "full" | "guided");
       setProgressMessage(t("msgDraftLoaded"));
     } catch {}
   }
@@ -379,7 +433,7 @@ useEffect(() => {
       localStorage.removeItem("nyaymitra_edit_case");
       localStorage.removeItem("nyaymitra_intake_draft");
     } catch {}
-    const fresh: CaseData = { fullName: "", contact: "", caseType: "Cyber Fraud / UPI Scam", stateOrUT: "", story: "", incidentDate: "", amountLost: "", oppositeParty: "", proofs: [], relief: [], customProofs: [], customReliefs: [], uploadedFiles: [] };
+    const fresh: CaseData = { fullName: "", phone: "", email: "", caseType: "Cyber Fraud / UPI Scam", stateOrUT: "", story: "", incidentDate: "", amountLost: "", oppositeParty: "", proofs: [], relief: [], customProofs: [], customReliefs: [], uploadedFiles: [] };
     setCaseData(fresh);
     setFollowUpAnswers({});
     setDraftFound(false);
