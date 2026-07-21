@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 export type Language = "en" | "hi" | "hinglish";
 
@@ -1570,16 +1570,11 @@ type LanguageContextType = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children, initialLanguage }: { children: ReactNode; initialLanguage?: Language }) {
-  const [language, setLanguageState] = useState<Language>(initialLanguage ?? "en");
+  const [language, setLanguageState] = useState<Language>(() => initialLanguage ?? getInitialLanguage());
 
   useEffect(() => {
-    if (initialLanguage) {
-      try { document.cookie = `nyaymitra_language=${encodeURIComponent(initialLanguage)};path=/;max-age=31536000;SameSite=Lax`; } catch {}
-      return;
-    }
-    const lang = getInitialLanguage();
-    setLanguageState(lang);
-    try { document.cookie = `nyaymitra_language=${encodeURIComponent(lang)};path=/;max-age=31536000;SameSite=Lax`; } catch {}
+    const activeLang = initialLanguage ?? getInitialLanguage();
+    try { document.cookie = `nyaymitra_language=${encodeURIComponent(activeLang)};path=/;max-age=31536000;SameSite=Lax`; } catch {}
   }, [initialLanguage]);
 
   const setLanguage = (lang: Language) => {

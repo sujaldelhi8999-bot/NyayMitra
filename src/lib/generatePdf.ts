@@ -17,17 +17,16 @@ import {
 } from "@/lib/caseUtils";
 import { OTHER_RELIEF_OPTION } from "@/lib/constants";
 
-const visitChecklist = [
-  "Carry original ID proof",
-  "Carry bank statement",
-  "Carry screenshots in printed and digital form",
-  "Note UTR / transaction ID",
-  "Keep phone number / UPI ID / chat details ready",
-  "Explain facts in chronological order",
-  "Do not delete original chats or SMS",
-];
 
-function getKitTitle(caseType: string, outputMode: string) {
+function getKitTitle(caseType: string, outputMode: string, language: Language) {
+  if (language === "hi") {
+    if (outputMode === "urgent-legal-aid-route") return "कानूनी सहायता परामर्श नोट";
+    if (caseType === "Cyber Fraud / UPI Scam") return "साइबर धोखाधड़ी लीगल एक्शन किट";
+    if (caseType === "Consumer Complaint") return "उपभोक्ता शिकायत तैयारी किट";
+    if (caseType === "Unpaid Salary / Gig Worker Payment") return "वेतन विवाद तैयारी किट";
+    if (caseType === "Other / Not Sure") return "सामान्य कानूनी मार्गदर्शन किट";
+    return `${caseType} तैयारी किट`;
+  }
   if (outputMode === "urgent-legal-aid-route") return "Legal Aid Consultation Note";
   if (caseType === "Cyber Fraud / UPI Scam") return "Cyber Fraud Legal Action Kit";
   if (caseType === "Consumer Complaint") return "Consumer Complaint Preparation Kit";
@@ -37,14 +36,17 @@ function getKitTitle(caseType: string, outputMode: string) {
 }
 
 export function generateLegalKitPdf(caseData: CaseData, language: Language) {
-  const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
+  const pdfLang: Language = language === "hi" ? "hi" : "en";
+  const t = (key: Parameters<typeof translate>[1]) => translate(pdfLang, key);
 
   const doc = new jsPDF({ unit: "pt", format: "a4" });
+  let hasDevanagariFont = false;
   try {
     doc.addFileToVFS("NotoSansDevanagari-Regular.ttf", notoSansDevanagari);
     doc.addFont("NotoSansDevanagari-Regular.ttf", "NotoSansDevanagari", "normal");
+    hasDevanagariFont = true;
   } catch {
-    // Font registration failed — fall back to helvetica
+    hasDevanagariFont = false;
   }
 
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -68,7 +70,8 @@ export function generateLegalKitPdf(caseData: CaseData, language: Language) {
         return;
       }
       addPageIfNeeded(16);
-      if (/[\u0900-\u097F]/.test(line)) {
+      const isDevanagari = /[\u0900-\u097F]/.test(line);
+      if (isDevanagari && hasDevanagariFont) {
         doc.setFont("NotoSansDevanagari", "normal");
       } else {
         doc.setFont("helvetica", bold ? "bold" : "normal");
@@ -86,11 +89,11 @@ export function generateLegalKitPdf(caseData: CaseData, language: Language) {
   }
 
   const outputMode = getOutputModeForCase(caseData);
-  const kitTitle = getKitTitle(caseData.caseType, outputMode);
+  const kitTitle = getKitTitle(caseData.caseType, outputMode, pdfLang);
   const activeProofOptions = Array.from(new Set([...getCaseConfig(caseData.caseType).proofs, ...(caseData.aiAnalysis?.classification?.suggestedProofs || [])]));
   const missingProofs = getMissingProofSuggestions(caseData, activeProofOptions.filter((proof) => !caseData.proofs.includes(proof)));
   const quality = calculateCaseQualityScore(caseData);
-  const complaint = caseData.complaintDraft || generateComplaintDraft(caseData, language);
+  const complaint = caseData.complaintDraft || generateComplaintDraft(caseData, pdfLang);
   const answeredFollowUps = Object.entries(caseData.followUpAnswers || {}).filter(([, answer]) => answer.trim());
   const amountMismatch = detectAmountMismatch(caseData);
   const verifiedSourceNotes = getVerifiedSourceNotes(caseData);
@@ -128,7 +131,7 @@ export function generateLegalKitPdf(caseData: CaseData, language: Language) {
     text(amountMismatch);
   }
 
-  section(outputMode === "urgent-legal-aid-route" ? "Facts Timeline" : t("kitTimelineOfEvents"));
+  section(outputMode === "urgent-legal-aid-route" ? (language === "hi" ? "तथ्य समयरेखा" : "Facts Timeline") : t("kitTimelineOfEvents"));
   timeline(caseData).forEach((item) => text(`- ${item}`));
 
   section(outputMode === "limited-guidance-kit" ? t("kitEvidenceOrganizer") : outputMode === "urgent-legal-aid-route" ? t("kitDocumentChecklist") : t("kitEvidenceIndex"));
@@ -164,13 +167,13 @@ export function generateLegalKitPdf(caseData: CaseData, language: Language) {
 
   if (caseData.aiAnalysis) {
     section(t("kitAiCaseSummary"));
-    text(caseData.aiAnalysis.extraction?.caseSummary || caseData.aiAnalysis.classification?.shortSummary || "No AI summary available.");
-    section("AI Extracted Timeline");
-    text(caseData.aiAnalysis.extraction?.timeline?.length ? caseData.aiAnalysis.extraction.timeline.map((item) => `- ${item.date}: ${item.event}`) : "No AI timeline available.");
+    text(caseData.aiAnalysis.extraction?.caseSummary || caseData.aiAnalysis.classification?.shortSummary || (language === "hi" ? "कोई AI सारांश उपलब्ध नहीं है।" : "No AI summary available."));
+    section(language === "hi" ? "AI द्वारा निकाली गई समयरेखा" : "AI Extracted Timeline");
+    text(caseData.aiAnalysis.extraction?.timeline?.length ? caseData.aiAnalysis.extraction.timeline.map((item) => `- ${item.date}: ${item.event}`) : (language === "hi" ? "कोई AI समयरेखा उपलब्ध नहीं है।" : "No AI timeline available."));
     section(t("kitAiMissingDetails"));
-    text(caseData.aiAnalysis.extraction?.missingDetails?.length ? caseData.aiAnalysis.extraction.missingDetails.map((item) => `- ${item}`) : "No AI missing details available.");
+    text(caseData.aiAnalysis.extraction?.missingDetails?.length ? caseData.aiAnalysis.extraction.missingDetails.map((item) => `- ${item}`) : (language === "hi" ? "कोई AI विवरण उपलब्ध नहीं है।" : "No AI missing details available."));
     section(t("kitAiReviewSuggestions"));
-    text(caseData.aiAnalysis.review?.suggestions?.length ? caseData.aiAnalysis.review.suggestions.map((item) => `- ${item}`) : "No AI review suggestions available.");
+    text(caseData.aiAnalysis.review?.suggestions?.length ? caseData.aiAnalysis.review.suggestions.map((item) => `- ${item}`) : (language === "hi" ? "कोई AI समीक्षा सुझाव उपलब्ध नहीं है।" : "No AI review suggestions available."));
   }
 
   section(t("kitQualityScore"));
@@ -185,9 +188,19 @@ export function generateLegalKitPdf(caseData: CaseData, language: Language) {
   section(outputMode === "urgent-legal-aid-route" ? t("kitLegalAidNote") : outputMode === "limited-guidance-kit" ? t("kitDraftRepresentation") : t("kitDraftComplaint"));
   text(complaint);
 
+  const hearingChecklist = [
+    t("kitVisitChecklist1"),
+    t("kitVisitChecklist2"),
+    t("kitVisitChecklist3"),
+    t("kitVisitChecklist4"),
+    t("kitVisitChecklist5"),
+    t("kitVisitChecklist6"),
+    t("kitVisitChecklist7"),
+  ];
+
   if (outputMode !== "urgent-legal-aid-route") {
     section(t("kitHearingPrep"));
-    visitChecklist.forEach((item) => text(`- ${item}`));
+    hearingChecklist.forEach((item) => text(`- ${item}`));
   }
 
   if (outputMode === "urgent-legal-aid-route") {
@@ -207,8 +220,10 @@ export function generateLegalKitPdf(caseData: CaseData, language: Language) {
   for (let page = 1; page <= totalPages; page += 1) {
     doc.setPage(page);
     doc.setFontSize(9);
-    doc.text(`Page ${page} of ${totalPages}`, pageWidth - margin - 60, pageHeight - 24);
+    const pageStr = language === "hi" ? `पृष्ठ ${page} / ${totalPages}` : `Page ${page} of ${totalPages}`;
+    doc.text(pageStr, pageWidth - margin - 60, pageHeight - 24);
   }
 
   doc.save("nyaymitra-legal-action-kit.pdf");
 }
+

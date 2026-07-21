@@ -69,7 +69,7 @@ function PreviewContent() {
   const [advisorQuestion, setAdvisorQuestion] = useState("");
   const [advisorLoading, setAdvisorLoading] = useState(false);
   const [advisorMessage, setAdvisorMessage] = useState("");
-  const [aiState, setAiState] = useState<{
+  const [, setAiState] = useState<{
     analysis: CaseData["aiAnalysis"];
     followupQuestions: string[];
     advisorChats?: AdvisorChat[];
@@ -114,17 +114,7 @@ function PreviewContent() {
           setDraftLanguage(parsed.language || contextLanguage);
           setEditableDraft(parsed.complaintDraft || "");
           setFollowUpAnswers(parsed.followUpAnswers || {});
-          if (parsed.aiAnalysis) {
-            setAiState((prev) => ({
-              ...prev,
-              analysis: parsed.aiAnalysis,
-              followupQuestions: parsed.aiAnalysis?.followupQuestions || [],
-              lastAnalyzedAt: parsed.aiAnalysis?.lastAnalyzedAt,
-            }));
-          }
-          if (parsed.advisorChats?.length) {
-            setAiState((prev) => ({ ...prev, advisorChats: parsed.advisorChats }));
-          }
+
         }
       } catch {}
       setLoaded(true);
@@ -191,7 +181,7 @@ function PreviewContent() {
     setDownloadError("");
     try {
       const draft = caseData.complaintDraft || editableDraft || generateComplaintDraft(caseData, pdfLanguage);
-      const exportData = { ...caseData, complaintDraft: draft, officialActionSuggestions: buildOfficialActionSuggestions(caseData) };
+      const exportData = { ...caseData, language: pdfLanguage, complaintDraft: draft, officialActionSuggestions: buildOfficialActionSuggestions(caseData) };
       const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");

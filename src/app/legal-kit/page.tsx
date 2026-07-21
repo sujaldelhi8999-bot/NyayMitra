@@ -25,15 +25,6 @@ import { OTHER_RELIEF_OPTION } from "@/lib/constants";
 import { TouchSelect } from "@/components/touch-select";
 import { CardTable } from "@/components/card-table";
 
-const visitChecklist = [
-  "Carry original ID proof",
-  "Carry bank statement",
-  "Carry screenshots in printed and digital form",
-  "Note UTR / transaction ID",
-  "Keep phone number / UPI ID / chat details ready",
-  "Explain facts in chronological order",
-  "Do not delete original chats or SMS",
-];
 
 export default function LegalKitPage() {
   const { language: contextLanguage } = useLanguage();
@@ -140,7 +131,7 @@ if (!caseData) {
     if (!caseData) return;
     try {
       const draft = caseData.complaintDraft || generateComplaintDraft(caseData, pdfLanguage);
-      const exportData = { ...caseData, complaintDraft: draft, officialActionSuggestions: buildOfficialActionSuggestions(caseData), verifiedSourceNotes: getVerifiedSourceNotes(caseData) };
+      const exportData = { ...caseData, language: pdfLanguage, complaintDraft: draft, officialActionSuggestions: buildOfficialActionSuggestions(caseData), verifiedSourceNotes: getVerifiedSourceNotes(caseData) };
       const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");

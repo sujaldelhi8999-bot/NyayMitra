@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { aiClassifyCase, type AiClientError } from "@/lib/aiClient";
 import { getOutputModeForCase, caseConfigs, getCaseConfig, highRiskCaseTypes, outputModeLabel, resolveOutputMode } from "@/lib/caseConfig";
 import { normalizeCaseStatus } from "@/lib/caseStatus";
-import { type Language, translate, useLanguage } from "@/lib/i18n";
+import { translate, useLanguage } from "@/lib/i18n";
 import type { CaseData, AiClassification, AdvisorChat, UploadedFile } from "@/types/case";
 import { generateComplaintDraft } from "@/lib/draftTemplates";
 import { CardTable } from "@/components/card-table";
@@ -320,9 +320,6 @@ useEffect(() => {
     return Boolean(result && typeof result === "object" && "error" in result);
   }
 
-  function showAiError(_result: AiClientError, _fallbackMessage = "AI could not respond. Rule-based mode is still available.") {
-    // ponytail: error display removed with preview section; classification result stored in aiState
-  }
 
   async function handleOtherClassification() {
     if (formData.caseType !== "Other / Not Sure") return;
