@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useLanguage, type Language, translate } from "@/lib/i18n";
-import { trapFocus } from "@/lib/focusTrap";
 
 const navLinks = [
   { href: "/#features", key: "navFeatures" },
@@ -31,7 +31,18 @@ function MobileNavDrawer({
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
 
   const handleTrapFocus = (e: KeyboardEvent) => {
-    if (drawerRef.current) trapFocus(drawerRef.current, e);
+    if (!drawerRef.current) return;
+    const focusable = drawerRef.current.querySelectorAll<HTMLElement>('a[href], button, select, textarea, input, [tabindex]:not([tabindex="-1"])');
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!first || !last) return;
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   };
 
   useEffect(() => {
@@ -73,9 +84,7 @@ function MobileNavDrawer({
       >
         <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
           <Link href="/" className="flex items-center gap-3" aria-label="NyayMitra home" onClick={onClose}>
-            <span className="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-teal-400 to-cyan-600 text-lg font-black text-white shadow-lg">
-              N
-            </span>
+            <Image src="/logo.png" alt="NyayMitra" width={40} height={40} priority />
             <span className="text-xl font-black tracking-tight text-slate-950" suppressHydrationWarning>
               {t("appName")}
             </span>
@@ -138,9 +147,7 @@ function Navbar({
     <header className="sticky top-0 z-50 border-b border-white/20 bg-white/85 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
         <Link href="/" className="flex items-center gap-3" aria-label="NyayMitra home">
-          <span className="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-teal-400 to-cyan-600 text-lg font-black text-white shadow-lg shadow-teal-900/20">
-            N
-          </span>
+          <Image src="/logo.png" alt="NyayMitra" width={40} height={40} priority />
           <span className="text-xl font-black tracking-tight text-slate-950" suppressHydrationWarning>
             {t("appName")}
           </span>
