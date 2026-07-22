@@ -27,6 +27,7 @@ import { generateLegalKitPdf } from "@/lib/generatePdf";
 import { calculateCaseQualityScore } from "@/lib/qualityScore";
 import { PortalCard } from "@/components/portal-card";
 import { CardTable } from "@/components/card-table";
+import { TouchSelect } from "@/components/touch-select";
 import {
   getMissingProofSuggestions,
   getVerifiedSourceNotes,
