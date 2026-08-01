@@ -51,7 +51,7 @@ function SourceTag({ source }: { source: "ai" | "rule" }) {
       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${
         source === "ai" ? "bg-purple-100 text-purple-800" : "bg-teal-100 text-teal-800"
       }`}
-      title={source === "ai" ? "AI-generated" : "Rule-based"}
+      title={source === "ai" ? "AI" : "Rule"}
     >
       {source === "ai" ? "AI" : "Rule"}
     </span>
@@ -383,13 +383,13 @@ function PreviewContent() {
             <p className="mb-2 text-sm font-semibold text-teal-300">{t("preview")}</p>
             <h2 className="text-3xl font-bold">{t("caseSnapshot")}</h2>
             <p className="mt-4 text-slate-200">
-              {Number(caseData.amountLost) > 0 ? <>Based on the information provided, this appears to be a <b>{caseData.caseType}</b> preparation matter where <b>{caseData.fullName}</b> reports a value/loss of <b>₹{caseData.amountLost}</b> on <b>{caseData.incidentDate}</b>. </> : <>Based on the information provided, this appears to be a <b>{caseData.caseType}</b> matter where <b>{caseData.fullName}</b> wants help organizing documents and preparing for legal-aid/lawyer review. </>}Opposite party details:{" "}
-              <b>{caseData.oppositeParty || "Not provided"}</b>. The user wants help with:{" "}
+              {Number(caseData.amountLost) > 0 ? <>{t("previewSnapshotSummary").replace("{caseType}", caseData.caseType).replace("{fullName}", caseData.fullName).replace("{amountLost}", String(caseData.amountLost)).replace("{incidentDate}", caseData.incidentDate)} </> : <>{t("previewSnapshotSummaryNoAmount").replace("{caseType}", caseData.caseType).replace("{fullName}", caseData.fullName)} </>}{t("previewOppositeParty")}{" "}
+              <b>{caseData.oppositeParty || t("previewNotProvided")}</b>. {t("previewUserWants")}{" "}
               <b>
                 {[...caseData.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(caseData.customReliefs || [])].length > 0
                   ? [...caseData.relief.filter((item) => item !== OTHER_RELIEF_OPTION), ...(caseData.customReliefs || [])].join(", ")
-                  : "Not selected"}
-              </b>.
+                  : t("previewNotSelected")
+              }</b>.
             </p>
             <div className="mt-5 rounded-lg bg-slate-900 p-4 text-sm text-slate-300">
               <b>{t("kitLabelUserStory")}:</b> {caseData.story}
@@ -421,18 +421,18 @@ function PreviewContent() {
               <p className="mt-3 text-xl font-bold text-teal-300">{riskLabel}</p>
               <p className="mt-3 text-slate-200">
                 {outputMode === "urgent-legal-aid-route"
-                  ? "Urgent legal-aid/lawyer review is recommended. NyayMitra will prepare a consultation note and document organizer only."
-                  : "This case can be prepared with evidence, timeline, and a draft for review. For serious matters, contact legal aid or a lawyer."}
+                  ? t("riskRouterUrgentDesc")
+                  : t("riskRouterNormalDesc")}
               </p>
               <p className="mt-4 rounded-lg bg-slate-900 p-4 text-sm text-slate-300">NyayMitra is a legal self-help tool, not a lawyer. Verify with legal aid/lawyer before filing.</p>
             </div>
-            <OfficialActionLinks caseData={caseData} />
+            <OfficialActionLinks caseData={caseData} language={language} />
           </div>
 
           <div className="rounded-lg border border-teal-400/30 bg-slate-900 p-6 shadow-2xl">
-            <p className="text-sm font-semibold text-teal-300">Optional AI layer</p>
-            <h2 className="mt-2 text-2xl font-bold">AI Assist</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-300">Let NyayMitra analyze your story and improve your preparation kit. Rule-based mode still works if AI is unavailable.</p>
+            <p className="text-sm font-semibold text-teal-300">{t("aiAssistEyebrow")}</p>
+            <h2 className="mt-2 text-2xl font-bold">{t("aiAssistTitle")}</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-300">{t("aiAssistDesc")}</p>
             <div className="mt-5 grid gap-3 md:grid-cols-3">
               <button type="button" onClick={handleAiFollowups} className="rounded-lg bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "followup" ? t("aiAnalyzingCase") : t("aiFollowups")}</button>
               <button type="button" onClick={handleAiImproveDraft} className="rounded-lg bg-white/10 px-4 py-3 font-bold text-white">{aiLoading === "draft" ? t("aiAnalyzingCase") : t("aiImproveDraft")}</button>
@@ -457,14 +457,14 @@ function PreviewContent() {
           </div>
 
           <div className="rounded-lg bg-white p-6 text-slate-950 shadow-2xl">
-            <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-700">Safe preparation guidance</p>
-            <h2 className="mt-2 text-3xl font-black">{t("sectionAdvisor")}</h2>
-            <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">Ask NyayMitra for preparation guidance, possible routes, risks, and next steps. This is not legal advice.</p>
-            <p className="mt-3 rounded-lg bg-slate-950 p-4 text-sm font-semibold text-white">NyayMitra can explain preparation options and next steps, but it is not a substitute for a licensed advocate. Please verify important decisions with legal aid or a lawyer.</p>
+            <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-700">{t("safePrepEyebrow")}</p>
+            <h2 className="mt-2 text-3xl font-black">{t("safePrepTitle")}</h2>
+            <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">{t("safePrepDesc")}</p>
+            <p className="mt-3 rounded-lg bg-slate-950 p-4 text-sm font-semibold text-white">{t("safePrepDisclaimer")}</p>
             <textarea value={advisorQuestion} onChange={(event) => setAdvisorQuestion(event.target.value)} rows={3} className="mt-5 w-full rounded-lg border border-slate-200 bg-slate-50 p-4 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" placeholder="Ask a question about your case preparation..." />
             <button type="button" onClick={handleAskAdvisor} className="mt-4 rounded-lg bg-teal-600 px-6 py-3 font-black text-white hover:bg-teal-700">{advisorLoading ? t("aiThinkingNyayMitra") : t("aiAskAdvisor")}</button>
             {advisorMessage && <p className="mt-3 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900" aria-live="polite">{advisorMessage}</p>}
-            {(caseData.advisorChats || []).length > 0 && <div className="mt-5 space-y-4">{caseData.advisorChats?.map((chat) => <AdvisorChatCard key={chat.id} chat={chat} />)}</div>}
+            {(caseData.advisorChats || []).length > 0 && <div className="mt-5 space-y-4">{caseData.advisorChats?.map((chat) => <AdvisorChatCard key={chat.id} chat={chat} language={language} />)}</div>}
           </div>
 
           <div className="space-y-6">
@@ -515,9 +515,9 @@ function PreviewContent() {
           <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               <div>
-                <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-700">Rule-based draft generator</p>
+                <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-700">{t("draftGenEyebrow")}</p>
                 <h2 className="mt-2 text-3xl font-black text-slate-950">{outputMode === "urgent-legal-aid-route" ? t("sectionDraftLegalAid") : t("editableDraft")}</h2>
-                <p className="mt-2 text-sm font-semibold text-slate-600">Generated locally from your case details. Review and edit before using.</p>
+                <p className="mt-2 text-sm font-semibold text-slate-600">{t("draftGenDesc")}</p>
               </div>
               <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                 <label className="flex items-center gap-2">
@@ -537,7 +537,7 @@ function PreviewContent() {
               </div>
             </div>
             <textarea value={editableDraft} onChange={(event) => handleDraftChange(event.target.value)} rows={18} className="mt-6 w-full rounded-lg border border-slate-200 bg-slate-50 p-5 font-mono text-sm leading-7 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" placeholder={outputMode === "urgent-legal-aid-route" ? t("msgNoLegalAidDraft") : t("msgNoDraft")} />
-            {editableDraft && <DraftQualityCard result={analyzeDraftQuality(editableDraft, caseData)} />}
+            {editableDraft && <DraftQualityCard result={analyzeDraftQuality(editableDraft, caseData, language)} language={language} />}
             {draftMessage && <p className="mt-4 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900">{draftMessage}</p>}
           </div>
 
@@ -560,7 +560,7 @@ function PreviewContent() {
             </div>
 
             <div className="rounded-lg border border-teal-400/30 bg-slate-900 p-6 shadow-2xl">
-              <p className="text-sm font-semibold text-teal-300">Rule-based preparation assistant</p>
+              <p className="text-sm font-semibold text-teal-300">{t("followUpAssistantEyebrow")}</p>
               <h2 className="mt-2 text-2xl font-bold">{t("followUps")}</h2>
               <div className="mt-5 space-y-4">
                 {getMergedFollowUpQuestions(caseData).map(({ question, source }) => (
@@ -580,7 +580,7 @@ function PreviewContent() {
 
           {caseData.followUpAnswers && Object.values(caseData.followUpAnswers).some(Boolean) && (
             <div className="rounded-lg bg-white p-6 text-slate-900 shadow-2xl">
-              <h2 className="text-2xl font-bold">Follow-up Answers Added</h2>
+              <h2 className="text-2xl font-bold">{t("followUpAnswersAdded")}</h2>
               <div className="mt-4 space-y-3">
                 {Object.entries(caseData.followUpAnswers).filter(([, answer]) => answer.trim()).map(([question, answer]) => (
                   <div key={question} className="rounded-lg bg-slate-50 p-4">
@@ -651,7 +651,8 @@ function detectCaseTypeMismatch(caseData: CaseData, language: Language) {
   return "";
 }
 
-function analyzeDraftQuality(draftText: string, caseData: CaseData) {
+function analyzeDraftQuality(draftText: string, caseData: CaseData, language: Language = "en") {
+  const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
   const lowerDraft = draftText.toLowerCase();
   const hasSubject = lowerDraft.includes("subject:");
   const hasIncidentDate = Boolean(caseData.incidentDate && draftText.includes(caseData.incidentDate));
@@ -661,12 +662,12 @@ function analyzeDraftQuality(draftText: string, caseData: CaseData) {
   const hasDeclaration = lowerDraft.includes("declaration");
   const suggestions: string[] = [];
   let score = 0;
-  if (hasSubject) score += 15; else suggestions.push("Add subject.");
-  if (hasIncidentDate) score += 15; else suggestions.push("Add incident date.");
-  if (hasAmount) score += 15; else suggestions.push("Mention amount lost.");
-  if (hasEvidence) score += 20; else suggestions.push("Mention evidence clearly.");
-  if (hasRelief) score += 20; else suggestions.push("Add relief requested.");
-  if (hasDeclaration) score += 15; else suggestions.push("Add declaration.");
+  if (hasSubject) score += 15; else suggestions.push(t("draftQualitySubject"));
+  if (hasIncidentDate) score += 15; else suggestions.push(t("draftQualityIncidentDate"));
+  if (hasAmount) score += 15; else suggestions.push(t("draftQualityAmount"));
+  if (hasEvidence) score += 20; else suggestions.push(t("draftQualityEvidence"));
+  if (hasRelief) score += 20; else suggestions.push(t("draftQualityRelief"));
+  if (hasDeclaration) score += 15; else suggestions.push(t("draftQualityDeclaration"));
   return { score, suggestions };
 }
 
@@ -699,13 +700,14 @@ function CaseQualityCard({ result }: { result: { score: number; label: string; s
   );
 }
 
-function DraftQualityCard({ result }: { result: { score: number; suggestions: string[] } }) {
+function DraftQualityCard({ result, language }: { result: { score: number; suggestions: string[] }; language?: Language }) {
+  const t = (key: Parameters<typeof translate>[1]) => translate(language || "en", key);
   const strong = result.score >= 70;
   return (
     <div className="mt-5 rounded-lg border border-slate-200 bg-white p-5">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-700">Draft Completeness Score</p>
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-700">{t("draftCompletenessScore")}</p>
           <h3 className="mt-1 text-2xl font-black text-slate-950">{result.score}/100</h3>
         </div>
         <div className="h-4 w-full overflow-hidden rounded-full bg-slate-100 md:w-80">
@@ -732,7 +734,8 @@ function AiBox({ title, items }: { title: string; items: string[] }) {
   );
 }
 
-function AdvisorChatCard({ chat }: { chat: AdvisorChat }) {
+function AdvisorChatCard({ chat, language }: { chat: AdvisorChat; language?: Language }) {
+  const t = (key: Parameters<typeof translate>[1]) => translate(language || "en", key);
   return (
     <div className="rounded-lg border border-slate-200 bg-slate-50 p-5">
       <div className="flex items-center gap-2 mb-2">
@@ -740,29 +743,30 @@ function AdvisorChatCard({ chat }: { chat: AdvisorChat }) {
         <SourceTag source="ai" />
       </div>
       <p className="mt-3 leading-7 text-slate-700">{chat.answer}</p>
-      {chat.lawyerReviewRecommended && <p className="mt-3 rounded-lg bg-red-100 p-3 text-sm font-black text-red-800">Legal-aid/lawyer review strongly recommended.</p>}
+      {chat.lawyerReviewRecommended && <p className="mt-3 rounded-lg bg-red-100 p-3 text-sm font-black text-red-800">{t("advisorLawyerReview")}</p>}
       <div className="mt-4 grid gap-3 md:grid-cols-2">
-        <AiBox title="Next steps" items={chat.nextSteps} />
-        <AiBox title="Missing info" items={chat.missingInfo.length ? chat.missingInfo : ["No specific missing info listed."]} />
+        <AiBox title={t("advisorNextSteps")} items={chat.nextSteps} />
+        <AiBox title={t("advisorMissingInfo")} items={chat.missingInfo.length ? chat.missingInfo : [t("advisorNoMissingInfo")]} />
       </div>
       <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm font-bold text-amber-900">{chat.riskNote}</p>
     </div>
   );
 }
 
-function OfficialActionLinks({ caseData }: { caseData: CaseData }) {
+function OfficialActionLinks({ caseData, language }: { caseData: CaseData; language?: Language }) {
+  const t = (key: Parameters<typeof translate>[1]) => translate(language || "en", key);
   const suggestions = buildOfficialActionSuggestions(caseData);
   return (
     <div className="rounded-lg border border-teal-300/30 bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 p-6 shadow-2xl">
-      <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-300">Official action link</p>
-      <h2 className="mt-2 text-3xl font-black text-white">Official Action Links</h2>
-      <p className="mt-2 max-w-3xl text-sm font-semibold leading-6 text-slate-300">Based on your case type, these official portals may help you report, track, or seek support.</p>
-      {suggestions.showEmergency && <p className="mt-4 rounded-lg border border-orange-300/40 bg-orange-500/15 p-4 text-sm font-bold text-orange-100">If there is immediate danger, call 112 or contact local emergency services immediately.</p>}
+      <p className="text-sm font-black uppercase tracking-[0.2em] text-teal-300">{t("officialActionEyebrow")}</p>
+      <h2 className="mt-2 text-3xl font-black text-white">{t("officialActionTitle")}</h2>
+      <p className="mt-2 max-w-3xl text-sm font-semibold leading-6 text-slate-300">{t("officialActionDesc")}</p>
+      {suggestions.showEmergency && <p className="mt-4 rounded-lg border border-orange-300/40 bg-orange-500/15 p-4 text-sm font-bold text-orange-100">{t("kitEmergencyWarning")}</p>}
       <p className="mt-4 rounded-lg bg-white/10 p-4 text-sm font-semibold text-slate-200">{suggestions.stateMessage}</p>
       <div className="mt-5 grid gap-4 md:grid-cols-2">
         {suggestions.portals.map((portal) => <PortalCard key={portal.id} portal={portal} />)}
       </div>
-      <p className="mt-5 rounded-lg bg-slate-950 p-4 text-sm font-semibold text-slate-200">NyayMitra provides official links for convenience. Portal eligibility, FIR registration, and complaint handling depend on the concerned authority and applicable procedure.</p>
+      <p className="mt-5 rounded-lg bg-slate-950 p-4 text-sm font-semibold text-slate-200">{t("officialActionDisclaimer")}</p>
     </div>
   );
 }
