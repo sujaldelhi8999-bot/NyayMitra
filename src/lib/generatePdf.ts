@@ -88,6 +88,59 @@ export function generateLegalKitPdf(caseData: CaseData, language: Language) {
     y += 4;
   }
 
+  function drawTable(headers: string[], rows: string[][]) {
+    const cols = headers.length;
+    const tableWidth = pageWidth - margin * 2;
+    const colWidths = headers.map(() => tableWidth / cols);
+    const fontSize = 8;
+    const rowPadding = 4;
+    const headerHeight = fontSize + rowPadding * 2 + 4;
+
+    addPageIfNeeded(headerHeight + 10);
+
+    doc.setFontSize(fontSize);
+    doc.setFont("helvetica", "bold");
+    doc.setFillColor(230, 230, 230);
+    doc.rect(margin, y - fontSize, tableWidth, headerHeight, "F");
+    doc.setFontSize(fontSize);
+
+    let x = margin;
+    headers.forEach((h, i) => {
+      doc.text(h, x + rowPadding, y);
+      x += colWidths[i];
+    });
+    y += headerHeight;
+
+    rows.forEach((row, rowIdx) => {
+      const cellHeights = row.map((cell, i) => {
+        const wrapped = doc.splitTextToSize(cell || "", colWidths[i] - rowPadding * 2);
+        return wrapped.length * (fontSize + 2);
+      });
+      const maxH = Math.max(...cellHeights) + rowPadding * 2;
+
+      addPageIfNeeded(maxH + 4);
+
+      if (rowIdx % 2 === 1) {
+        doc.setFillColor(245, 245, 245);
+        doc.rect(margin, y - fontSize, tableWidth, maxH, "F");
+      }
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(fontSize);
+      let cx = margin;
+      row.forEach((cell, i) => {
+        const wrapped = doc.splitTextToSize(cell || "", colWidths[i] - rowPadding * 2);
+        doc.text(wrapped, cx + rowPadding, y);
+        cx += colWidths[i];
+      });
+      y += maxH;
+    });
+
+    doc.setDrawColor(180, 180, 180);
+    doc.line(margin, y, margin + tableWidth, y);
+    y += 6;
+  }
+
   const outputMode = getOutputModeForCase(caseData);
   const kitTitle = getKitTitle(caseData.caseType, outputMode, pdfLang);
   const activeProofOptions = Array.from(new Set([...getCaseConfig(caseData.caseType).proofs, ...(caseData.aiAnalysis?.classification?.suggestedProofs || [])]));
@@ -135,7 +188,9 @@ export function generateLegalKitPdf(caseData: CaseData, language: Language) {
   timeline(caseData).forEach((item) => text(`- ${item}`));
 
   section(outputMode === "limited-guidance-kit" ? t("kitEvidenceOrganizer") : outputMode === "urgent-legal-aid-route" ? t("kitDocumentChecklist") : t("kitEvidenceIndex"));
-  evidenceRows(caseData).forEach((row) => text(`${row.annexure}. ${row.evidence} | ${row.status} | File: ${row.fileName} | ${row.proves} | ${row.action}`));
+  const evHeaders = ["#", "Evidence", "Status", "File", "Proves", "Action"];
+  const evRows = evidenceRows(caseData).map((r) => [r.annexure, r.evidence, r.status, r.fileName, r.proves, r.action]);
+  drawTable(evHeaders, evRows);
 
   section(t("kitUploadedAnnexures"));
   text(caseData.uploadedFiles.length ? caseData.uploadedFiles.map((file, index) => `A${index + 1} - ${file.fileName} - ${file.evidenceCategory}`) : t("kitNoUploadedAnnexureFiles"));
