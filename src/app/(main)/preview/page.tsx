@@ -75,7 +75,6 @@ function PreviewContent() {
   const [aiLoading, setAiLoading] = useState("");
   const [aiMessage, setAiMessage] = useState("");
   const [extraFollowUpQuestions, setExtraFollowUpQuestions] = useState<string[]>([]);
-  const [pdfLanguage, setPdfLanguage] = useState<Language>("en");
   const [downloadError, setDownloadError] = useState("");
   const [advisorQuestion, setAdvisorQuestion] = useState("");
   const [advisorLoading, setAdvisorLoading] = useState(false);
@@ -123,7 +122,6 @@ function PreviewContent() {
           setCaseData(normalized);
           const lang = parsed.language || contextLanguage;
           setDraftLanguage(lang);
-          setPdfLanguage(lang);
           setContextLanguage(lang);
           setEditableDraft(parsed.complaintDraft || "");
           setFollowUpAnswers(parsed.followUpAnswers || {});
@@ -180,10 +178,10 @@ function PreviewContent() {
     if (!caseData) return;
     setDownloadError("");
     try {
-      const draft = caseData.complaintDraft || editableDraft || generateComplaintDraft(caseData, pdfLanguage);
-      const updated = { ...caseData, complaintDraft: draft, language: pdfLanguage };
+      const draft = caseData.complaintDraft || editableDraft || generateComplaintDraft(caseData, contextLanguage);
+      const updated = { ...caseData, complaintDraft: draft, language: contextLanguage };
       persistCase(updated);
-      generateLegalKitPdf(updated, pdfLanguage);
+      generateLegalKitPdf(updated, contextLanguage);
     } catch (err) {
       console.error("PDF download failed:", err);
       setDownloadError("PDF download failed. Please try again.");
@@ -194,8 +192,8 @@ function PreviewContent() {
     if (!caseData) return;
     setDownloadError("");
     try {
-      const draft = caseData.complaintDraft || editableDraft || generateComplaintDraft(caseData, pdfLanguage);
-      const exportData = { ...caseData, language: pdfLanguage, complaintDraft: draft, officialActionSuggestions: buildOfficialActionSuggestions(caseData) };
+      const draft = caseData.complaintDraft || editableDraft || generateComplaintDraft(caseData, contextLanguage);
+      const exportData = { ...caseData, language: contextLanguage, complaintDraft: draft, officialActionSuggestions: buildOfficialActionSuggestions(caseData) };
       const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
@@ -371,13 +369,6 @@ function PreviewContent() {
                 setDraftLanguage(lang);
                 if (caseData) persistCase({ ...caseData, language: lang });
               }}
-              className="w-36"
-            />
-            <TouchSelect
-              value={pdfLanguage}
-              placeholder={t("downloadLang")}
-              options={downloadLangOptions}
-              onChange={(value) => setPdfLanguage(value as Language)}
               className="w-36"
             />
             <TouchSelect
