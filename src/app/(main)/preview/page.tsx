@@ -67,7 +67,6 @@ function PreviewContent() {
   const { language: contextLanguage, setLanguage: setContextLanguage } = useLanguage();
   const [caseData, setCaseData] = useState<CaseData | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [language, setLanguage] = useState<Language>("en");
   const [editableDraft, setEditableDraft] = useState("");
   const [draftLanguage, setDraftLanguage] = useState<Language>("en");
   const [draftMessage, setDraftMessage] = useState("");
@@ -93,7 +92,7 @@ function PreviewContent() {
     lastAnalyzedAt: undefined,
   });
 
-  const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
+  const t = (key: Parameters<typeof translate>[1]) => translate(contextLanguage, key);
 
   const downloadLangOptions = [
     { value: "en", label: "English" },
@@ -123,7 +122,6 @@ function PreviewContent() {
           };
           setCaseData(normalized);
           const lang = parsed.language || contextLanguage;
-          setLanguage(lang);
           setDraftLanguage(lang);
           setPdfLanguage(lang);
           setContextLanguage(lang);
@@ -155,9 +153,9 @@ function PreviewContent() {
   const proofOptions = Array.from(new Set([...(caseData.proofs || []), OTHER_PROOF_OPTION]));
   const missingProofs = proofOptions.filter((proof) => proof !== OTHER_PROOF_OPTION && !caseData.proofs.includes(proof));
   const displayedMissingProofs = getMissingProofSuggestions(caseData, missingProofs);
-  const storyWarning = getStoryQualityWarning(caseData, language);
-  const caseTypeMismatch = detectCaseTypeMismatch(caseData, language);
-  const amountMismatch = getLocalizedAmountMismatch(caseData, language);
+  const storyWarning = getStoryQualityWarning(caseData, contextLanguage);
+  const caseTypeMismatch = detectCaseTypeMismatch(caseData, contextLanguage);
+  const amountMismatch = getLocalizedAmountMismatch(caseData, contextLanguage);
   const riskLabel = getCaseRiskLabel(caseData);
 
   function persistCase(next: CaseData) {
@@ -175,12 +173,6 @@ function PreviewContent() {
       localStorage.setItem("nyaymitra_edit_case", JSON.stringify(caseData));
     } catch {}
     router.push("/intake?edit=true");
-  }
-
-  function handlePreviewLanguageChange(lang: Language) {
-    setLanguage(lang);
-    setContextLanguage(lang);
-    if (caseData) persistCase({ ...caseData, language: lang });
   }
 
   function handleDownloadPdf() {
@@ -369,13 +361,6 @@ function PreviewContent() {
             <button type="button" onClick={editCase} className="rounded-lg bg-white/10 px-5 py-3 font-bold text-white hover:bg-white/20">{t("editIntake")}</button>
             <Link href="/dashboard" className="rounded-lg border border-white/20 px-5 py-3 text-center font-bold text-white hover:bg-white/10">{t("backDashboard")}</Link>
             <TouchSelect
-              value={language}
-              placeholder={t("languageLabel")}
-              options={downloadLangOptions}
-              onChange={(value) => handlePreviewLanguageChange(value as Language)}
-              className="w-36"
-            />
-            <TouchSelect
               value={pdfLanguage}
               placeholder={t("downloadLang")}
               options={downloadLangOptions}
@@ -442,7 +427,7 @@ function PreviewContent() {
               </p>
               <p className="mt-4 rounded-lg bg-slate-900 p-4 text-sm text-slate-300">NyayMitra is a legal self-help tool, not a lawyer. Verify with legal aid/lawyer before filing.</p>
             </div>
-            <OfficialActionLinks caseData={caseData} language={language} />
+            <OfficialActionLinks caseData={caseData} language={contextLanguage} />
           </div>
 
           <div className="rounded-lg border border-teal-400/30 bg-slate-900 p-6 shadow-2xl">
@@ -480,7 +465,7 @@ function PreviewContent() {
             <textarea value={advisorQuestion} onChange={(event) => setAdvisorQuestion(event.target.value)} rows={3} className="mt-5 w-full rounded-lg border border-slate-200 bg-slate-50 p-4 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" placeholder="Ask a question about your case preparation..." />
             <button type="button" onClick={handleAskAdvisor} className="mt-4 rounded-lg bg-teal-600 px-6 py-3 font-black text-white hover:bg-teal-700">{advisorLoading ? t("aiThinkingNyayMitra") : t("aiAskAdvisor")}</button>
             {advisorMessage && <p className="mt-3 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900" aria-live="polite">{advisorMessage}</p>}
-            {(caseData.advisorChats || []).length > 0 && <div className="mt-5 space-y-4">{caseData.advisorChats?.map((chat) => <AdvisorChatCard key={chat.id} chat={chat} language={language} />)}</div>}
+            {(caseData.advisorChats || []).length > 0 && <div className="mt-5 space-y-4">{caseData.advisorChats?.map((chat) => <AdvisorChatCard key={chat.id} chat={chat} language={contextLanguage} />)}</div>}
           </div>
 
           <div className="space-y-6">
@@ -553,7 +538,7 @@ function PreviewContent() {
               </div>
             </div>
             <textarea value={editableDraft} onChange={(event) => handleDraftChange(event.target.value)} rows={18} className="mt-6 w-full rounded-lg border border-slate-200 bg-slate-50 p-5 font-mono text-sm leading-7 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-100" placeholder={outputMode === "urgent-legal-aid-route" ? t("msgNoLegalAidDraft") : t("msgNoDraft")} />
-            {editableDraft && <DraftQualityCard result={analyzeDraftQuality(editableDraft, caseData, language)} language={language} />}
+            {editableDraft && <DraftQualityCard result={analyzeDraftQuality(editableDraft, caseData, contextLanguage)} language={contextLanguage} />}
             {draftMessage && <p className="mt-4 rounded-lg bg-teal-100 p-3 text-sm font-bold text-teal-900">{draftMessage}</p>}
           </div>
 

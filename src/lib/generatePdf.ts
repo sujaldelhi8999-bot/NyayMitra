@@ -63,10 +63,16 @@ export function generateLegalKitPdf(caseData: CaseData, language: Language) {
 
   function text(lines: string | string[], size = 10, bold = false) {
     doc.setFontSize(size);
-    const rawLines: string[] = Array.isArray(lines) ? lines : doc.splitTextToSize(lines, pageWidth - margin * 2);
-    const content: string[] = rawLines.flatMap((line) => {
-      if (!line || !line.trim()) return [""];
-      return doc.splitTextToSize(line, pageWidth - margin * 2);
+    const maxWidth = pageWidth - margin * 2;
+    const content: string[] = (Array.isArray(lines) ? lines : [lines]).flatMap((raw) => {
+      if (!raw || !raw.trim()) return [""];
+      const isDevanagari = /[\u0900-\u097F]/.test(raw);
+      if (isDevanagari && hasDevanagariFont) {
+        doc.setFont("NotoSansDevanagari", "normal");
+      } else {
+        doc.setFont("helvetica", bold ? "bold" : "normal");
+      }
+      return doc.splitTextToSize(raw, maxWidth);
     });
     content.forEach((line) => {
       if (!line || !line.trim()) {
