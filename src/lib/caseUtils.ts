@@ -184,8 +184,8 @@ export function getCaseRiskLevel(data: CaseData) {
 
 export function detectAmountMismatch(data: CaseData) {
   const fieldAmount = Number(data.amountLost);
-  const matches = Array.from(data.story.matchAll(/(?:₹|rs\.?|inr)?\s*([0-9][0-9,]*(?:\.\d+)?)/gi));
-  const storyAmounts = matches.map((match) => Number(match[1].replace(/,/g, ""))).filter((amount) => amount > 0);
+  const matches = Array.from(data.story.matchAll(/(?:₹|rs\.?|inr)\s*([0-9][0-9,]+(?:\.\d+)?)/gi));
+  const storyAmounts = matches.map((match) => Number(match[1].replace(/,/g, ""))).filter((amount) => amount > 100);
   const differentAmount = storyAmounts.find((amount) => fieldAmount > 0 && amount !== fieldAmount);
 
   if (!differentAmount) return "";
