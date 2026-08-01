@@ -133,7 +133,8 @@ function PreviewContent() {
       setLoaded(true);
     }, 0);
     return () => { cancelled = true; };
-  }, [contextLanguage, setContextLanguage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!loaded) return null;
 
@@ -360,6 +361,18 @@ function PreviewContent() {
           <div className="flex flex-wrap gap-3">
             <button type="button" onClick={editCase} className="rounded-lg bg-white/10 px-5 py-3 font-bold text-white hover:bg-white/20">{t("editIntake")}</button>
             <Link href="/dashboard" className="rounded-lg border border-white/20 px-5 py-3 text-center font-bold text-white hover:bg-white/10">{t("backDashboard")}</Link>
+            <TouchSelect
+              value={contextLanguage}
+              placeholder={t("languageLabel")}
+              options={downloadLangOptions}
+              onChange={(value) => {
+                const lang = value as Language;
+                setContextLanguage(lang);
+                setDraftLanguage(lang);
+                if (caseData) persistCase({ ...caseData, language: lang });
+              }}
+              className="w-36"
+            />
             <TouchSelect
               value={pdfLanguage}
               placeholder={t("downloadLang")}
