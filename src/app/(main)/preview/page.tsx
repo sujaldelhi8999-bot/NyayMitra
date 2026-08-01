@@ -64,7 +64,7 @@ export default function PreviewPage() {
 
 function PreviewContent() {
   const router = useRouter();
-  const { language: contextLanguage } = useLanguage();
+  const { language: contextLanguage, setLanguage: setContextLanguage } = useLanguage();
   const [caseData, setCaseData] = useState<CaseData | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [language, setLanguage] = useState<Language>("en");
@@ -122,8 +122,11 @@ function PreviewContent() {
             status: normalizeCaseStatus(parsed.status),
           };
           setCaseData(normalized);
-          setLanguage(parsed.language || contextLanguage);
-          setDraftLanguage(parsed.language || contextLanguage);
+          const lang = parsed.language || contextLanguage;
+          setLanguage(lang);
+          setDraftLanguage(lang);
+          setPdfLanguage(lang);
+          setContextLanguage(lang);
           setEditableDraft(parsed.complaintDraft || "");
           setFollowUpAnswers(parsed.followUpAnswers || {});
 
@@ -132,7 +135,7 @@ function PreviewContent() {
       setLoaded(true);
     }, 0);
     return () => { cancelled = true; };
-  }, [contextLanguage]);
+  }, [contextLanguage, setContextLanguage]);
 
   if (!loaded) return null;
 
@@ -172,6 +175,12 @@ function PreviewContent() {
       localStorage.setItem("nyaymitra_edit_case", JSON.stringify(caseData));
     } catch {}
     router.push("/intake?edit=true");
+  }
+
+  function handlePreviewLanguageChange(lang: Language) {
+    setLanguage(lang);
+    setContextLanguage(lang);
+    if (caseData) persistCase({ ...caseData, language: lang });
   }
 
   function handleDownloadPdf() {
@@ -359,6 +368,13 @@ function PreviewContent() {
           <div className="flex flex-wrap gap-3">
             <button type="button" onClick={editCase} className="rounded-lg bg-white/10 px-5 py-3 font-bold text-white hover:bg-white/20">{t("editIntake")}</button>
             <Link href="/dashboard" className="rounded-lg border border-white/20 px-5 py-3 text-center font-bold text-white hover:bg-white/10">{t("backDashboard")}</Link>
+            <TouchSelect
+              value={language}
+              placeholder={t("languageLabel")}
+              options={downloadLangOptions}
+              onChange={(value) => handlePreviewLanguageChange(value as Language)}
+              className="w-36"
+            />
             <TouchSelect
               value={pdfLanguage}
               placeholder={t("downloadLang")}

@@ -63,7 +63,11 @@ export function generateLegalKitPdf(caseData: CaseData, language: Language) {
 
   function text(lines: string | string[], size = 10, bold = false) {
     doc.setFontSize(size);
-    const content: string[] = Array.isArray(lines) ? lines : doc.splitTextToSize(lines, pageWidth - margin * 2);
+    const rawLines: string[] = Array.isArray(lines) ? lines : doc.splitTextToSize(lines, pageWidth - margin * 2);
+    const content: string[] = rawLines.flatMap((line) => {
+      if (!line || !line.trim()) return [""];
+      return doc.splitTextToSize(line, pageWidth - margin * 2);
+    });
     content.forEach((line) => {
       if (!line || !line.trim()) {
         y += size + 6;
