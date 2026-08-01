@@ -64,28 +64,21 @@ export function generateLegalKitPdf(caseData: CaseData, language: Language) {
   function text(lines: string | string[], size = 10, bold = false) {
     doc.setFontSize(size);
     const maxWidth = pageWidth - margin * 2;
-    const content: string[] = (Array.isArray(lines) ? lines : [lines]).flatMap((raw) => {
-      if (!raw || !raw.trim()) return [""];
-      const isDevanagari = /[\u0900-\u097F]/.test(raw);
-      if (isDevanagari && hasDevanagariFont) {
-        doc.setFont("NotoSansDevanagari", "normal");
-      } else {
-        doc.setFont("helvetica", bold ? "bold" : "normal");
-      }
-      return doc.splitTextToSize(raw, maxWidth);
+    const rawLines: string[] = Array.isArray(lines) ? lines : [lines];
+
+    const content: string[] = [];
+    rawLines.forEach((raw) => {
+      if (!raw || !raw.trim()) { content.push(""); return; }
+      const isDev = /[\u0900-\u097F]/.test(raw) && hasDevanagariFont;
+      doc.setFont(isDev ? "NotoSansDevanagari" : "helvetica", isDev ? "normal" : bold ? "bold" : "normal");
+      content.push(...doc.splitTextToSize(raw, maxWidth));
     });
+
     content.forEach((line) => {
-      if (!line || !line.trim()) {
-        y += size + 6;
-        return;
-      }
+      if (!line || !line.trim()) { y += size + 6; return; }
       addPageIfNeeded(16);
-      const isDevanagari = /[\u0900-\u097F]/.test(line);
-      if (isDevanagari && hasDevanagariFont) {
-        doc.setFont("NotoSansDevanagari", "normal");
-      } else {
-        doc.setFont("helvetica", bold ? "bold" : "normal");
-      }
+      const isDev = /[\u0900-\u097F]/.test(line) && hasDevanagariFont;
+      doc.setFont(isDev ? "NotoSansDevanagari" : "helvetica", isDev ? "normal" : bold ? "bold" : "normal");
       doc.text(line, margin, y);
       y += size + 6;
     });
