@@ -637,8 +637,8 @@ function getStoryQualityWarning(caseData: CaseData, language: Language) {
 function getLocalizedAmountMismatch(caseData: CaseData, language: Language) {
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
   const fieldAmount = Number(caseData.amountLost);
-  const matches = Array.from(caseData.story.matchAll(/(?:₹|rs\.?|inr)?\s*([0-9][0-9,]*(?:\.\d+)?)/gi));
-  const storyAmounts = matches.map((match) => Number(match[1].replace(/,/g, ""))).filter((amount) => amount > 0);
+  const matches = Array.from(caseData.story.matchAll(/(?:₹|rs\.?|inr)\s*([0-9][0-9,]+(?:\.\d+)?)/gi));
+  const storyAmounts = matches.map((match) => Number(match[1].replace(/,/g, ""))).filter((amount) => amount > 100);
   const differentAmount = storyAmounts.find((amount) => fieldAmount > 0 && amount !== fieldAmount);
   if (!differentAmount) return "";
   return t("warnAmountMismatch").replace("{fieldAmount}", String(caseData.amountLost)).replace("{storyAmount}", String(differentAmount));
